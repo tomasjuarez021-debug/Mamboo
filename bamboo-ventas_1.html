@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mamboo</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --black:#0b0f1c;--surface:#101828;--card:#141f32;--line:#1e2d48;
+  --yellow:#e8b84b;--yellow2:#f5d080;
+  --green:#4a7a50;--green2:#6aa070;
+  --brown:#8b6f4e;--brown2:#a08060;
+  --blue:#1e3a6e;--blue2:#2a5a9e;
+  --navy:#172554;--navy2:#1e3a8a;
+  --text:#dde4f0;--text2:#7a8aaa;--text3:#3a4a6a;
+  --red:#c0453a;
+  --ff:'IBM Plex Sans',sans-serif;
+  --fm:'IBM Plex Mono',monospace;
+}
+html{font-size:15px;background:#0b0f1c!important}
+body{font-family:var(--ff);background:#0b0f1c!important;color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px}
+
+/* HEADER */
+header{background:var(--surface);border-bottom:1px solid var(--line);height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;z-index:200;flex-shrink:0}
+.logo{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;letter-spacing:0.04em;display:flex;align-items:center;gap:0.7rem;line-height:1}
+.logo-sub{font-family:var(--ff);font-size:0.6rem;color:var(--text2);letter-spacing:0.06em;font-weight:400;margin-top:1px}
+.logo-dot{width:7px;height:7px;border-radius:50%;background:var(--yellow);flex-shrink:0}
+.hdr-kpis{display:flex;gap:2.5rem}
+.hdr-kpi{text-align:right;font-size:0.7rem;color:var(--text2);font-family:var(--fm)}
+.hdr-kpi strong{display:block;font-size:0.92rem;color:var(--yellow);font-weight:500}
+
+/* NAV */
+nav{background:var(--surface);border-bottom:1px solid var(--line);display:flex;padding:0 2rem;gap:0;flex-shrink:0}
+.tab{padding:0.7rem 1.1rem;font-size:0.75rem;font-weight:600;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;letter-spacing:0.06em;text-transform:uppercase;transition:color .15s,border-color .15s;user-select:none}
+.tab:hover{color:var(--text2)}
+.tab.active{color:var(--yellow);border-bottom-color:var(--yellow)}
+
+/* MAIN */
+main{flex:1;max-width:1180px;width:100%;margin:0 auto;padding:1.8rem 2rem 4rem}
+.section{display:none;animation:fadeUp .2s ease}
+.section.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* SECTION HEADER */
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.4rem;flex-wrap:wrap;gap:0.8rem}
+.sec-hdr h2{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3)}
+
+/* CARD */
+.card{background:var(--card);border:1px solid var(--line);border-radius:5px;padding:1.4rem}
+.card+.card{margin-top:0.9rem}
+.card-title{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-bottom:1.1rem}
+
+/* GRIDS */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0.9rem}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:0.9rem;margin-bottom:0.9rem}
+@media(max-width:800px){.grid2,.grid4{grid-template-columns:1fr 1fr}}
+@media(max-width:500px){.grid2,.grid4{grid-template-columns:1fr}}
+
+/* KPI */
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:5px;padding:1.2rem 1.4rem;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px}
+.kpi.ky::before{background:var(--yellow)}
+.kpi.kg::before{background:var(--green2)}
+.kpi.kb::before{background:var(--brown)}
+.kpi.kbl::before{background:#4a7ab8}
+.kpi-label{font-size:0.67rem;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);margin-bottom:0.35rem}
+.kpi-val{font-family:var(--fm);font-size:1.5rem;font-weight:500;color:var(--text);line-height:1}
+.kpi-sub{font-size:0.68rem;color:var(--text3);margin-top:0.3rem}
+
+/* FORM */
+.fg{display:flex;flex-direction:column;gap:0.3rem}
+.fg label{font-size:0.67rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3)}
+.fg input,.fg select,.fg textarea{background:var(--surface);border:1px solid var(--line);border-radius:4px;color:var(--text);font-family:var(--ff);font-size:0.88rem;padding:0.55rem 0.85rem;outline:none;transition:border-color .15s;width:100%}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--yellow)}
+.fg select option{background:var(--surface)}
+.fg textarea{resize:vertical;min-height:65px}
+.form-cols{display:grid;grid-template-columns:1fr 1fr;gap:0.7rem}
+.fstack{display:flex;flex-direction:column;gap:0.65rem}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:0.35rem;padding:0.55rem 1.1rem;border:none;border-radius:4px;font-family:var(--ff);font-size:0.8rem;font-weight:600;letter-spacing:0.03em;cursor:pointer;transition:opacity .15s,transform .1s;white-space:nowrap}
+.btn:hover{opacity:0.82}
+.btn:active{transform:scale(0.98)}
+.btn-y{background:var(--yellow);color:var(--black)}
+.btn-g{background:var(--green);color:#fff}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--line)}
+.btn-ghost:hover{border-color:var(--text2);opacity:1}
+.btn-danger{background:transparent;color:var(--red);border:1px solid rgba(192,69,58,0.4);padding:0.35rem 0.7rem;font-size:0.75rem}
+.btn-danger:hover{background:var(--red);color:#fff;border-color:var(--red);opacity:1}
+.btn-sm{padding:0.3rem 0.65rem;font-size:0.73rem}
+.btn-row{display:flex;gap:0.55rem;margin-top:0.9rem;flex-wrap:wrap}
+
+/* DIVIDER */
+.div{height:1px;background:var(--line);margin:1.1rem 0}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:0.83rem}
+thead tr{border-bottom:1px solid var(--line)}
+thead th{padding:0.65rem 0.9rem;text-align:left;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:700;white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--line);transition:background .12s}
+tbody tr:hover{background:var(--surface)}
+tbody td{padding:0.75rem 0.9rem;vertical-align:middle}
+tbody tr:last-child{border-bottom:none}
+
+/* BADGES */
+.badge{display:inline-block;padding:0.15rem 0.5rem;border-radius:3px;font-size:0.68rem;font-weight:700;font-family:var(--fm)}
+.bg{background:rgba(74,122,80,.2);color:#6aa070}
+.by{background:rgba(232,184,75,.15);color:var(--yellow)}
+.bb{background:rgba(139,111,78,.2);color:var(--brown2)}
+.bbl{background:rgba(42,90,158,.25);color:#6a9ad8}
+.br{background:rgba(192,69,58,.18);color:#e07060}
+
+/* SEARCH ROW */
+.search-row{display:flex;gap:0.6rem;margin-bottom:0.9rem;flex-wrap:wrap}
+.search-row input,.search-row select{background:var(--card);border:1px solid var(--line);border-radius:4px;color:var(--text);font-family:var(--ff);font-size:0.83rem;padding:0.5rem 0.85rem;outline:none;transition:border-color .15s}
+.search-row input{flex:1;min-width:180px}
+.search-row input:focus,.search-row select:focus{border-color:var(--yellow)}
+.search-row select option{background:var(--surface)}
+
+/* VENTA ITEMS */
+.vitem{display:grid;grid-template-columns:1fr 85px 32px;gap:0.45rem;align-items:center;margin-bottom:0.45rem}
+.vitem select,.vitem input{background:var(--surface);border:1px solid var(--line);border-radius:4px;color:var(--text);font-family:var(--ff);font-size:0.83rem;padding:0.5rem 0.7rem;outline:none;width:100%}
+.vitem input{text-align:center}
+.vitem select:focus,.vitem input:focus{border-color:var(--yellow)}
+.vitem select option{background:var(--surface)}
+.vdel{background:var(--line);border:none;border-radius:4px;cursor:pointer;color:var(--text2);font-size:1rem;height:32px;width:32px;display:flex;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0}
+.vdel:hover{background:var(--red);color:#fff}
+
+/* TOTAL */
+.total-bar{display:flex;justify-content:space-between;align-items:center;padding:0.9rem 0 0}
+.total-bar .lbl{font-size:0.67rem;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3)}
+.total-val{font-family:var(--fm);font-size:1.35rem;font-weight:500;color:var(--yellow)}
+
+/* MODAL */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:900;justify-content:center;align-items:center}
+.modal-ov.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:1.6rem;width:92%;max-width:500px;animation:fadeUp .2s ease;max-height:90vh;overflow-y:auto}
+.modal-title{font-size:0.72rem;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--text3);margin-bottom:1.2rem}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.4rem;right:1.4rem;background:var(--card);border:1px solid var(--line);color:var(--text);padding:0.75rem 1.2rem;border-radius:4px;font-size:0.82rem;font-weight:500;z-index:9999;transform:translateY(70px);opacity:0;transition:all .25s;max-width:280px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.ok{border-left:3px solid var(--green2)}
+.toast.err{border-left:3px solid var(--red)}
+.toast.info{border-left:3px solid var(--yellow)}
+
+/* MINI LIST */
+.mrow{display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0;border-bottom:1px solid var(--line);font-size:0.83rem}
+.mrow:last-child{border-bottom:none}
+.mrow .name{color:var(--text);font-weight:500}
+.mrow .sub{font-size:0.7rem;color:var(--text3);margin-top:0.1rem}
+.mrow .val{font-family:var(--fm);font-size:0.88rem;color:var(--yellow);flex-shrink:0;margin-left:1rem}
+.rank{width:18px;height:18px;border-radius:2px;background:var(--line);color:var(--text3);font-size:0.67rem;font-weight:700;font-family:var(--fm);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:0.55rem}
+
+/* STOCK BAR */
+.sbar{height:2px;background:var(--line);border-radius:2px;margin-top:5px;width:70px}
+.sfill{height:100%;border-radius:2px;background:var(--green2)}
+.sfill.low{background:var(--yellow)}
+.sfill.out{background:var(--red)}
+
+/* EMPTY */
+.empty{text-align:center;padding:2.5rem 1rem;color:var(--text3);font-size:0.82rem}
+
+/* DETALLE */
+.det-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.det-lbl{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.2rem}
+.det-val{font-size:0.88rem;font-weight:500}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    <div>
+      <div>Mamboo</div>
+      <div class="logo-sub">Cepillos e hisopos sustentables</div>
+    </div>
+  </div>
+  <div class="hdr-kpis">
+    <div class="hdr-kpi"><strong id="hdr-v">0</strong>Hoy</div>
+    <div class="hdr-kpi"><strong id="hdr-c">0</strong>Clientes</div>
+    <div class="hdr-kpi"><strong id="hdr-i">$0</strong>Ingresos</div>
+  </div>
+</header>
+
+<nav>
+  <div class="tab active" onclick="showTab('dashboard')">Dashboard</div>
+  <div class="tab" onclick="showTab('venta')">Nueva Venta</div>
+  <div class="tab" onclick="showTab('clientes')">Clientes</div>
+  <div class="tab" onclick="showTab('inventario')">Inventario</div>
+  <div class="tab" onclick="showTab('historial')">Historial</div>
+</nav>
+
+<main>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div class="section active" id="sec-dashboard">
+  <div class="grid4">
+    <div class="kpi ky"><div class="kpi-label">Ventas totales</div><div class="kpi-val" id="kpi-v">0</div><div class="kpi-sub">pedidos</div></div>
+    <div class="kpi kg"><div class="kpi-label">Ingresos</div><div class="kpi-val" id="kpi-i">$0</div><div class="kpi-sub">acumulado</div></div>
+    <div class="kpi kb"><div class="kpi-label">Clientes</div><div class="kpi-val" id="kpi-c">0</div><div class="kpi-sub">registrados</div></div>
+    <div class="kpi kbl"><div class="kpi-label">Unidades</div><div class="kpi-val" id="kpi-u">0</div><div class="kpi-sub">cepillos vendidos</div></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><div class="card-title">Últimas ventas</div><div id="dash-rec"><div class="empty">Sin ventas aún</div></div></div>
+    <div class="card"><div class="card-title">Más vendidos</div><div id="dash-top"><div class="empty">Sin datos</div></div></div>
+  </div>
+</div>
+
+<!-- ═══ NUEVA VENTA ═══ -->
+<div class="section" id="sec-venta">
+  <div class="sec-hdr"><h2>Nueva Venta</h2></div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Cliente</div>
+      <div class="fstack">
+        <div class="fg"><label>Cliente existente</label><select id="v-sel" onchange="autoFill()"><option value="">— Ingresar manualmente —</option></select></div>
+        <div class="fg"><label>Nombre *</label><input id="v-nom" type="text" placeholder="Nombre completo"></div>
+        <div class="form-cols">
+          <div class="fg"><label>Teléfono</label><input id="v-tel" type="tel" placeholder="+52 55 0000 0000"></div>
+          <div class="fg"><label>Email</label><input id="v-email" type="email" placeholder="correo@ejemplo.com"></div>
+        </div>
+        <div class="fg"><label>Dirección</label><input id="v-dir" type="text" placeholder="Calle, ciudad"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Productos</div>
+      <div id="vitems"></div>
+      <button class="btn btn-ghost" style="margin-top:0.5rem;font-size:0.75rem" onclick="addItem()">+ Agregar producto</button>
+      <div class="div"></div>
+      <div class="form-cols">
+        <div class="fg"><label>Método de pago</label>
+          <select id="v-pago"><option>Efectivo</option><option>Transferencia</option><option>Tarjeta</option><option>Mercado Pago</option></select>
+        </div>
+        <div class="fg"><label>Descuento (%)</label><input id="v-desc" type="number" value="0" min="0" max="100" onchange="calcTotal()"></div>
+      </div>
+      <div class="fg" style="margin-top:0.65rem"><label>Notas</label><textarea id="v-notas" placeholder="Instrucciones especiales…"></textarea></div>
+      <div class="div"></div>
+      <div class="total-bar"><span class="lbl">Total a cobrar</span><span class="total-val" id="v-total">$0.00</span></div>
+      <div class="btn-row">
+        <button class="btn btn-y" onclick="registrarVenta()">Registrar venta</button>
+        <button class="btn btn-ghost" onclick="limpiarVenta()">Limpiar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CLIENTES ═══ -->
+<div class="section" id="sec-clientes">
+  <div class="sec-hdr"><h2>Clientes</h2><button class="btn btn-y" onclick="abrirMCli()">+ Nuevo cliente</button></div>
+  <div class="search-row"><input id="q-cli" type="text" placeholder="Buscar nombre, teléfono o email…" oninput="renderCli()"></div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Nombre</th><th>Teléfono</th><th>Email</th><th>Compras</th><th>Gastado</th><th></th></tr></thead>
+        <tbody id="t-cli"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ INVENTARIO ═══ -->
+<div class="section" id="sec-inventario">
+  <div class="sec-hdr"><h2>Inventario</h2><button class="btn btn-y" onclick="abrirMProd()">+ Nuevo producto</button></div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Producto</th><th>Categoría</th><th>SKU</th><th>Precio</th><th>Stock</th><th>Estado</th><th></th></tr></thead>
+        <tbody id="t-inv"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ HISTORIAL ═══ -->
+<div class="section" id="sec-historial">
+  <div class="sec-hdr"><h2>Historial de ventas</h2><button class="btn btn-ghost" onclick="exportCSV()">↓ Exportar CSV</button></div>
+  <div class="search-row">
+    <input id="q-ven" type="text" placeholder="Buscar cliente o producto…" oninput="renderHist()">
+    <select id="f-pago" onchange="renderHist()">
+      <option value="">Todos los pagos</option>
+      <option>Efectivo</option><option>Transferencia</option><option>Tarjeta</option><option>Mercado Pago</option>
+    </select>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Fecha</th><th>Cliente</th><th>Productos</th><th>Pago</th><th>Total</th><th></th></tr></thead>
+        <tbody id="t-hist"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- ═══ MODAL CLIENTE ═══ -->
+<div class="modal-ov" id="m-cli">
+  <div class="modal">
+    <div class="modal-title" id="m-cli-tit">Nuevo cliente</div>
+    <div class="fstack">
+      <div class="fg"><label>Nombre *</label><input id="mc-nom" type="text" placeholder="Nombre completo"></div>
+      <div class="form-cols">
+        <div class="fg"><label>Teléfono</label><input id="mc-tel" type="tel"></div>
+        <div class="fg"><label>Email</label><input id="mc-email" type="email"></div>
+      </div>
+      <div class="fg"><label>Dirección</label><input id="mc-dir" type="text"></div>
+      <div class="fg"><label>Notas</label><textarea id="mc-notas"></textarea></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-y" onclick="guardarCli()">Guardar</button>
+      <button class="btn btn-ghost" onclick="cerrar('m-cli')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL PRODUCTO ═══ -->
+<div class="modal-ov" id="m-prod">
+  <div class="modal">
+    <div class="modal-title" id="m-prod-tit">Nuevo producto</div>
+    <div class="fstack">
+      <div class="fg"><label>Nombre *</label><input id="mp-nom" type="text" placeholder="Ej. Cepillo Bambú Adulto Suave"></div>
+      <div class="fg"><label>Descripción</label><textarea id="mp-desc"></textarea></div>
+      <div class="form-cols">
+        <div class="fg"><label>Precio ($) *</label><input id="mp-precio" type="number" min="0" step="0.01"></div>
+        <div class="fg"><label>Stock</label><input id="mp-stock" type="number" min="0"></div>
+      </div>
+      <div class="form-cols">
+        <div class="fg"><label>Categoría</label>
+          <select id="mp-cat"><option>Adulto</option><option>Infantil</option><option>Extra Suave</option><option>Carbón Activado</option><option>Kit Familiar</option><option>Accesorio</option></select>
+        </div>
+        <div class="fg"><label>SKU</label><input id="mp-sku" type="text" placeholder="BB-001"></div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-y" onclick="guardarProd()">Guardar</button>
+      <button class="btn btn-ghost" onclick="cerrar('m-prod')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL DETALLE ═══ -->
+<div class="modal-ov" id="m-det">
+  <div class="modal" style="max-width:540px">
+    <div class="modal-title">Detalle de venta</div>
+    <div id="m-det-body"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="window.print()">Imprimir</button>
+      <button class="btn btn-ghost" onclick="cerrar('m-det')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="toast-msg"></span></div>
+
+<script>
+// ══ STATE ══
+let clientes = JSON.parse(localStorage.getItem('bb3_cli') || '[]');
+let productos = JSON.parse(localStorage.getItem('bb3_prod') || '[]');
+let ventas    = JSON.parse(localStorage.getItem('bb3_ven') || '[]');
+let editCliId = null, editProdId = null;
+
+function save(){
+  localStorage.setItem('bb3_cli',  JSON.stringify(clientes));
+  localStorage.setItem('bb3_prod', JSON.stringify(productos));
+  localStorage.setItem('bb3_ven',  JSON.stringify(ventas));
+}
+
+if(!productos.length){
+  productos=[
+    {id:uid(),nombre:'Cepillo Bambú Adulto Suave',desc:'Cerdas de nylon suaves, mango 100% bambú',precio:89,stock:150,cat:'Adulto',sku:'BB-001'},
+    {id:uid(),nombre:'Cepillo Bambú Adulto Medio',desc:'Cerdas medias, limpieza profunda',precio:89,stock:120,cat:'Adulto',sku:'BB-002'},
+    {id:uid(),nombre:'Cepillo Bambú Infantil',desc:'Diseño infantil, cerdas ultra suaves',precio:75,stock:80,cat:'Infantil',sku:'BB-003'},
+    {id:uid(),nombre:'Cepillo Carbón Activado',desc:'Blanqueamiento natural',precio:110,stock:60,cat:'Carbón Activado',sku:'BB-004'},
+    {id:uid(),nombre:'Kit Familiar 4 piezas',desc:'2 adultos + 2 infantiles',precio:320,stock:40,cat:'Kit Familiar',sku:'BB-005'},
+  ];
+  save();
+}
+
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6) }
+function fmt(n){ return '$'+Number(n).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2}) }
+function now(){ return new Date().toLocaleString('es-MX',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) }
+
+function toast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  t.className='toast '+type;
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ══ TABS ══
+const TABS=['dashboard','venta','clientes','inventario','historial'];
+function showTab(id){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',TABS[i]===id));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  const map={dashboard:renderDash,venta:()=>{fillSelCli();renderItems();},clientes:renderCli,inventario:renderInv,historial:renderHist};
+  if(map[id]) map[id]();
+  updateHdr();
+}
+
+// ══ HEADER ══
+function updateHdr(){
+  const hoy=new Date().toDateString();
+  document.getElementById('hdr-v').textContent=ventas.filter(v=>new Date(v._ts).toDateString()===hoy).length;
+  document.getElementById('hdr-c').textContent=clientes.length;
+  document.getElementById('hdr-i').textContent=fmt(ventas.reduce((s,v)=>s+v.total,0));
+}
+
+// ══ DASHBOARD ══
+function renderDash(){
+  document.getElementById('kpi-v').textContent=ventas.length;
+  document.getElementById('kpi-i').textContent=fmt(ventas.reduce((s,v)=>s+v.total,0));
+  document.getElementById('kpi-c').textContent=clientes.length;
+  document.getElementById('kpi-u').textContent=ventas.reduce((s,v)=>s+v.items.reduce((a,i)=>a+i.qty,0),0);
+
+  const rec=document.getElementById('dash-rec');
+  if(!ventas.length){ rec.innerHTML='<div class="empty">Sin ventas aún</div>'; }
+  else rec.innerHTML=[...ventas].reverse().slice(0,6).map(v=>`
+    <div class="mrow">
+      <div><div class="name">${v.cliente}</div><div class="sub">${v.fecha} · <span style="color:var(--text2)">${v.pago}</span></div></div>
+      <div class="val">${fmt(v.total)}</div>
+    </div>`).join('');
+
+  const top=document.getElementById('dash-top');
+  const map={};
+  ventas.forEach(v=>v.items.forEach(i=>{ map[i.nombre]=(map[i.nombre]||0)+i.qty }));
+  const sorted=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  if(!sorted.length){ top.innerHTML='<div class="empty">Sin datos</div>'; }
+  else top.innerHTML=sorted.map(([n,q],i)=>`
+    <div class="mrow">
+      <div style="display:flex;align-items:center"><span class="rank">${i+1}</span><span class="name">${n}</span></div>
+      <span class="badge bg">${q} uds.</span>
+    </div>`).join('');
+
+  updateHdr();
+}
+
+// ══ NUEVA VENTA ══
+let items=[{pid:'',qty:1}];
+
+function fillSelCli(){
+  const sel=document.getElementById('v-sel');
+  const cur=sel.value;
+  sel.innerHTML='<option value="">— Ingresar manualmente —</option>';
+  clientes.forEach(c=>{ sel.innerHTML+=`<option value="${c.id}">${c.nombre}${c.tel?' · '+c.tel:''}</option>` });
+  if(cur) sel.value=cur;
+}
+
+function autoFill(){
+  const id=document.getElementById('v-sel').value;
+  const c=clientes.find(x=>x.id===id);
+  if(!c){ return; }
+  document.getElementById('v-nom').value=c.nombre;
+  document.getElementById('v-tel').value=c.tel||'';
+  document.getElementById('v-email').value=c.email||'';
+  document.getElementById('v-dir').value=c.dir||'';
+}
+
+function renderItems(){
+  document.getElementById('vitems').innerHTML=items.map((it,i)=>`
+    <div class="vitem">
+      <select onchange="items[${i}].pid=this.value;calcTotal()">
+        <option value="">— Producto —</option>
+        ${productos.map(p=>`<option value="${p.id}"${it.pid===p.id?' selected':''}>${p.nombre} · ${fmt(p.precio)}</option>`).join('')}
+      </select>
+      <input type="number" min="1" value="${it.qty}" onchange="items[${i}].qty=Math.max(1,+this.value);calcTotal()">
+      <button class="vdel" onclick="removeItem(${i})">×</button>
+    </div>`).join('');
+  calcTotal();
+}
+
+function addItem(){ items.push({pid:'',qty:1}); renderItems(); }
+function removeItem(i){ if(items.length===1){ items=[{pid:'',qty:1}]; } else { items.splice(i,1); } renderItems(); }
+
+function calcTotal(){
+  let sub=0;
+  items.forEach(it=>{ const p=productos.find(x=>x.id===it.pid); if(p) sub+=p.precio*it.qty; });
+  const d=parseFloat(document.getElementById('v-desc').value)||0;
+  const total=sub*(1-d/100);
+  document.getElementById('v-total').textContent=fmt(total);
+  return total;
+}
+
+function registrarVenta(){
+  const nom=document.getElementById('v-nom').value.trim();
+  if(!nom){ toast('El nombre del cliente es obligatorio','err'); return; }
+  const validos=items.filter(i=>i.pid&&i.qty>0);
+  if(!validos.length){ toast('Agrega al menos un producto','err'); return; }
+
+  const itemsData=validos.map(it=>{
+    const p=productos.find(x=>x.id===it.pid);
+    return {prodId:p.id,nombre:p.nombre,precio:p.precio,qty:it.qty,subtotal:p.precio*it.qty};
+  });
+
+  itemsData.forEach(it=>{ const p=productos.find(x=>x.id===it.prodId); if(p) p.stock=Math.max(0,p.stock-it.qty); });
+
+  let cliId=document.getElementById('v-sel').value;
+  if(!cliId){
+    const ex=clientes.find(c=>c.nombre.toLowerCase()===nom.toLowerCase());
+    if(ex){ cliId=ex.id; }
+    else{
+      const nc={id:uid(),nombre:nom,tel:document.getElementById('v-tel').value.trim(),email:document.getElementById('v-email').value.trim(),dir:document.getElementById('v-dir').value.trim(),notas:'',_ts:Date.now()};
+      clientes.push(nc); cliId=nc.id;
+    }
+  }
+
+  const d=parseFloat(document.getElementById('v-desc').value)||0;
+  ventas.push({
+    id:uid(),_ts:Date.now(),fecha:now(),
+    clienteId:cliId,cliente:nom,
+    tel:document.getElementById('v-tel').value.trim(),
+    email:document.getElementById('v-email').value.trim(),
+    dir:document.getElementById('v-dir').value.trim(),
+    items:itemsData,
+    pago:document.getElementById('v-pago').value,
+    descuento:d,total:calcTotal(),
+    notas:document.getElementById('v-notas').value.trim()
+  });
+
+  save(); toast('Venta registrada correctamente','ok'); limpiarVenta(); updateHdr();
+}
+
+function limpiarVenta(){
+  ['v-nom','v-tel','v-email','v-dir','v-notas'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('v-desc').value=0;
+  document.getElementById('v-sel').value='';
+  items=[{pid:'',qty:1}];
+  renderItems();
+}
+
+// ══ CLIENTES ══
+function renderCli(){
+  const q=(document.getElementById('q-cli').value||'').toLowerCase();
+  const list=clientes.filter(c=>[c.nombre,c.tel||'',c.email||''].some(x=>x.toLowerCase().includes(q)));
+  const tb=document.getElementById('t-cli');
+  if(!list.length){ tb.innerHTML='<tr><td colspan="7" class="empty">Sin clientes registrados</td></tr>'; return; }
+  tb.innerHTML=list.map((c,i)=>{
+    const comp=ventas.filter(v=>v.clienteId===c.id);
+    const gast=comp.reduce((s,v)=>s+v.total,0);
+    return `<tr>
+      <td style="font-family:var(--fm);font-size:0.72rem;color:var(--text3)">${i+1}</td>
+      <td><strong>${c.nombre}</strong></td>
+      <td style="font-family:var(--fm);font-size:0.8rem;color:var(--text2)">${c.tel||'—'}</td>
+      <td style="font-size:0.8rem;color:var(--text2)">${c.email||'—'}</td>
+      <td><span class="badge bbl">${comp.length}</span></td>
+      <td style="font-family:var(--fm);color:var(--yellow)">${fmt(gast)}</td>
+      <td><div style="display:flex;gap:0.35rem">
+        <button class="btn btn-sm btn-ghost" onclick="editCli('${c.id}')">Editar</button>
+        <button class="btn btn-sm btn-danger" onclick="delCli('${c.id}')">Eliminar</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function abrirMCli(id){
+  editCliId=id||null;
+  document.getElementById('m-cli-tit').textContent=id?'Editar cliente':'Nuevo cliente';
+  const c=id?clientes.find(x=>x.id===id):{};
+  document.getElementById('mc-nom').value=c.nombre||'';
+  document.getElementById('mc-tel').value=c.tel||'';
+  document.getElementById('mc-email').value=c.email||'';
+  document.getElementById('mc-dir').value=c.dir||'';
+  document.getElementById('mc-notas').value=c.notas||'';
+  document.getElementById('m-cli').classList.add('open');
+}
+function editCli(id){ abrirMCli(id); }
+
+function guardarCli(){
+  const nom=document.getElementById('mc-nom').value.trim();
+  if(!nom){ toast('El nombre es obligatorio','err'); return; }
+  if(editCliId){
+    const c=clientes.find(x=>x.id===editCliId);
+    c.nombre=nom; c.tel=document.getElementById('mc-tel').value.trim();
+    c.email=document.getElementById('mc-email').value.trim();
+    c.dir=document.getElementById('mc-dir').value.trim();
+    c.notas=document.getElementById('mc-notas').value.trim();
+  } else {
+    clientes.push({id:uid(),nombre:nom,tel:document.getElementById('mc-tel').value.trim(),email:document.getElementById('mc-email').value.trim(),dir:document.getElementById('mc-dir').value.trim(),notas:document.getElementById('mc-notas').value.trim(),_ts:Date.now()});
+  }
+  save(); cerrar('m-cli'); renderCli(); updateHdr();
+  toast(editCliId?'Cliente actualizado':'Cliente registrado','ok');
+}
+
+function delCli(id){
+  if(!confirm('¿Eliminar este cliente?')) return;
+  clientes=clientes.filter(c=>c.id!==id); save(); renderCli(); updateHdr(); toast('Cliente eliminado','err');
+}
+
+// ══ INVENTARIO ══
+function renderInv(){
+  const tb=document.getElementById('t-inv');
+  if(!productos.length){ tb.innerHTML='<tr><td colspan="7" class="empty">Sin productos</td></tr>'; return; }
+  tb.innerHTML=productos.map(p=>{
+    const pct=Math.min(100,Math.round((p.stock/200)*100));
+    const fillCls=p.stock>20?'sfill':p.stock>0?'sfill low':'sfill out';
+    const bCls=p.stock>20?'bg':p.stock>0?'by':'br';
+    const bTxt=p.stock>20?'OK':p.stock>0?'Bajo':'Agotado';
+    return `<tr>
+      <td><strong style="font-size:0.85rem">${p.nombre}</strong>${p.desc?`<div style="font-size:0.72rem;color:var(--text3);margin-top:2px">${p.desc}</div>`:''}</td>
+      <td><span class="badge bb">${p.cat}</span></td>
+      <td style="font-family:var(--fm);font-size:0.75rem;color:var(--text3)">${p.sku||'—'}</td>
+      <td style="font-family:var(--fm);color:var(--yellow)">${fmt(p.precio)}</td>
+      <td>
+        <span style="font-family:var(--fm);font-size:0.83rem">${p.stock}</span>
+        <div class="sbar"><div class="${fillCls}" style="width:${pct}%"></div></div>
+      </td>
+      <td><span class="badge ${bCls}">${bTxt}</span></td>
+      <td><div style="display:flex;gap:0.35rem">
+        <button class="btn btn-sm btn-ghost" onclick="editProd('${p.id}')">Editar</button>
+        <button class="btn btn-sm btn-danger" onclick="delProd('${p.id}')">Eliminar</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function abrirMProd(){
+  editProdId=null;
+  document.getElementById('m-prod-tit').textContent='Nuevo producto';
+  ['mp-nom','mp-desc','mp-sku'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('mp-precio').value='';
+  document.getElementById('mp-stock').value='';
+  document.getElementById('mp-cat').value='Adulto';
+  document.getElementById('m-prod').classList.add('open');
+}
+
+function editProd(id){
+  editProdId=id;
+  const p=productos.find(x=>x.id===id);
+  document.getElementById('m-prod-tit').textContent='Editar producto';
+  document.getElementById('mp-nom').value=p.nombre;
+  document.getElementById('mp-desc').value=p.desc||'';
+  document.getElementById('mp-precio').value=p.precio;
+  document.getElementById('mp-stock').value=p.stock;
+  document.getElementById('mp-cat').value=p.cat;
+  document.getElementById('mp-sku').value=p.sku||'';
+  document.getElementById('m-prod').classList.add('open');
+}
+
+function guardarProd(){
+  const nom=document.getElementById('mp-nom').value.trim();
+  const precio=parseFloat(document.getElementById('mp-precio').value);
+  if(!nom||isNaN(precio)){ toast('Nombre y precio son obligatorios','err'); return; }
+  if(editProdId){
+    const p=productos.find(x=>x.id===editProdId);
+    p.nombre=nom; p.desc=document.getElementById('mp-desc').value.trim();
+    p.precio=precio; p.stock=parseInt(document.getElementById('mp-stock').value)||0;
+    p.cat=document.getElementById('mp-cat').value; p.sku=document.getElementById('mp-sku').value.trim();
+  } else {
+    productos.push({id:uid(),nombre:nom,desc:document.getElementById('mp-desc').value.trim(),precio,stock:parseInt(document.getElementById('mp-stock').value)||0,cat:document.getElementById('mp-cat').value,sku:document.getElementById('mp-sku').value.trim()});
+  }
+  save(); cerrar('m-prod'); renderInv(); toast(editProdId?'Producto actualizado':'Producto agregado','ok');
+}
+
+function delProd(id){
+  if(!confirm('¿Eliminar este producto?')) return;
+  productos=productos.filter(p=>p.id!==id); save(); renderInv(); toast('Producto eliminado','err');
+}
+
+// ══ HISTORIAL ══
+function renderHist(){
+  const q=(document.getElementById('q-ven').value||'').toLowerCase();
+  const fp=document.getElementById('f-pago').value;
+  const list=[...ventas].reverse().filter(v=>{
+    const mq=v.cliente.toLowerCase().includes(q)||v.items.some(i=>i.nombre.toLowerCase().includes(q));
+    const mp=!fp||v.pago===fp;
+    return mq&&mp;
+  });
+  const tb=document.getElementById('t-hist');
+  if(!list.length){ tb.innerHTML='<tr><td colspan="7" class="empty">Sin ventas registradas</td></tr>'; return; }
+  tb.innerHTML=list.map((v,i)=>`
+    <tr>
+      <td style="font-family:var(--fm);font-size:0.72rem;color:var(--text3)">${list.length-i}</td>
+      <td style="font-family:var(--fm);font-size:0.75rem;color:var(--text2)">${v.fecha}</td>
+      <td>
+        <strong style="font-size:0.85rem">${v.cliente}</strong>
+        ${v.tel?`<div style="font-size:0.7rem;color:var(--text3)">${v.tel}</div>`:''}
+      </td>
+      <td style="font-size:0.78rem;color:var(--text2);max-width:220px">${v.items.map(i=>`${i.nombre} ×${i.qty}`).join(' · ')}</td>
+      <td><span class="badge bg">${v.pago}</span></td>
+      <td>
+        <span style="font-family:var(--fm);color:var(--yellow)">${fmt(v.total)}</span>
+        ${v.descuento>0?`<div style="font-size:0.68rem;color:var(--brown2)">-${v.descuento}%</div>`:''}
+      </td>
+      <td><button class="btn btn-sm btn-ghost" onclick="verDetalle('${v.id}')">Ver</button></td>
+    </tr>`).join('');
+}
+
+function verDetalle(id){
+  const v=ventas.find(x=>x.id===id);
+  const sub=v.items.reduce((s,i)=>s+i.subtotal,0);
+  document.getElementById('m-det-body').innerHTML=`
+    <div class="det-grid">
+      <div>
+        <div class="det-lbl">Cliente</div>
+        <div class="det-val">${v.cliente}</div>
+        ${v.tel?`<div style="font-size:0.78rem;color:var(--text2);margin-top:2px">${v.tel}</div>`:''}
+        ${v.email?`<div style="font-size:0.78rem;color:var(--text2)">${v.email}</div>`:''}
+        ${v.dir?`<div style="font-size:0.78rem;color:var(--text2)">${v.dir}</div>`:''}
+      </div>
+      <div>
+        <div class="det-lbl">Fecha</div><div class="det-val" style="font-family:var(--fm);font-size:0.83rem">${v.fecha}</div>
+        <div style="margin-top:0.5rem"><span class="badge bbl">${v.pago}</span></div>
+      </div>
+    </div>
+    <div class="div"></div>
+    <table style="width:100%;border-collapse:collapse;font-size:0.82rem;margin-bottom:0.8rem">
+      <thead><tr style="border-bottom:1px solid var(--line)">
+        <th style="padding:0.5rem 0;text-align:left;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3)">Producto</th>
+        <th style="padding:0.5rem 0;text-align:right;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3)">Precio</th>
+        <th style="padding:0.5rem 0;text-align:center;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3)">Cant.</th>
+        <th style="padding:0.5rem 0;text-align:right;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3)">Subtotal</th>
+      </tr></thead>
+      <tbody>
+        ${v.items.map(i=>`<tr style="border-bottom:1px solid var(--line)">
+          <td style="padding:0.55rem 0">${i.nombre}</td>
+          <td style="padding:0.55rem 0;text-align:right;font-family:var(--fm)">${fmt(i.precio)}</td>
+          <td style="padding:0.55rem 0;text-align:center;font-family:var(--fm)">${i.qty}</td>
+          <td style="padding:0.55rem 0;text-align:right;font-family:var(--fm)">${fmt(i.subtotal)}</td>
+        </tr>`).join('')}
+        ${v.descuento>0?`<tr><td colspan="3" style="padding:0.55rem 0;text-align:right;color:var(--brown2);font-size:0.8rem">Descuento (${v.descuento}%)</td><td style="padding:0.55rem 0;text-align:right;font-family:var(--fm);color:var(--brown2)">-${fmt(sub*v.descuento/100)}</td></tr>`:''}
+        <tr style="border-top:1px solid var(--line)">
+          <td colspan="3" style="padding:0.7rem 0;text-align:right;font-weight:700;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text2)">Total</td>
+          <td style="padding:0.7rem 0;text-align:right;font-family:var(--fm);font-size:1.05rem;color:var(--yellow)">${fmt(v.total)}</td>
+        </tr>
+      </tbody>
+    </table>
+    ${v.notas?`<div style="background:var(--surface);padding:0.7rem 0.9rem;border-radius:4px;font-size:0.8rem;color:var(--text2);border:1px solid var(--line)"><span style="color:var(--text3);font-size:0.67rem;text-transform:uppercase;letter-spacing:0.08em">Notas — </span>${v.notas}</div>`:''}`;
+  document.getElementById('m-det').classList.add('open');
+}
+
+// ══ CSV ══
+function exportCSV(){
+  if(!ventas.length){ toast('No hay ventas para exportar','err'); return; }
+  const rows=[['ID','Fecha','Cliente','Tel','Email','Productos','Pago','Descuento%','Total']];
+  ventas.forEach(v=>rows.push([v.id,v.fecha,v.cliente,v.tel||'',v.email||'',v.items.map(i=>`${i.nombre}x${i.qty}`).join(';'),v.pago,v.descuento,v.total]));
+  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'}));
+  a.download='ventas_bambú.csv'; a.click();
+  toast('CSV exportado','info');
+}
+
+// ══ MODALS ══
+function cerrar(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-ov').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); }));
+
+// ══ CARGA DE HISTÓRICO ══
+function cargarHistorico(){
+  if(localStorage.getItem('bb3_historico_cargado')) return;
+
+  const PROD_ID = productos[0]?.id || 'hist';
+
+  function hv(cliente, vendedor, qty, precio, fecha, pago){
+    const ts = new Date(fecha.split('/').reverse().join('-')).getTime() || Date.now();
+    const total = qty * precio;
+
+    // Asegurar cliente en lista
+    let c = clientes.find(x=>x.nombre.toLowerCase()===cliente.toLowerCase());
+    if(!c){ c={id:uid(),nombre:cliente,tel:'',email:'',dir:'',notas:`Vendedor: ${vendedor}`,_ts:ts}; clientes.push(c); }
+
+    ventas.push({
+      id:uid(), _ts:ts, fecha,
+      clienteId:c.id, cliente, tel:'', email:'', dir:'',
+      items:[{prodId:PROD_ID,nombre:'Cepillo Bambú',precio,qty,subtotal:total}],
+      pago:pago||'Efectivo', descuento:0, total,
+      notas:`Vendedor: ${vendedor}`
+    });
+  }
+
+  // ── 2020 ──
+  hv('Venturini Camila','Tomy',50,91.4,'08/10/2020');
+  hv('Pozniak Adriana','Tomy',50,115.7,'15/10/2020');
+  hv('Rocio Julia','Tomy',50,115.5,'16/10/2020');
+  hv('Martina Valles','Tomy',60,91.4,'19/10/2020');
+  hv('Valeria Huenan','Tomy',50,115.5,'22/10/2020');
+  hv('Vanesa Silvana','Felix',50,120.9,'26/10/2020');
+  hv('Camila Grecco','Tomy',50,129.4,'09/12/2020');
+  hv('Capoeira','Felix',50,138,'09/12/2020');
+
+  // ── 2021 ──
+  hv('Fraga Sandra','Felix',50,103.6,'03/02/2021');
+  hv('Tamara Chilindron','Tomas Juarez',20,107.4,'14/02/2021');
+  hv('Romanowicz Ludmila','Felix',60,103.6,'16/02/2021');
+  hv('Martita Martino','Tomas Juarez',20,107.4,'18/02/2021');
+  hv('Romanowicz Ludmila','Felix',60,103.6,'22/02/2021');
+  hv('Tamara Chilindron','Tomas Juarez',25,107.4,'23/02/2021');
+  hv('Gabriela Shurman','Tomas Juarez',20,107.4,'28/02/2021');
+  hv('Lola Fusco','Tomas Juarez',40,107.4,'01/03/2021');
+  hv('A Cherin','Tomas Juarez',2,250,'01/03/2021');
+  hv('Douglas Varguillas','Tomas Juarez',126,97.6,'08/03/2021');
+  hv('Juan Zureta','Felix',50,103.6,'09/03/2021');
+  hv('Venturini Camila','Tomas Juarez',40,107.4,'09/03/2021');
+  hv('Quiroga Rocio','Tomas Juarez',20,107.4,'10/03/2021');
+  hv('Peralta Marcela Viviana','Tomas Juarez',50,107.4,'10/03/2021');
+  hv('Juan Zureta','Felix',60,107.4,'11/03/2021');
+  hv('Dara Elysium','Tomas Juarez',20,107.4,'12/03/2021');
+  hv('Romanowicz Ludmila','Felix',60,103.6,'14/03/2021');
+  hv('Carina Manestar','Tomas Juarez',3,250,'17/03/2021');
+  hv('Gaby Carnevale','Tomas Juarez',5,250,'17/03/2021');
+  hv('Caro Casa 14','Tomas Juarez',6,250,'17/03/2021');
+  hv('Ariadna Camara','Tomas Juarez',60,107.4,'17/03/2021');
+  hv('Vanina Admin','Tomas Juarez',2,250,'25/03/2021');
+  hv('Vizzari Veronica Noemi','Tomas Juarez',50,118.5,'25/03/2021');
+  hv('Vane Casa 14','Tomas Juarez',3,250,'26/03/2021');
+  hv('Vane Zobkko','Tomas Juarez',2,250,'26/03/2021');
+  hv('Patricia Catalano','Tomas Juarez',25,128,'29/03/2021');
+  hv('Veronica Couto','Tomas Juarez',40,118.5,'05/04/2021');
+  hv('Consultorio Tete','Tomas Juarez',2,250,'06/04/2021');
+  hv('Juan Zureta','Felix',100,107.4,'09/04/2021');
+  hv('Gloria Kranevitter','Tomas Juarez',60,118.5,'12/04/2021');
+  hv('Nati Parodi','Tomas Juarez',20,129.3,'13/04/2021');
+  hv('Ariadna Camara','Tomas Juarez',200,100,'23/04/2021');
+  hv('Henry Gym Javo','Tomas Juarez',8,250,'24/04/2021');
+  hv('Pablo Ravinsara','Tomas Juarez',40,118.5,'03/06/2021');
+  hv('Roxana Rothe','Tomas Juarez',40,118.5,'08/06/2021');
+  hv('Venturini Camila','Tomas Juarez',50,118.5,'28/06/2021');
+  hv('Consultorio Tete','Tomas Juarez',2,250,'28/06/2021');
+  hv('Cliente Nany','Nadia Romanowics',45,91.3,'05/07/2021');
+  hv('Cliente Nany','Nadia Romanowics',20,91.3,'05/07/2021');
+  hv('Cliente Nany','Nadia Romanowics',30,91.3,'08/07/2021');
+  hv('Roxana Rothe','Tomas Juarez',40,118.5,'12/07/2021');
+  hv('Pablo Ravinsara','Tomas Juarez',40,118.5,'12/07/2021');
+  hv('Cliente Nany','Nadia Romanowics',12,91.3,'15/07/2021');
+  hv('Cliente Nany','Nadia Romanowics',41,91.3,'15/07/2021');
+  hv('Cliente Nany','Nadia Romanowics',300,83.4,'21/07/2021');
+  hv('Nany Romanowicz','Tomas Juarez',20,91.3,'22/07/2021');
+  hv('Cliente Nany','Nadia Romanowics',60,91.3,'22/07/2021');
+  hv('Cliente Nany','Nadia Romanowics',25,91.3,'24/07/2021');
+  hv('Cliente Nany','Nadia Romanowics',45,91.3,'05/08/2021');
+  hv('Ale Woodniak','Tomas Juarez',6,250,'09/08/2021');
+  hv('Cliente Nany','Nadia Romanowics',20,91.3,'12/08/2021');
+  hv('Cliente Nany','Nadia Romanowics',60,91.3,'12/08/2021');
+  hv('Cliente Nany','Nadia Romanowics',60,91.3,'13/08/2021');
+  hv('Cliente Nany','Nadia Romanowics',30,91.3,'19/08/2021');
+  hv('Retira en Lomas','Nadia Romanowics',20,91.3,'19/08/2021');
+  hv('Martu','Nadia Romanowics',30,91.3,'20/08/2021');
+  hv('Ana','Nadia Romanowics',80,91.3,'20/08/2021');
+  hv('Nadia','Nadia Romanowics',40,91.3,'21/08/2021');
+  hv('Hilda','Nadia Romanowics',30,91.3,'22/08/2021');
+  hv('Soledad','Nadia Romanowics',40,91.3,'22/08/2021');
+  hv('Adriana','Nadia Romanowics',35,91.3,'22/08/2021');
+  hv('Ariadna Camara','Nadia Romanowics',60,120,'22/08/2021');
+  hv('Sofi','Nadia Romanowics',41,91.3,'22/08/2021');
+  hv('Cami Reales','Nadia Romanowics',30,91.3,'22/08/2021');
+  hv('Giselle','Nadia Romanowics',30,91.3,'23/08/2021');
+  hv('Florencia','Nadia Romanowics',30,91.3,'24/08/2021');
+  hv('Elisa Eva','Nadia Romanowics',30,91.3,'29/08/2021');
+  hv('Distribuidor Santa Fe','Nadia Romanowics',260,83.4,'08/09/2021');
+  hv('Andrea Paice','Nadia Romanowics',40,91.3,'08/09/2021');
+  hv('Veronica Bertone','Nadia Romanowics',20,91.3,'08/09/2021');
+  hv('Pablo Ravinsara','Tomas Juarez',35,140,'09/09/2021');
+  hv('Venta Nany','Nadia Romanowics',30,91.3,'09/09/2021');
+  hv('Gisela Tarabini','Nadia Romanowics',20,91.3,'14/09/2021');
+  hv('Venta Nany','Nadia Romanowics',30,91.3,'15/09/2021');
+  hv('Celeste','Nadia Romanowics',20,91.3,'22/09/2021');
+  hv('Cristina Nany','Nadia Romanowics',40,91.3,'27/09/2021');
+  hv('Alfredo','Nadia Romanowics',30,91.3,'27/09/2021');
+  hv('Gisela Tarabini','Nadia Romanowics',40,91.3,'27/09/2021');
+  hv('Nadia Romanowics','Tomas Juarez',30,91.3,'27/09/2021');
+  hv('Nadia Romanowics','Tomas Juarez',30,91.3,'29/09/2021');
+  hv('Venta Nany','Nadia Romanowics',60,91.3,'08/10/2021');
+  hv('Venta Nany','Nadia Romanowics',30,96.3,'16/10/2021');
+  hv('Cano Yolanda','Tomas Juarez',25,140,'18/10/2021');
+  hv('Marina Coller','Nadia Romanowics',40,91.3,'02/11/2021');
+  hv('Andrea Paice','Nadia Romanowics',30,91.3,'02/11/2021');
+  hv('Valeria Noemi Berrios','Nadia Romanowics',20,91.3,'02/11/2021');
+  hv('Angelica Gauna','Nadia Romanowics',35,91.3,'02/11/2021');
+  hv('Adriana Krawitz','Nadia Romanowics',30,91.3,'02/11/2021');
+  hv('Soledad Ruiz','Nadia Romanowics',40,91.3,'02/11/2021');
+  hv('Andrea Gonzalez','Nadia Romanowics',31,91.3,'02/11/2021');
+  hv('Nadia Romanowicz','Tomas Juarez',40,91.3,'03/11/2021');
+  hv('Emiliana Guerra','Nadia Romanowics',40,91.3,'03/11/2021');
+  hv('Jorgelina Alvarez','Nadia Romanowics',30,91.3,'03/11/2021');
+  hv('Jorgelina Barrionuevo','Nadia Romanowics',60,91.3,'03/11/2021');
+  hv('Daira Bujan','Nadia Romanowics',30,91.3,'04/11/2021');
+  hv('Zulma Perez','Nadia Romanowics',30,91.3,'05/11/2021');
+  hv('Julieta Perez','Nadia Romanowics',60,91.3,'10/11/2021');
+  hv('Valeria Huenan','Tomas Juarez',50,72,'11/11/2021');
+  hv('Nair Ricci','Nadia Romanowics',30,91.3,'12/11/2021');
+  hv('Gisela Vera','Nadia Romanowics',60,91.3,'19/11/2021');
+  hv('Silvina Del Ministro','Nadia Romanowics',20,91.3,'23/11/2021');
+  hv('Monica UP','Nadia Romanowics',30,91.3,'26/11/2021');
+  hv('Hugo Banfield','Nadia Romanowics',20,91.3,'26/11/2021');
+  hv('Julieta Santone','Nadia Romanowics',20,91.3,'04/12/2021');
+
+  // ── 2022 ──
+  hv('Rio Negro (Nany)','Nadia Romanowics',80,91.3,'03/02/2022');
+  hv('Las Flores (Nany)','Nadia Romanowics',40,91.3,'14/02/2022');
+  hv('Melody Aguilar','Tomas Juarez',20,140,'05/03/2022');
+  hv('Romanowicz Ludmila','Tomas Juarez',30,91.3,'22/03/2022');
+  hv('Mercado Libre (Nany)','Nadia Romanowics',30,91.3,'25/03/2022');
+  hv('Barbara Noelia','Tomas Juarez',30,133,'30/03/2022');
+  hv('Soledad Ruiz','Nadia Romanowics',20,91.3,'31/03/2022');
+  hv('Jorge Rocha','Tomas Juarez',250,112.14,'02/04/2022');
+  hv('Carla Espinosa','Tomas Juarez',30,133,'04/04/2022');
+  hv('Gisela Tarabini','Tomas Juarez',40,116.9,'15/04/2022');
+  hv('Giselle Ortiz','Tomas Juarez',22,115,'18/04/2022');
+  hv('Belen Savid','Tomas Juarez',20,155.05,'22/04/2022');
+  hv('Mercado Libre','Tomas Juarez',20,156,'25/04/2022');
+  hv('Laura Aguzin','Tomas Juarez',20,148.4,'26/04/2022');
+  hv('Priscila Julieta Perez','Tomas Juarez',20,152.5,'26/04/2022');
+  hv('Ana Mosconi','Tomas Juarez',30,145.9,'26/04/2022');
+  hv('Patricia Scatalaro','Tomas Juarez',20,155.05,'27/04/2022');
+  hv('Sara Reynoso','Tomas Juarez',60,128.4,'27/04/2022');
+  hv('Mercado Libre','Tomas Juarez',50,134.8,'27/04/2022');
+  hv('Romina Rigoni','Tomas Juarez',20,158.5,'06/05/2022');
+  hv('Rocio Astoroga','Tomas Juarez',60,104.3,'10/05/2022');
+  hv('Martina Peralta','Tomas Juarez',20,155.05,'14/05/2022');
+  hv('Mercado Libre','Tomas Juarez',20,159.95,'15/05/2022');
+  hv('Mariana Corrales','Tomas Juarez',20,157.75,'19/05/2022');
+  hv('Gabriela Valls','Tomas Juarez',30,148.8,'23/05/2022');
+  hv('Maria Julia Vela','Tomas Juarez',60,133.12,'25/05/2022');
+  hv('Nadia Giammaria','Nadia Romanowics',60,98.43,'31/05/2022');
+  hv('Candela Etchetto','Tomas Juarez',20,157.6,'31/05/2022');
+  hv('Marlene Lopez','Tomas Juarez',20,137.55,'31/05/2022');
+  hv('Laura Aguzin','Tomas Juarez',20,140.25,'31/05/2022');
+  hv('Flavia Costa','Tomas Juarez',20,156.05,'01/06/2022');
+  hv('Daira Lorena Bijan','Nadia Romanowics',30,99.7,'02/06/2022');
+  hv('Martina Peralta','Tomas Juarez',20,152.05,'12/06/2022');
+  hv('Rocio Astoroga','Tomas Juarez',40,151.55,'22/06/2022');
+  hv('Yamila Valeria Mora','Tomas Juarez',60,131.47,'22/06/2022');
+  hv('Maria Julia Vela','Tomas Juarez',60,131.47,'22/06/2022');
+  hv('Pablo Ravinsara','Tomas Juarez',40,148.18,'28/06/2022');
+  hv('Soler Melina','Tomas Juarez',30,149.63,'11/07/2022');
+  hv('Sebastian Puente','Tomas Juarez',100,127.35,'13/07/2022');
+  hv('Belen Savid','Tomas Juarez',30,159.27,'18/07/2022');
+  hv('Candela Etchetto','Tomas Juarez',40,163.2,'29/07/2022');
+  hv('Sara Reynoso','Tomas Juarez',100,140.29,'02/08/2022');
+  hv('Fiorela Espru','Tomas Juarez',20,167.15,'06/08/2022');
+  hv('Maria Ver Barelli','Tomas Juarez',20,167.7,'08/08/2022');
+  hv('Martina Peralta','Tomas Juarez',30,146.6,'11/08/2022');
+  hv('Rocio Astoroga','Tomas Juarez',40,159.18,'11/08/2022');
+  hv('Maria Sol Fernandez','Tomas Juarez',20,165.5,'11/08/2022');
+  hv('Gabriela Bustamante','Tomas Juarez',20,158.3,'13/08/2022');
+  hv('Fabiana Lanaro','Tomas Juarez',20,168.65,'13/08/2022');
+  hv('Sandra Pettina','Tomas Juarez',20,143.95,'22/08/2022');
+  hv('Sebastian Puente','Tomas Juarez',100,143.9,'23/08/2022');
+  hv('Paloma Gancedo','Tomas Juarez',100,133.69,'24/08/2022');
+  hv('Mercado Libre','Tomas Juarez',20,155.9,'24/08/2022');
+  hv('Agustina Canovas Rubio','Tomas Juarez',30,150.33,'27/08/2022');
+  hv('Camila Ximena Vega','Tomas Juarez',20,154,'30/08/2022');
+  hv('Sandra Pettina','Tomas Juarez',20,171.5,'31/08/2022');
+  hv('Mercado Libre','Tomas Juarez',30,135.8,'13/09/2022');
+  hv('Tatiana Turnes','Nadia Romanowics',40,113.25,'13/09/2022');
+  hv('Laura Aguzin','Tomas Juarez',30,158.5,'13/09/2022');
+
+  // ── 2023 ──
+  hv('Sebastian Puente','Vendedor',500,125,'08/03/2023');
+  hv('Katerina Gruber','Vendedor',100,138,'08/03/2023');
+  hv('Belen Savid','Vendedor',100,125,'12/03/2023');
+  hv('Carolina Marchiso','Vendedor',100,124.4,'12/03/2023');
+  hv('Gabriella Valls','Vendedor',100,126,'19/03/2023');
+  hv('Ana Mosconi','Vendedor',100,126,'19/03/2023');
+  hv('Nadia Romanowicz','Vendedor',100,133.2,'28/03/2023');
+  hv('Soledad Ruiz','Vendedor',100,126,'09/04/2023');
+  hv('Gabriella Valls','Vendedor',100,126,'12/04/2023');
+  hv('Priscila y Diego','Vendedor',100,126.9,'14/04/2023');
+  hv('Nadia Romanowics','Vendedor',100,129.6,'20/04/2023');
+  hv('Julieta Perez','Vendedor',200,126.3,'25/04/2023');
+  hv('Aros Libre','Vendedor',100,129.6,'28/04/2023');
+
+  save();
+  localStorage.setItem('bb3_historico_cargado','1');
+  console.log('Histórico cargado:', ventas.length, 'ventas,', clientes.length, 'clientes');
+}
+
+cargarHistorico();
+
+// ══ INIT ══
+renderDash();
+updateHdr();
+</script>
+</body>
+</html>
