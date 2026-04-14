@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mamboo</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=Playfair+Display:wght@700&family=Nunito:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -210,6 +210,11 @@ tbody tr:last-child{border-bottom:none}
   #sec-dashboard>div[style*="320px"]{grid-template-columns:1fr!important}
 }
 
+/* COMPACT INVENTORY TABLE */
+.inv-table thead th{padding:0.35rem 0.5rem;font-size:0.58rem}
+.inv-table tbody td{padding:0.38rem 0.5rem;font-size:0.75rem}
+.inv-table .badge{font-size:0.58rem;padding:0.08rem 0.3rem}
+
 /* EMPTY */
 .empty{text-align:center;padding:2rem 1rem;color:var(--text3);font-size:0.82rem}
 
@@ -220,8 +225,8 @@ tbody tr:last-child{border-bottom:none}
 .det-val{font-size:0.85rem;font-weight:500}
 
 /* FAB nueva venta */
-.fab{display:none;position:fixed;bottom:1.2rem;right:1.2rem;z-index:500;background:var(--yellow);color:var(--black);border:none;border-radius:50%;width:54px;height:54px;font-size:1.5rem;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(232,184,75,0.35);cursor:pointer;-webkit-tap-highlight-color:transparent}
-@media(max-width:600px){.fab{display:flex}}
+.fab{display:flex;position:fixed;bottom:1.4rem;right:1.4rem;z-index:500;background:var(--yellow);color:var(--black);border:none;border-radius:50%;width:54px;height:54px;font-size:1.5rem;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(232,184,75,0.35);cursor:pointer;-webkit-tap-highlight-color:transparent;font-weight:700;transition:transform .15s,box-shadow .15s}
+.fab:hover{transform:scale(1.08);box-shadow:0 6px 28px rgba(232,184,75,0.5)}
 
 /* hide-mob utility */
 @media(max-width:500px){.hide-mob{display:none!important}}
@@ -234,21 +239,16 @@ tbody tr:last-child{border-bottom:none}
   <div class="logo">
     <div class="logo-dot"></div>
     <div>
-      <div>Mamboo</div>
-      <div class="logo-sub">Cepillos e hisopos sustentables</div>
+      <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:1.35rem;letter-spacing:0.04em;color:var(--yellow)">Mamboo</div>
+      <div class="logo-sub" style="font-family:'Nunito',sans-serif;font-weight:300;letter-spacing:0.06em;font-size:0.58rem;color:var(--green2)">gestión de ventas</div>
     </div>
-  </div>
-  <div class="hdr-kpis">
-    <div class="hdr-kpi"><strong id="hdr-u">0</strong>Productos vendidos</div>
-    <div class="hdr-kpi"><strong id="hdr-c">0</strong>Clientes</div>
   </div>
 </header>
 
 <nav>
   <div class="tab active" onclick="showTab('dashboard')">Dashboard</div>
-  <div class="tab" onclick="showTab('venta')">Nueva Venta</div>
-  <div class="tab" onclick="showTab('clientes')">Clientes</div>
   <div class="tab" onclick="showTab('inventario')">Inventario</div>
+  <div class="tab" onclick="showTab('clientes')">Clientes</div>
   <div class="tab" onclick="showTab('historial')">Historial</div>
 </nav>
 
@@ -257,60 +257,19 @@ tbody tr:last-child{border-bottom:none}
 <!-- ═══ DASHBOARD ═══ -->
 <div class="section active" id="sec-dashboard">
   <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.6rem;margin-bottom:0.8rem" class="kpi-grid">
-    <div class="kpi ky"><div class="kpi-label">Ventas totales</div><div class="kpi-val" id="kpi-v">0</div><div class="kpi-sub">pedidos</div></div>
     <div class="kpi kg"><div class="kpi-label">Productos vendidos</div><div class="kpi-val" id="kpi-u">0</div><div class="kpi-sub">unidades totales</div></div>
-    <div class="kpi kg">
-      <div class="kpi-label">Total · USD Blue histórico</div>
-      <div class="kpi-val" id="kpi-i-usd" style="font-size:1.1rem;color:var(--green2)">U$S 0</div>
-      <div class="kpi-sub">blue de cada época</div>
-    </div>
+    <div class="kpi ky"><div class="kpi-label">Ventas totales</div><div class="kpi-val" id="kpi-v">0</div><div class="kpi-sub">pedidos</div></div>
+    <div class="kpi kb"><div class="kpi-label">Stock disponible</div><div class="kpi-val" id="kpi-stock">0</div><div class="kpi-sub">cepillos en inventario</div></div>
     <div class="kpi kb"><div class="kpi-label">Clientes</div><div class="kpi-val" id="kpi-c">0</div><div class="kpi-sub">registrados</div></div>
   </div>
 
-  <div style="display:grid;grid-template-columns:1fr 320px;gap:0.9rem;margin-bottom:0.9rem">
-    <div style="display:flex;flex-direction:column;gap:0.9rem">
-      <div class="card"><div class="card-title">Últimas ventas</div><div id="dash-rec"><div class="empty">Sin ventas aún</div></div></div>
-      <div class="card"><div class="card-title">Más vendidos</div><div id="dash-top"><div class="empty">Sin datos</div></div></div>
-    </div>
+  <div class="card" style="margin-bottom:0.8rem">
+    <div class="card-title">Progresión histórica de unidades vendidas</div>
+    <canvas id="chart-hist" height="120"></canvas>
+  </div>
 
-    <!-- MAPA ARGENTINA -->
-    <div class="card" style="padding:1rem">
-      <div class="card-title">Cobertura por provincia</div>
-      <div style="display:flex;gap:0.8rem;margin-bottom:0.7rem;flex-wrap:wrap">
-        <span style="font-size:0.67rem;color:var(--text3);display:flex;align-items:center;gap:0.3rem"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--blue2)"></span>Con ventas</span>
-        <span style="font-size:0.67rem;color:var(--text3);display:flex;align-items:center;gap:0.3rem"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--line)"></span>Sin ventas</span>
-      </div>
-            <svg id="mapa-arg" viewBox="0 0 250 440" style="width:100%;height:auto;display:block" xmlns="http://www.w3.org/2000/svg">
-        <path id="prov-jujuy" data-nombre="Jujuy" class="prov" d="M 128.2,1.9 L 163.5,1.9 L 184.3,11.5 L 184.3,30.6 L 176.3,40.2 L 163.5,45.0 L 149.8,45.0 L 137.8,38.3 L 128.2,30.6 L 125.8,19.1 Z"/>
-        <path id="prov-salta" data-nombre="Salta" class="prov" d="M 85.7,1.9 L 128.2,1.9 L 125.8,19.1 L 128.2,30.6 L 125.8,49.7 L 117.8,59.3 L 104.2,62.2 L 92.1,57.4 L 83.3,47.8 L 80.1,35.4 L 81.7,19.1 L 84.1,7.7 Z"/>
-        <path id="prov-formosa" data-nombre="Formosa" class="prov" d="M 128.2,1.9 L 192.3,1.9 L 211.5,9.6 L 219.6,25.8 L 208.3,33.5 L 192.3,28.7 L 184.3,30.6 L 184.3,11.5 L 163.5,1.9 Z"/>
-        <path id="prov-misiones" data-nombre="Misiones" class="prov" d="M 212.3,36.3 L 226.0,28.7 L 242.0,32.5 L 248.4,49.7 L 246.0,68.9 L 236.4,83.2 L 226.0,89.9 L 215.5,83.2 L 209.9,67.0 L 205.9,51.7 Z"/>
-        <path id="prov-chaco" data-nombre="Chaco" class="prov" d="M 125.8,49.7 L 161.9,45.0 L 184.3,30.6 L 192.3,28.7 L 208.3,33.5 L 219.6,25.8 L 224.4,38.3 L 219.6,51.7 L 208.3,59.3 L 192.3,67.0 L 179.5,73.7 L 164.3,73.7 L 151.4,67.0 L 139.4,59.3 L 128.2,59.3 L 125.8,49.7 Z"/>
-        <path id="prov-tucuman" data-nombre="Tucumán" class="prov" d="M 95.4,78.4 L 111.4,73.7 L 119.4,83.2 L 121.8,97.6 L 117.0,109.0 L 105.8,111.9 L 95.4,105.2 L 92.1,92.8 Z"/>
-        <path id="prov-catamarca" data-nombre="Catamarca" class="prov" d="M 48.1,59.3 L 83.3,47.8 L 92.1,57.4 L 104.2,62.2 L 109.0,73.7 L 109.0,92.8 L 103.4,107.1 L 95.4,118.6 L 84.1,124.3 L 73.7,118.6 L 63.3,107.1 L 55.3,92.8 L 49.7,78.4 Z"/>
-        <path id="prov-sde" data-nombre="Santiago del Estero" class="prov" d="M 119.4,59.3 L 139.4,59.3 L 151.4,67.0 L 164.3,73.7 L 179.5,73.7 L 192.3,67.0 L 204.3,73.7 L 208.3,86.1 L 201.9,97.6 L 191.5,109.0 L 180.3,114.8 L 167.5,116.7 L 155.4,116.7 L 143.4,114.8 L 135.4,107.1 L 125.8,99.5 L 120.2,86.1 L 117.8,73.7 Z"/>
-        <path id="prov-corrientes" data-nombre="Corrientes" class="prov" d="M 204.3,73.7 L 224.4,51.7 L 228.4,89.9 L 246.0,98.5 L 250,111.9 L 248.4,124.3 L 240.4,135.8 L 230.0,145.4 L 219.6,150.2 L 207.5,147.3 L 195.5,143.5 L 187.5,133.9 L 184.3,122.4 L 188.3,110.0 L 196.3,97.6 L 204.3,86.1 Z"/>
-        <path id="prov-lrioja" data-nombre="La Rioja" class="prov" d="M 48.1,78.4 L 55.3,92.8 L 63.3,107.1 L 73.7,118.6 L 75.3,133.9 L 72.1,147.3 L 65.7,159.7 L 55.3,166.4 L 44.1,159.7 L 37.7,145.4 L 35.3,131.0 L 36.1,114.8 L 41.7,97.6 L 45.7,86.1 Z"/>
-        <path id="prov-er" data-nombre="Entre Ríos" class="prov" d="M 187.5,133.9 L 195.5,143.5 L 207.5,147.3 L 215.5,156.9 L 219.6,172.2 L 213.9,188.4 L 207.5,198.0 L 196.3,204.7 L 185.9,207.6 L 177.9,200.9 L 173.9,188.4 L 176.3,174.1 L 181.9,159.7 L 187.5,145.4 L 187.5,138.7 Z"/>
-        <path id="prov-sf" data-nombre="Santa Fe" class="prov" d="M 143.4,114.8 L 155.4,116.7 L 167.5,116.7 L 180.3,114.8 L 184.3,122.4 L 187.5,133.9 L 187.5,138.7 L 181.9,145.4 L 176.3,159.7 L 173.9,174.1 L 171.5,188.4 L 164.3,202.8 L 155.4,210.4 L 145.8,212.3 L 137.8,207.6 L 131.4,193.2 L 129.8,179.8 L 133.8,162.6 L 137.8,148.3 L 139.4,133.9 L 140.2,121.5 Z"/>
-        <path id="prov-sj" data-nombre="San Juan" class="prov" d="M 21.6,143.5 L 36.1,114.8 L 41.7,97.6 L 45.7,86.1 L 48.1,78.4 L 43.3,86.1 L 35.3,114.8 L 21.6,143.5 L 20.0,159.7 L 20.0,181.7 L 23.2,196.1 L 28.0,202.8 L 25.6,217.1 L 20.0,223.8 L 11.2,223.8 L 4.0,214.3 L 1.6,199.0 L 1.6,181.7 L 5.6,164.5 L 11.2,151.1 Z"/>
-        <path id="prov-cordoba" data-nombre="Córdoba" class="prov" d="M 72.1,133.9 L 84.1,124.3 L 95.4,118.6 L 103.4,107.1 L 109.0,92.8 L 109.0,73.7 L 119.4,86.1 L 125.8,99.5 L 135.4,107.1 L 139.4,121.5 L 139.4,133.9 L 137.8,150.2 L 136.2,166.4 L 131.4,178.9 L 124.2,188.4 L 115.4,195.1 L 105.8,198.0 L 96.2,195.1 L 85.7,188.4 L 75.3,178.9 L 71.3,166.4 L 71.3,150.2 Z"/>
-        <path id="prov-sl" data-nombre="San Luis" class="prov" d="M 71.3,166.4 L 75.3,178.9 L 85.7,188.4 L 96.2,195.1 L 105.8,198.0 L 115.4,195.1 L 124.2,188.4 L 131.4,178.9 L 136.2,178.9 L 136.2,191.3 L 132.2,204.7 L 125.8,212.3 L 117.8,217.1 L 108.2,220.0 L 97.8,220.0 L 88.1,217.1 L 79.3,212.3 L 72.1,204.7 L 69.7,191.3 L 69.7,178.9 L 71.3,169.3 Z"/>
-        <path id="prov-mendoza" data-nombre="Mendoza" class="prov" d="M 3.2,164.5 L 11.2,151.1 L 20.0,143.5 L 21.6,159.7 L 20.0,181.7 L 23.2,196.1 L 28.0,202.8 L 27.2,217.1 L 23.2,229.6 L 17.6,241.0 L 11.2,250.6 L 5.6,258.3 L 1.6,246.8 L 0,231.5 L 0,215.2 L 1.6,199.0 L 1.6,181.7 Z"/>
-        <path id="prov-ba" data-nombre="Buenos Aires" class="prov" d="M 132.2,204.7 L 137.8,212.3 L 147.4,210.4 L 155.4,202.8 L 164.3,188.4 L 173.9,200.9 L 184.3,204.7 L 195.5,200.9 L 205.9,191.3 L 213.9,181.7 L 222.0,191.3 L 230.0,207.6 L 236.4,224.8 L 238.0,243.9 L 235.6,263.0 L 228.4,279.3 L 217.9,289.8 L 205.9,298.4 L 192.3,303.2 L 179.5,303.2 L 167.5,296.5 L 156.2,287.0 L 147.4,275.5 L 139.4,263.0 L 133.8,243.9 L 132.2,226.7 L 133.8,215.2 Z"/>
-        <path id="prov-lpampa" data-nombre="La Pampa" class="prov" d="M 23.2,162.6 L 25.6,178.9 L 29.6,193.2 L 33.7,200.9 L 31.2,217.1 L 27.2,231.5 L 24.0,245.8 L 17.6,255.4 L 8.0,258.3 L 0,252.5 L 0,229.6 L 0,215.2 L 0,200.9 L 0,185.6 L 4.0,181.7 L 11.2,178.9 L 17.6,176.0 Z"/>
-        <path id="prov-neuquen" data-nombre="Neuquén" class="prov" d="M 1.6,215.2 L 0,199.0 L 0,181.7 L 1.6,164.5 L 5.6,164.5 L 11.2,178.9 L 11.2,200.9 L 11.2,215.2 L 15.2,229.6 L 13.6,241.0 L 8.0,246.8 L 4.0,236.3 L 0,224.8 Z"/>
-        <path id="prov-rionegro" data-nombre="Río Negro" class="prov" d="M 0,224.8 L 4.0,236.3 L 8.0,246.8 L 15.2,241.0 L 21.6,241.0 L 32.1,250.6 L 41.7,255.4 L 49.7,252.5 L 57.7,258.3 L 63.3,269.7 L 61.7,282.2 L 53.7,287.0 L 43.3,287.0 L 32.1,282.2 L 21.6,275.5 L 11.2,267.8 L 3.2,258.3 L 0,246.8 L 0,233.4 Z"/>
-        <path id="prov-chubut" data-nombre="Chubut" class="prov" d="M 0,239.1 L 0,254.4 L 3.2,258.3 L 11.2,267.8 L 21.6,275.5 L 32.1,282.2 L 43.3,287.0 L 53.7,287.0 L 63.3,282.2 L 68.1,294.6 L 68.1,310.9 L 63.3,323.3 L 53.7,330.0 L 41.7,331.9 L 29.6,327.1 L 17.6,320.4 L 7.2,310.9 L 0,298.4 L 0,285.0 L 0,269.7 Z"/>
-        <path id="prov-sc" data-nombre="Santa Cruz" class="prov" d="M 0,287.0 L 0,298.4 L 7.2,310.9 L 17.6,320.4 L 29.6,327.1 L 41.7,331.9 L 53.7,330.0 L 63.3,323.3 L 68.1,336.7 L 68.1,353.9 L 63.3,367.3 L 53.7,376.9 L 41.7,380.7 L 29.6,380.7 L 17.6,375.0 L 7.2,365.4 L 0,352.0 L 0,336.7 L 0,320.4 L 0,304.2 Z"/>
-        <path id="prov-tdf" data-nombre="Tierra del Fuego" class="prov" d="M 19.2,411.3 L 31.2,408.4 L 43.3,411.3 L 53.7,418.0 L 59.3,426.6 L 56.1,434.3 L 41.7,436.2 L 28.0,434.3 L 16.0,427.6 L 11.2,419.0 L 14.4,411.3 Z"/>
-        <circle id="prov-caba" data-nombre="Ciudad de Buenos Aires" class="prov" cx="179" cy="200" r="4"/>
-        <text x="184" y="203" style="font-size:5px;fill:var(--text2);font-family:var(--fm);pointer-events:none">CABA</text>
-      </svg>
-      <div id="mapa-info" style="font-size:0.72rem;color:var(--text2);margin-top:0.5rem;min-height:16px;text-align:center"></div>
-    </div>
-
-    </div>
+  <div style="margin-bottom:0.9rem">
+    <div class="card"><div class="card-title">Últimas ventas</div><div id="dash-rec"><div class="empty">Sin ventas aún</div></div></div>
   </div>
 </div>
 
@@ -419,52 +378,30 @@ tbody tr:last-child{border-bottom:none}
 
 <!-- ═══ INVENTARIO ═══ -->
 <div class="section" id="sec-inventario">
-  <div class="sec-hdr"><h2>Inventario</h2><button class="btn btn-y" onclick="abrirMProd()">+ Nuevo producto</button></div>
+  <div class="sec-hdr"><h2>Inventario</h2><button class="btn btn-y btn-sm" onclick="abrirMProd()">+ Nuevo</button></div>
 
-  <!-- Línea Adulto -->
-  <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-bottom:0.5rem">— Línea Adulto</div>
-  <div class="card" style="padding:0;overflow:hidden;margin-bottom:1.2rem">
+  <!-- Tabla unificada Adulto + Kids -->
+  <div class="card" style="padding:0;overflow:hidden;margin-bottom:0.8rem">
     <div class="tbl-wrap">
-      <table>
-        <thead><tr><th>Color</th><th>Producto</th><th>Precio</th><th>Stock</th><th>Estado</th><th>Valor estimado USD</th><th></th></tr></thead>
+      <table class="inv-table">
+        <thead><tr><th>Línea</th><th>Color</th><th>SKU</th><th>Precio</th><th>Stock</th><th>Estado</th><th></th></tr></thead>
         <tbody id="t-inv-adulto"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Línea Kids -->
-  <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-bottom:0.5rem">— Línea Kids</div>
-  <div class="card" style="padding:0;overflow:hidden;margin-bottom:1.6rem">
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr><th>Color</th><th>Producto</th><th>Precio</th><th>Stock</th><th>Estado</th><th>Valor estimado USD</th><th></th></tr></thead>
         <tbody id="t-inv-kids"></tbody>
       </table>
     </div>
   </div>
 
-  <!-- Promociones / Packs -->
-  <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-bottom:0.8rem">— Promociones por volumen</div>
-  <div id="packs-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.9rem;margin-bottom:1.4rem"></div>
-
-  <!-- Resumen stock total -->
-  <div class="card" style="padding:1rem 1.4rem;margin-bottom:1.4rem">
-    <div class="card-title">Stock consolidado</div>
-    <div id="stock-resumen" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:0.7rem"></div>
+  <!-- Packs + Stock unificado -->
+  <div class="card" style="padding:0.9rem 1rem;margin-bottom:0.8rem">
+    <div class="card-title" style="margin-bottom:0.8rem">Packs ofrecidos</div>
+    <div id="packs-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;margin-bottom:1rem"></div>
+    <div class="div" style="margin:0.5rem 0 0.8rem"></div>
+    <div class="card-title" style="margin-bottom:0.6rem">Stock consolidado</div>
+    <div id="stock-resumen" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:0.4rem"></div>
   </div>
 
   <!-- PROYECCIONES -->
   <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-bottom:0.8rem">— Proyecciones hasta liquidar stock</div>
-
-  <div class="card" style="margin-bottom:1rem">
-    <div class="fg" style="max-width:280px">
-      <label>Velocidad de venta estimada / mes (uds.)</label>
-      <input id="proj-vel" type="number" min="1" step="1" value="200" oninput="renderProyecciones()">
-    </div>
-    <div style="font-size:0.7rem;color:var(--text3);margin-top:0.8rem;line-height:1.5">
-      Piso = precio con 10% off (pack ×100) · Techo = precio de lista sin descuento.
-    </div>
-  </div>
 
   <div id="proj-grid"></div>
 </div>
@@ -482,7 +419,7 @@ tbody tr:last-child{border-bottom:none}
   <div class="card" style="padding:0;overflow:hidden">
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>#</th><th>Fecha</th><th>Cliente</th><th class="hide-mob">Productos</th><th class="hide-mob">Pago</th><th>Cantidad</th><th>USD Blue</th><th></th></tr></thead>
+        <thead><tr><th>#</th><th>Fecha</th><th>Cliente</th><th>Uds.</th><th>Total USD</th><th>Pago</th><th></th></tr></thead>
         <tbody id="t-hist"></tbody>
       </table>
     </div>
@@ -502,6 +439,7 @@ tbody tr:last-child{border-bottom:none}
         <div class="fg"><label>Email</label><input id="mc-email" type="email"></div>
       </div>
       <div class="fg"><label>Dirección</label><input id="mc-dir" type="text"></div>
+      <div class="fg"><label>Provincia</label><input id="mc-prov" type="text" placeholder="Ej. Buenos Aires"></div>
       <div class="fg"><label>Notas</label><textarea id="mc-notas"></textarea></div>
     </div>
     <div class="btn-row">
@@ -612,9 +550,12 @@ function toast(msg,type='ok'){
 }
 
 // ══ TABS ══
-const TABS=['dashboard','venta','clientes','inventario','historial'];
+const TABS=['dashboard','clientes','inventario','historial'];
 function showTab(id){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',TABS[i]===id));
+  document.querySelectorAll('.tab').forEach(t=>{
+    const tabId=t.getAttribute('onclick').match(/'(\w+)'/)[1];
+    t.classList.toggle('active', tabId===id);
+  });
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.getElementById('sec-'+id).classList.add('active');
   const map={dashboard:renderDash,venta:()=>{fillSelCli();renderItems();},clientes:renderCli,inventario:renderInv,historial:renderHist};
@@ -624,8 +565,10 @@ function showTab(id){
 
 // ══ HEADER ══
 function updateHdr(){
-  document.getElementById('hdr-u').textContent=ventas.reduce((s,v)=>s+v.items.reduce((a,i)=>a+i.qty,0),0).toLocaleString('es-AR');
-  document.getElementById('hdr-c').textContent=clientes.length.toLocaleString('es-AR');
+  const u = document.getElementById('hdr-u');
+  const c = document.getElementById('hdr-c');
+  if(u) u.textContent=ventas.reduce((s,v)=>s+v.items.reduce((a,i)=>a+i.qty,0),0).toLocaleString('es-AR');
+  if(c) c.textContent=clientes.length.toLocaleString('es-AR');
 }
 
 // ══ DASHBOARD ══
@@ -667,38 +610,14 @@ function detectarProvinciaCliente(v){
   return 'prov-ba'; // default: la mayoría son BA
 }
 
-function renderMapa(){
-  document.querySelectorAll('.prov').forEach(el=>el.classList.remove('activa'));
-
-  const conteo = {};
-  ventas.forEach(v=>{
-    const pid = detectarProvinciaCliente(v);
-    conteo[pid] = (conteo[pid]||0) + v.items.reduce((s,i)=>s+i.qty,0);
-  });
-
-  Object.entries(conteo).forEach(([pid, qty])=>{
-    const el = document.getElementById(pid);
-    if(el){ el.classList.add('activa'); el.dataset.qty = qty; }
-  });
-
-  document.querySelectorAll('.prov').forEach(el=>{
-    el.onmouseenter = ()=>{
-      const nombre = el.dataset.nombre;
-      const qty = el.dataset.qty;
-      document.getElementById('mapa-info').textContent =
-        nombre + (qty ? ' · ' + Number(qty).toLocaleString('es-AR') + ' uds. vendidas' : ' · Sin ventas registradas');
-    };
-    el.onmouseleave = ()=>{ document.getElementById('mapa-info').textContent=''; };
-  });
-}
+function renderMapa(){ /* mapa eliminado */ }
 
 function renderDash(){
   document.getElementById('kpi-v').textContent=ventas.length.toLocaleString('es-AR');
-  const totalUSDsum = ventas.reduce((s,v)=>{ const r=totalUSD(v.total,v.fecha); return s+(r?r.usd:v.total/BLUE_HOY); },0);
-  const kpiUSDel = document.getElementById('kpi-i-usd');
-  if(kpiUSDel) kpiUSDel.textContent = fmtUSD(totalUSDsum);
   document.getElementById('kpi-c').textContent=clientes.length.toLocaleString('es-AR');
   document.getElementById('kpi-u').textContent=ventas.reduce((s,v)=>s+v.items.reduce((a,i)=>a+i.qty,0),0).toLocaleString('es-AR');
+  const stockTotal = productos.reduce((s,p)=>s+p.stock,0);
+  document.getElementById('kpi-stock').textContent=stockTotal.toLocaleString('es-AR');
 
   const rec=document.getElementById('dash-rec');
   if(!ventas.length){ rec.innerHTML='<div class="empty">Sin ventas aún</div>'; }
@@ -717,19 +636,103 @@ function renderDash(){
     </div>`;
   }).join('');
 
-  const top=document.getElementById('dash-top');
-  const mapT={};
-  ventas.forEach(v=>v.items.forEach(i=>{ mapT[i.nombre]=(mapT[i.nombre]||0)+i.qty }));
-  const sorted=Object.entries(mapT).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  if(!sorted.length){ top.innerHTML='<div class="empty">Sin datos</div>'; }
-  else top.innerHTML=sorted.map(([n,q],i)=>`
-    <div class="mrow">
-      <div style="display:flex;align-items:center"><span class="rank">${i+1}</span><span class="name">${n}</span></div>
-      <span class="badge bg">${q} uds.</span>
-    </div>`).join('');
-
   renderMapa();
+  renderChartHist();
   updateHdr();
+}
+
+function renderChartHist(){
+  const canvas = document.getElementById('chart-hist');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  // Agrupar unidades por año
+  const porAnio = {};
+  ventas.forEach(v => {
+    const partes = (v.fecha||'').split('/');
+    const anio = partes.length === 3 ? partes[2] : null;
+    if(!anio) return;
+    const uds = v.items.reduce((s,i)=>s+i.qty,0);
+    porAnio[anio] = (porAnio[anio]||0) + uds;
+  });
+
+  const años = Object.keys(porAnio).sort();
+  // Acumulado progresivo
+  let acum = 0;
+  const valores = años.map(a => { acum += porAnio[a]; return acum; });
+
+  if(!años.length){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    return;
+  }
+
+  const W = canvas.offsetWidth || 600;
+  const H = 120;
+  canvas.width = W;
+  canvas.height = H;
+
+  const pad = { top:12, right:16, bottom:28, left:48 };
+  const gW = W - pad.left - pad.right;
+  const gH = H - pad.top - pad.bottom;
+  const maxVal = Math.max(...valores);
+
+  // Colores del tema
+  const colLine  = '#e8b84b';
+  const colFill  = 'rgba(232,184,75,0.10)';
+  const colGrid  = '#1e2d48';
+  const colText  = '#3a4a6a';
+  const colDot   = '#e8b84b';
+
+  ctx.clearRect(0,0,W,H);
+
+  // Grilla horizontal
+  const ticks = 4;
+  for(let i=0;i<=ticks;i++){
+    const y = pad.top + gH - (i/ticks)*gH;
+    ctx.strokeStyle = colGrid;
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left+gW, y); ctx.stroke();
+    ctx.fillStyle = colText;
+    ctx.font = '9px IBM Plex Mono, monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText(Math.round(maxVal*(i/ticks)).toLocaleString('es-AR'), pad.left-6, y+3);
+  }
+
+  // Calcular puntos
+  const pts = años.map((a,i) => ({
+    x: pad.left + (años.length===1 ? gW/2 : i/(años.length-1)*gW),
+    y: pad.top + gH - (valores[i]/maxVal)*gH,
+    v: valores[i], a
+  }));
+
+  // Área de relleno
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pad.top+gH);
+  pts.forEach(p => ctx.lineTo(p.x, p.y));
+  ctx.lineTo(pts[pts.length-1].x, pad.top+gH);
+  ctx.closePath();
+  ctx.fillStyle = colFill;
+  ctx.fill();
+
+  // Línea
+  ctx.beginPath();
+  ctx.strokeStyle = colLine;
+  ctx.lineWidth = 2;
+  pts.forEach((p,i) => i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+  ctx.stroke();
+
+  // Puntos y etiquetas eje X
+  pts.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 3.5, 0, Math.PI*2);
+    ctx.fillStyle = colDot;
+    ctx.fill();
+
+    ctx.fillStyle = colText;
+    ctx.font = '9px IBM Plex Mono, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(p.a, p.x, H-6);
+  });
 }
 
 // ══ NUEVA VENTA ══
@@ -953,6 +956,7 @@ function abrirMCli(id){
   document.getElementById('mc-tel').value=c.tel||'';
   document.getElementById('mc-email').value=c.email||'';
   document.getElementById('mc-dir').value=c.dir||'';
+  document.getElementById('mc-prov').value=c.prov||'';
   document.getElementById('mc-notas').value=c.notas||'';
   document.getElementById('m-cli').classList.add('open');
 }
@@ -966,9 +970,10 @@ function guardarCli(){
     c.nombre=nom; c.tel=document.getElementById('mc-tel').value.trim();
     c.email=document.getElementById('mc-email').value.trim();
     c.dir=document.getElementById('mc-dir').value.trim();
+    c.prov=document.getElementById('mc-prov').value.trim();
     c.notas=document.getElementById('mc-notas').value.trim();
   } else {
-    clientes.push({id:uid(),nombre:nom,tel:document.getElementById('mc-tel').value.trim(),email:document.getElementById('mc-email').value.trim(),dir:document.getElementById('mc-dir').value.trim(),notas:document.getElementById('mc-notas').value.trim(),_ts:Date.now()});
+    clientes.push({id:uid(),nombre:nom,tel:document.getElementById('mc-tel').value.trim(),email:document.getElementById('mc-email').value.trim(),dir:document.getElementById('mc-dir').value.trim(),prov:document.getElementById('mc-prov').value.trim(),notas:document.getElementById('mc-notas').value.trim(),_ts:Date.now()});
   }
   save(); cerrar('m-cli'); renderCli(); updateHdr();
   toast(editCliId?'Cliente actualizado':'Cliente registrado','ok');
@@ -1001,37 +1006,20 @@ function renderProdRows(lista, tbId){
     const fillCls = p.stock>20?'sfill':p.stock>0?'sfill low':'sfill out';
     const bCls = p.stock>20?'bg':p.stock>0?'by':'br';
     const bTxt = p.stock>20?'OK':p.stock>0?'Bajo':'Agotado';
-    // USD 3 escenarios (usando blue actual)
-    const usdPiso  = p.stock > 0 ? fmtUSD(p.precio * 0.90 * p.stock / BLUE_HOY) : '—';
-    const usdMedio = p.stock > 0 ? fmtUSD(p.precio * 0.95 * p.stock / BLUE_HOY) : '—';
-    const usdTecho = p.stock > 0 ? fmtUSD(p.precio * 1.00 * p.stock / BLUE_HOY) : '—';
+    const linea = p.linea || p.cat || '—';
     return `<tr>
-      <td style="width:30px;padding-right:0">${colorDot(p.color||p.nombre)}</td>
-      <td style="padding-left:0.4rem">
-        <div style="display:flex;align-items:baseline;gap:0.4rem;flex-wrap:wrap">
-          <strong style="font-size:0.83rem">${p.nombre}</strong>
-          ${p.desc?`<span style="font-size:0.7rem;color:var(--text3)">${p.desc}</span>`:''}
-        </div>
-      </td>
-      <td style="font-family:var(--fm);color:var(--yellow);white-space:nowrap">${fmt(p.precio)}</td>
+      <td style="font-size:0.65rem;color:var(--text3)">${linea}</td>
+      <td style="width:22px;padding:0.35rem 0.3rem">${colorDot(p.color||p.nombre)}</td>
+      <td style="font-family:var(--fm);font-size:0.68rem;color:var(--text3)">${p.sku||'—'}</td>
+      <td style="font-family:var(--fm);color:var(--yellow);white-space:nowrap;font-size:0.75rem">${fmt(p.precio)}</td>
       <td>
-        <span style="font-family:var(--fm);font-size:0.88rem">${p.stock}</span>
-        <div class="sbar" style="width:50px"><div class="${fillCls}" style="width:${pct}%"></div></div>
+        <span style="font-family:var(--fm);font-size:0.82rem">${p.stock}</span>
+        <div class="sbar" style="width:36px"><div class="${fillCls}" style="width:${pct}%"></div></div>
       </td>
       <td><span class="badge ${bCls}">${bTxt}</span></td>
-      <td style="white-space:nowrap">
-        <div style="font-size:0.67rem;color:var(--text3);margin-bottom:1px">−10% · lista · +0%</div>
-        <div style="font-family:var(--fm);font-size:0.72rem;display:flex;gap:0.3rem;align-items:center">
-          <span style="color:var(--yellow)">${usdPiso}</span>
-          <span style="color:var(--text3)">·</span>
-          <span style="color:var(--green2);font-weight:600">${usdMedio}</span>
-          <span style="color:var(--text3)">·</span>
-          <span style="color:var(--green2)">${usdTecho}</span>
-        </div>
-      </td>
-      <td><div style="display:flex;gap:0.3rem">
-        <button class="btn btn-sm btn-ghost" onclick="editProd('${p.id}')">Edit</button>
-        <button class="btn btn-sm btn-danger" onclick="delProd('${p.id}')">✕</button>
+      <td><div style="display:flex;gap:0.25rem">
+        <button class="btn btn-sm btn-ghost" onclick="editProd('${p.id}')" style="padding:0.2rem 0.5rem;font-size:0.68rem">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="delProd('${p.id}')" style="padding:0.2rem 0.5rem;font-size:0.68rem">✕</button>
       </div></td>
     </tr>`;
   }).join('');
@@ -1045,6 +1033,13 @@ function renderInv(){
   renderProdRows(adultos, 't-inv-adulto');
   renderProdRows([...kids, ...otros], 't-inv-kids');
 
+  // Separador visual entre líneas
+  const tbKids = document.getElementById('t-inv-kids');
+  if(tbKids && tbKids.innerHTML && adultos.length && kids.length){
+    const sep = `<tr><td colspan="7" style="padding:0;border-bottom:none"><div style="height:1px;background:var(--line);margin:2px 0"></div></td></tr>`;
+    tbKids.innerHTML = sep + tbKids.innerHTML;
+  }
+
   renderPacks();
   renderStockResumen();
   renderProyecciones();
@@ -1052,98 +1047,43 @@ function renderInv(){
 
 // PROYECCIONES ────────────────────────────────────────────
 function renderProyecciones(){
-  const velMes     = parseFloat(document.getElementById('proj-vel')?.value) || 200;
+  const BLUE = 1400;
   const stockTotal = productos.reduce((s,p)=>s+p.stock, 0);
-  const precioBase = productos.length ? productos.reduce((s,p)=>s+p.precio,0)/productos.length : 89;
-
   const grid = document.getElementById('proj-grid');
   if(!grid) return;
   if(!stockTotal){ grid.innerHTML='<div class="empty">Sin stock para proyectar</div>'; return; }
 
-  // Piso  = precio lista con 10% off (mayor descuento, pack ×100)
-  const precioPiso  = precioBase * 0.90;
-  // Techo = precio lista sin descuento
-  const precioTecho = precioBase;
+  const precioMin = 1260;
+  const precioMax = 1400;
+  const precioAvg = Math.round((1260 + 1302 + 1330 + 1400) / 4);
 
-  // Ingresos (= ganancia estimada, sin costo)
-  const ganPiso   = precioPiso  * stockTotal;
-  const ganTecho  = precioTecho * stockTotal;
+  const escenarios = [
+    { nombre:'Pesimista',   col:'var(--yellow)', precio: precioMin },
+    { nombre:'Conservador', col:'var(--text2)',  precio: precioAvg },
+    { nombre:'Optimista',   col:'var(--green2)', precio: precioMax },
+  ];
 
-  // Tiempos
-  const mesesPiso  = stockTotal / velMes;   // misma velocidad, solo cambia precio
-  const mesesTecho = stockTotal / velMes;
+  const th = s => `<th style="padding:0.4rem 0.7rem;text-align:${s==='Escenario'?'left':'right'};font-size:0.6rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);border-bottom:1px solid var(--line);font-weight:700">${s}</th>`;
+  const td = (v, col, fw) => `<td style="padding:0.42rem 0.7rem;text-align:right;font-family:var(--fm);font-size:0.8rem;color:${col||'var(--text)'};${fw?'font-weight:700':''};">${v}</td>`;
 
-  const colPiso  = 'var(--yellow)';
-  const colTecho = 'var(--green2)';
-
-  function mLabel(m){ return m < 1 ? '< 1 mes' : m.toFixed(1) + ' meses'; }
-  function mColor(m){ return m <= 2 ? 'var(--green2)' : m <= 5 ? 'var(--yellow)' : 'var(--text2)'; }
-
-  // Barra: posición del punto medio entre piso y techo
-  const mitad   = (ganPiso + ganTecho) / 2;
-  const rango   = ganTecho - ganPiso;
-  const pctMid  = rango > 0 ? 50 : 50; // siempre 50% entre piso y techo
-
-  function cell(val, col, fw){
-    return `<div style="padding:0.6rem 0.6rem;font-family:var(--fm);text-align:center;border-left:1px solid var(--line);border-top:1px solid var(--line);color:${col};font-size:0.85rem;${fw?'font-weight:700;font-size:1rem;':''}">${val}</div>`;
-  }
-  function label(txt){
-    return `<div style="padding:0.6rem 0.8rem;color:var(--text3);font-size:0.72rem;border-top:1px solid var(--line);white-space:nowrap">${txt}</div>`;
-  }
-
-  grid.innerHTML = `
-  <div class="card">
-    <div class="card-title">Proyección hasta liquidar stock — ${stockTotal.toLocaleString('es-AR')} uds.</div>
-
-    <!-- Barra visual -->
-    <div style="margin-bottom:1.4rem">
-      <div style="display:flex;justify-content:space-between;font-size:0.65rem;margin-bottom:0.35rem;text-transform:uppercase;letter-spacing:0.06em">
-        <span style="color:${colPiso}">● Piso  · 10% off (pack ×100)</span>
-        <span style="color:${colTecho}">● Techo  · precio lista</span>
-      </div>
-      <div style="position:relative;height:10px;background:var(--line);border-radius:5px;overflow:visible">
-        <div style="position:absolute;inset:0;background:linear-gradient(to right,${colPiso}55,${colTecho}99);border-radius:5px"></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-family:var(--fm);font-size:0.78rem;margin-top:0.5rem;font-weight:600">
-        <span style="color:${colPiso}">${fmt(Math.round(ganPiso))}</span>
-        <span style="color:var(--text3);font-size:0.68rem">ganancia estimada</span>
-        <span style="color:${colTecho}">${fmt(Math.round(ganTecho))}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:var(--text3);margin-top:0.15rem">
-        <span>Diferencia: <span style="font-family:var(--fm);color:var(--green2)">${fmt(Math.round(ganTecho-ganPiso))}</span></span>
-        <span>${mLabel(mesesPiso)} · ~${velMes} uds/mes</span>
-      </div>
+  grid.innerHTML = `<div class="card" style="padding:0.9rem 1rem">
+    <div class="card-title" style="margin-bottom:0.7rem">Proyección total — ${stockTotal.toLocaleString('es-AR')} uds. en stock</div>
+    <div class="tbl-wrap">
+      <table style="width:100%;border-collapse:collapse;font-size:0.78rem">
+        <thead><tr>${th('Escenario')}${th('Precio / ud.')}${th('Total USD · $1.400')}</tr></thead>
+        <tbody>
+          ${escenarios.map(e => {
+            const totalUSD = Math.round(e.precio * stockTotal / BLUE);
+            return `<tr style="border-bottom:1px solid var(--line)">
+              <td style="padding:0.42rem 0.7rem;font-weight:600;color:${e.col}">${e.nombre}</td>
+              ${td('$' + e.precio.toLocaleString('es-AR'), 'var(--text2)')}
+              ${td('U$S ' + totalUSD.toLocaleString('es-AR'), e.col, true)}
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
     </div>
-
-    <!-- Tabla -->
-    <div style="display:grid;grid-template-columns:auto 1fr 1fr;border:1px solid var(--line);border-radius:6px;overflow:hidden">
-
-      <!-- Headers -->
-      <div style="background:var(--surface);padding:0.6rem 0.8rem;font-size:0.62rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3)"></div>
-      <div style="background:var(--surface);padding:0.6rem 0.5rem;font-size:0.62rem;text-transform:uppercase;letter-spacing:0.07em;color:${colPiso};text-align:center;border-left:1px solid var(--line)">Piso  −10%</div>
-      <div style="background:var(--surface);padding:0.6rem 0.5rem;font-size:0.62rem;text-transform:uppercase;letter-spacing:0.07em;color:${colTecho};text-align:center;border-left:1px solid var(--line)">Techo  lista</div>
-
-      <!-- Precio unitario -->
-      ${label('Precio / ud.')}
-      ${cell(fmt(Math.round(precioPiso)), colPiso, false)}
-      ${cell(fmt(Math.round(precioTecho)), colTecho, false)}
-
-      <!-- Ganancia estimada total -->
-      ${label('Ganancia estimada')}
-      ${cell(fmt(Math.round(ganPiso)), colPiso, true)}
-      ${cell(fmt(Math.round(ganTecho)), colTecho, true)}
-
-      <!-- Tiempo -->
-      ${label('Tiempo para liquidar')}
-      <div style="padding:0.6rem 0.5rem;text-align:center;border-left:1px solid var(--line);border-top:1px solid var(--line);color:${mColor(mesesPiso)};font-size:0.8rem">${mLabel(mesesPiso)}</div>
-      <div style="padding:0.6rem 0.5rem;text-align:center;border-left:1px solid var(--line);border-top:1px solid var(--line);color:${mColor(mesesTecho)};font-size:0.8rem">${mLabel(mesesTecho)}</div>
-
-    </div>
-
-    <div style="margin-top:0.7rem;font-size:0.67rem;color:var(--text3)">
-      Velocidad estimada: <span style="font-family:var(--fm);color:var(--text2)">${velMes} uds/mes</span>
-      · Precio promedio de lista: <span style="font-family:var(--fm);color:var(--text2)">${fmt(Math.round(precioBase))}</span>
-    </div>
+    <div style="margin-top:0.6rem;font-size:0.65rem;color:var(--text3)">Cotización dólar blue: <span style="font-family:var(--fm);color:var(--text2)">$1.400</span></div>
   </div>`;
 }
 
@@ -1155,73 +1095,53 @@ const PACKS = [
 ];
 
 function renderPacks(){
-  // Precio base: promedio de todos los productos
   const precioBase = productos.length
     ? productos.reduce((s,p)=>s+p.precio,0) / productos.length
     : 89;
 
-  // Stock total disponible
-  const stockTotal = productos.reduce((s,p)=>s+p.stock,0);
-
   const grid = document.getElementById('packs-grid');
   if(!grid) return;
 
-  grid.innerHTML = PACKS.map(pk => {
-    const precioUnit  = precioBase * (1 - pk.off/100);
-    const totalPack   = precioUnit * pk.qty;
-    const ahorro      = (precioBase - precioUnit) * pk.qty;
-    const packsDisp   = Math.floor(stockTotal / pk.qty);
+  const colores = ['var(--green2)','var(--yellow)','var(--blue2)'];
 
-    return `<div class="pack-card ${pk.cls}">
-      <div class="pack-label">${pk.label}</div>
-      <div class="pack-qty">${pk.qty} <span style="font-size:1rem;color:var(--text2)">uds.</span></div>
-      <div style="margin:0.5rem 0"><span class="pack-off">${pk.off}% OFF</span></div>
-      <div style="font-size:0.78rem;color:var(--text2)">
-        Precio unitario: <span style="font-family:var(--fm);color:var(--text)">${fmt(Math.round(precioUnit))}</span>
-      </div>
-      <div class="pack-total">${fmt(Math.round(totalPack))}</div>
-      <div style="font-size:0.7rem;color:var(--text3);margin-top:2px">Ahorrás ${fmt(Math.round(ahorro))} vs. precio lista</div>
-      <div class="pack-disp">Packs disponibles: <strong>${packsDisp}</strong>
-        <span style="color:var(--text3)"> (stock: ${stockTotal} uds.)</span>
-      </div>
-    </div>`;
-  }).join('');
+  grid.innerHTML = `<div style="grid-column:1/-1">
+    <table style="width:100%;border-collapse:collapse;font-size:0.78rem">
+      <thead><tr>
+        <th style="text-align:left;padding:0.3rem 0.5rem;font-size:0.6rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);border-bottom:1px solid var(--line)">Pack</th>
+        <th style="text-align:center;padding:0.3rem 0.5rem;font-size:0.6rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);border-bottom:1px solid var(--line)">Uds.</th>
+        <th style="text-align:center;padding:0.3rem 0.5rem;font-size:0.6rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);border-bottom:1px solid var(--line)">Dto.</th>
+        <th style="text-align:right;padding:0.3rem 0.5rem;font-size:0.6rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);border-bottom:1px solid var(--line)">Precio/ud.</th>
+        <th style="text-align:right;padding:0.3rem 0.5rem;font-size:0.6rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);border-bottom:1px solid var(--line)">Total pack</th>
+      </tr></thead>
+      <tbody>
+        ${PACKS.map((pk, i) => {
+          const precioUnit = precioBase * (1 - pk.off/100);
+          const totalPack  = precioUnit * pk.qty;
+          const ahorro     = (precioBase - precioUnit) * pk.qty;
+          const col = colores[i];
+          return `<tr>
+            <td style="padding:0.38rem 0.5rem;font-weight:600;color:${col}">${pk.label}</td>
+            <td style="padding:0.38rem 0.5rem;text-align:center;font-family:var(--fm)">${pk.qty}</td>
+            <td style="padding:0.38rem 0.5rem;text-align:center"><span class="badge" style="background:rgba(255,255,255,0.06);color:${col}">${pk.off}% off</span></td>
+            <td style="padding:0.38rem 0.5rem;text-align:right;font-family:var(--fm);color:var(--text)">${fmt(Math.round(precioUnit))}</td>
+            <td style="padding:0.38rem 0.5rem;text-align:right;font-family:var(--fm);color:${col};font-weight:600">${fmt(Math.round(totalPack))}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  </div>`;
 }
 
 function renderStockResumen(){
   const el = document.getElementById('stock-resumen');
   if(!el) return;
   const stockTotal = productos.reduce((s,p)=>s+p.stock,0);
-  const adultos    = productos.filter(p=>(p.linea||p.cat)==='Adulto');
-  const kids       = productos.filter(p=>(p.linea||p.cat)==='Kids');
-  const stAdulto   = adultos.reduce((s,p)=>s+p.stock,0);
-  const stKids     = kids.reduce((s,p)=>s+p.stock,0);
-
   el.innerHTML = `
     <div style="background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:0.8rem 1rem">
-      <div style="font-size:0.67rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.2rem">Total general</div>
+      <div style="font-size:0.67rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.2rem">Total en stock</div>
       <div style="font-family:var(--fm);font-size:1.4rem;font-weight:500;color:var(--yellow)">${stockTotal.toLocaleString('es-AR')}</div>
-      <div style="font-size:0.7rem;color:var(--text3)">unidades disponibles</div>
+      <div style="font-size:0.7rem;color:var(--text3)">cepillos disponibles</div>
     </div>
-    <div style="background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:0.8rem 1rem">
-      <div style="font-size:0.67rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.2rem">Línea Adulto</div>
-      <div style="font-family:var(--fm);font-size:1.4rem;font-weight:500;color:var(--green2)">${stAdulto.toLocaleString('es-AR')}</div>
-      <div style="font-size:0.7rem;color:var(--text3)">${adultos.length} variantes</div>
-    </div>
-    <div style="background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:0.8rem 1rem">
-      <div style="font-size:0.67rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.2rem">Línea Kids</div>
-      <div style="font-family:var(--fm);font-size:1.4rem;font-weight:500;color:var(--blue2)">${stKids.toLocaleString('es-AR')}</div>
-      <div style="font-size:0.7rem;color:var(--text3)">${kids.length} variantes</div>
-    </div>
-    ${PACKS.map(pk=>{
-      const pBase = productos.length ? productos.reduce((s,p)=>s+p.precio,0)/productos.length : 89;
-      const disp = Math.floor(stockTotal/pk.qty);
-      return `<div style="background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:0.8rem 1rem">
-        <div style="font-size:0.67rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.2rem">Packs ×${pk.qty}</div>
-        <div style="font-family:var(--fm);font-size:1.4rem;font-weight:500;color:var(--text)">${disp}</div>
-        <div style="font-size:0.7rem;color:var(--text3)">${fmt(Math.round(pBase*(1-pk.off/100)*pk.qty))} c/u · ${pk.off}% off</div>
-      </div>`;
-    }).join('')}
   `;
 }
 
@@ -1278,6 +1198,13 @@ function delProd(id){
 }
 
 // ══ HISTORIAL ══
+function fmtFechaCorta(f){
+  const meses=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  const p=f.split('/');
+  if(p.length<3) return f;
+  return meses[parseInt(p[1],10)-1]+' '+p[2].slice(-2);
+}
+
 function renderHist(){
   const q=(document.getElementById('q-ven').value||'').toLowerCase();
   const fp=document.getElementById('f-pago').value;
@@ -1291,18 +1218,15 @@ function renderHist(){
   tb.innerHTML=list.map((v,i)=>{
     const uds=v.items.reduce((s,i)=>s+i.qty,0);
     const usdR=totalUSD(v.total,v.fecha);
+    const totalFmt = v.total>0 ? fmt(Math.round(v.total*(1-(v.descuento||0)/100))) : '—';
     return `<tr>
-      <td style="font-family:var(--fm);font-size:0.72rem;color:var(--text3)">${list.length-i}</td>
-      <td style="font-family:var(--fm);font-size:0.75rem;color:var(--text2)">${v.fecha}</td>
-      <td>
-        <strong style="font-size:0.85rem">${v.cliente}</strong>
-        ${v.tel?`<div style="font-size:0.7rem;color:var(--text3)">${v.tel}</div>`:''}
-      </td>
-      <td style="font-size:0.78rem;color:var(--text2)">${v.items.map(i=>`${i.nombre} ×${i.qty}`).join(' · ')}</td>
-      <td><span class="badge bg">${v.pago}</span></td>
-      <td style="font-family:var(--fm);font-weight:600;color:var(--text)">${uds} uds.${v.descuento>0?`<div style="font-size:0.68rem;color:var(--brown2);font-weight:400">-${v.descuento}%</div>`:''}</td>
-      <td>${usdR?`<span style="font-family:var(--fm);color:var(--green2);font-size:0.88rem">${fmtUSD(usdR.usd)}</span><div style="font-size:0.65rem;color:var(--text3)">@ $${usdR.rate} blue</div>`:'<span style="color:var(--text3);font-size:0.75rem">—</span>'}</td>
-      <td><button class="btn btn-sm btn-ghost" onclick="verDetalle('${v.id}')">Ver</button></td>
+      <td style="font-size:0.72rem;color:var(--text3);white-space:nowrap">${list.length-i}</td>
+      <td style="font-size:0.82rem;color:var(--text2);white-space:nowrap">${fmtFechaCorta(v.fecha)}</td>
+      <td style="font-size:0.82rem;color:var(--text);white-space:nowrap">${v.cliente}</td>
+      <td style="font-size:0.82rem;color:var(--text);white-space:nowrap">${uds} ud${v.descuento>0?` <span style="font-size:0.7rem;color:var(--brown2)">-${v.descuento}%</span>`:''}</td>
+      <td style="font-size:0.82rem;color:var(--text);white-space:nowrap">${usdR?fmtUSD(usdR.usd):'—'}</td>
+      <td style="white-space:nowrap"><span class="badge bb" style="font-size:0.58rem">${v.pago}</span></td>
+      <td style="white-space:nowrap"><button class="btn btn-sm btn-ghost" onclick="verDetalle('${v.id}')" style="padding:0.2rem 0.5rem;font-size:0.68rem">Ver</button></td>
     </tr>`;
   }).join('');
 }
@@ -1311,6 +1235,13 @@ function verDetalle(id){
   const v=ventas.find(x=>x.id===id);
   const usdR = totalUSD(v.total, v.fecha);
   const totalUds = v.items.reduce((s,i)=>s+i.qty,0);
+  const totalARS = v.total>0 ? Math.round(v.total*(1-(v.descuento||0)/100)) : 0;
+  const totalUSDval = usdR ? Math.round(usdR.usd*100)/100 : null;
+
+  // Buscar provincia del cliente
+  const cli = clientes.find(c=>c.id===v.clienteId);
+  const prov = cli?.prov || v.prov || '';
+
   document.getElementById('m-det-body').innerHTML=`
     <div class="det-grid">
       <div>
@@ -1318,7 +1249,7 @@ function verDetalle(id){
         <div class="det-val">${v.cliente}</div>
         ${v.tel?`<div style="font-size:0.78rem;color:var(--text2);margin-top:2px">${v.tel}</div>`:''}
         ${v.email?`<div style="font-size:0.78rem;color:var(--text2)">${v.email}</div>`:''}
-        ${v.dir?`<div style="font-size:0.78rem;color:var(--text2)">${v.dir}</div>`:''}
+        ${prov?`<div style="font-size:0.78rem;color:var(--text2)">${prov}</div>`:''}
       </div>
       <div>
         <div class="det-lbl">Fecha</div>
@@ -1327,35 +1258,38 @@ function verDetalle(id){
       </div>
     </div>
     <div class="div"></div>
-    <table style="width:100%;border-collapse:collapse;font-size:0.82rem;margin-bottom:0.8rem">
+    <table style="width:100%;border-collapse:collapse;font-size:0.82rem;margin-bottom:1rem">
       <thead><tr style="border-bottom:1px solid var(--line)">
         <th style="padding:0.5rem 0;text-align:left;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3)">Producto</th>
-        <th style="padding:0.5rem 0;text-align:center;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3)">Cantidad</th>
-        <th style="padding:0.5rem 0;text-align:right;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--green2)">USD Blue</th>
+        <th style="padding:0.5rem 0;text-align:center;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3)">Cant.</th>
       </tr></thead>
       <tbody>
-        ${v.items.map(i=>{
-          const usdItem = usdR ? (i.qty / totalUds) * usdR.usd : null;
-          return `<tr style="border-bottom:1px solid var(--line)">
-            <td style="padding:0.55rem 0">${i.nombre}</td>
-            <td style="padding:0.55rem 0;text-align:center;font-family:var(--fm);font-size:1rem;font-weight:600;color:var(--text)">${i.qty}</td>
-            <td style="padding:0.55rem 0;text-align:right;font-family:var(--fm);color:var(--green2)">${usdItem?fmtUSD(usdItem):'—'}</td>
-          </tr>`;
-        }).join('')}
-        ${v.descuento>0?`
-        <tr>
-          <td colspan="3" style="padding:0.4rem 0;text-align:right;color:var(--brown2);font-size:0.78rem">Descuento aplicado: ${v.descuento}%</td>
-        </tr>`:''}
+        ${v.items.map(i=>`<tr style="border-bottom:1px solid var(--line)">
+          <td style="padding:0.5rem 0;color:var(--text)">${i.nombre}</td>
+          <td style="padding:0.5rem 0;text-align:center;font-family:var(--fm);font-weight:600;color:var(--text)">${i.qty}</td>
+        </tr>`).join('')}
+        ${v.descuento>0?`<tr><td colspan="2" style="padding:0.4rem 0;text-align:right;color:var(--brown2);font-size:0.78rem">Descuento: ${v.descuento}%</td></tr>`:''}
         <tr style="border-top:2px solid var(--line)">
-          <td style="padding:0.7rem 0;color:var(--text3);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.06em">Total</td>
-          <td style="padding:0.7rem 0;text-align:center;font-family:var(--fm);font-size:1.1rem;font-weight:700;color:var(--text)">${totalUds} uds.</td>
-          <td style="padding:0.7rem 0;text-align:right;font-family:var(--fm);font-size:1.1rem;font-weight:700;color:var(--green2)">
-            ${usdR?fmtUSD(usdR.usd):'—'}
-            ${usdR?`<div style="font-size:0.65rem;color:var(--text3);font-weight:400">@ $${usdR.rate} blue</div>`:''}
-          </td>
+          <td style="padding:0.6rem 0;color:var(--text3);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em">Total</td>
+          <td style="padding:0.6rem 0;text-align:center;font-family:var(--fm);font-weight:700;color:var(--text)">${totalUds} uds.</td>
         </tr>
       </tbody>
     </table>
+
+    <!-- Bloque de totales ARS / USD -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:0.8rem">
+      <div style="background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:0.9rem 1rem">
+        <div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.4rem">Total ARS</div>
+        <div style="font-family:var(--fm);font-size:1.25rem;font-weight:700;color:var(--yellow)">${totalARS>0?fmt(totalARS):'—'}</div>
+        <div style="font-size:0.65rem;color:var(--text3);margin-top:0.2rem">al momento de la venta</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:0.9rem 1rem">
+        <div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.4rem">Total USD Blue</div>
+        <div style="font-family:var(--fm);font-size:1.25rem;font-weight:700;color:var(--green2)">${totalUSDval?fmtUSD(totalUSDval):'—'}</div>
+        <div style="font-size:0.65rem;color:var(--text3);margin-top:0.2rem">${usdR?`@ $${usdR.rate} blue`:'sin cotización'}</div>
+      </div>
+    </div>
+
     ${v.notas?`<div style="background:var(--surface);padding:0.7rem 0.9rem;border-radius:4px;font-size:0.8rem;color:var(--text2);border:1px solid var(--line)"><span style="color:var(--text3);font-size:0.67rem;text-transform:uppercase;letter-spacing:0.08em">Notas — </span>${v.notas}</div>`:''}`;
   document.getElementById('m-det').classList.add('open');
 }
