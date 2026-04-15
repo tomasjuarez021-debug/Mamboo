@@ -264,13 +264,22 @@ tbody tr:last-child{border-bottom:none}
   </div>
 
   <div class="card" style="margin-bottom:0.8rem">
-    <div class="card-title">Progresión histórica de unidades vendidas</div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:0.8rem">
+      <div class="card-title" style="margin-bottom:0">Progresión histórica de unidades vendidas</div>
+      <div id="chart-peak" style="text-align:right;flex-shrink:0;margin-left:1rem"></div>
+    </div>
     <canvas id="chart-hist" height="120"></canvas>
   </div>
 
   <div style="margin-bottom:0.9rem">
     <div class="card"><div class="card-title">Últimas ventas</div><div id="dash-rec"><div class="empty">Sin ventas aún</div></div></div>
   </div>
+
+  <div class="card" id="card-provincias" style="margin-bottom:0.8rem">
+    <div class="card-title">Cobertura de provincias</div>
+    <div id="dash-provincias"></div>
+  </div>
+
 </div>
 
 <!-- ═══ NUEVA VENTA ═══ -->
@@ -364,14 +373,61 @@ tbody tr:last-child{border-bottom:none}
 
 <!-- ═══ CLIENTES ═══ -->
 <div class="section" id="sec-clientes">
-  <div class="sec-hdr"><h2>Clientes</h2><button class="btn btn-y" onclick="abrirMCli()">+ Nuevo cliente</button></div>
-  <div class="search-row"><input id="q-cli" type="text" placeholder="Buscar nombre, teléfono o email…" oninput="renderCli()"></div>
+  <div class="sec-hdr"><h2>Clientes</h2><button class="btn btn-y btn-sm" onclick="abrirMCli()">+ Nuevo</button></div>
+  <div class="search-row" style="margin-bottom:0.8rem">
+    <input id="q-cli" type="text" placeholder="Buscar nombre o provincia…" oninput="renderCli()" style="max-width:340px">
+  </div>
   <div class="card" style="padding:0;overflow:hidden">
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>#</th><th>Nombre</th><th>Teléfono</th><th>Email</th><th>Pedidos</th><th>Unidades</th><th>USD Blue histórico</th><th></th></tr></thead>
+        <thead><tr>
+          <th style="width:36px;text-align:center">#</th>
+          <th>Nombre</th>
+          <th>Provincia</th>
+          <th style="text-align:center">Pedidos</th>
+          <th style="text-align:center">Unidades</th>
+          <th style="width:90px"></th>
+        </tr></thead>
         <tbody id="t-cli"></tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- PANEL DETALLE CLIENTE -->
+  <div id="panel-cli" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:900;justify-content:center;align-items:flex-end" onclick="if(event.target===this)cerrarPanelCli()">
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:14px 14px 0 0;padding:1.4rem 1.2rem 2.8rem;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;animation:slideUp .25s ease" onclick="event.stopPropagation()">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.3rem">
+        <div id="pcli-nombre" style="font-size:1.05rem;font-weight:700;color:var(--text);line-height:1.2"></div>
+        <button onclick="cerrarPanelCli()" style="background:var(--line);border:none;border-radius:50%;width:28px;height:28px;color:var(--text2);cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:1rem">×</button>
+      </div>
+      <div id="pcli-loc" style="font-size:0.7rem;color:var(--text3);margin-bottom:1.1rem;text-transform:uppercase;letter-spacing:0.08em"></div>
+      <div style="height:1px;background:var(--line);margin-bottom:1.1rem"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.65rem;margin-bottom:1.1rem">
+        <div style="background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:0.8rem 0.9rem">
+          <div style="font-size:0.58rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.25rem">Pedidos</div>
+          <div id="pcli-pedidos" style="font-family:var(--fm);font-size:1.4rem;font-weight:700;color:var(--text)"></div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:0.8rem 0.9rem">
+          <div style="font-size:0.58rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.25rem">Unidades compradas</div>
+          <div id="pcli-uds" style="font-family:var(--fm);font-size:1.4rem;font-weight:700;color:var(--text)"></div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:0.8rem 0.9rem">
+          <div style="font-size:0.58rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.25rem">Total USD blue</div>
+          <div id="pcli-usd" style="font-family:var(--fm);font-size:1.15rem;font-weight:700;color:var(--green2)"></div>
+          <div style="font-size:0.6rem;color:var(--text3);margin-top:0.15rem">cotización histórica</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:0.8rem 0.9rem">
+          <div style="font-size:0.58rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.25rem">Pesos hoy</div>
+          <div id="pcli-ars" style="font-family:var(--fm);font-size:1.15rem;font-weight:700;color:var(--yellow)"></div>
+          <div style="font-size:0.6rem;color:var(--text3);margin-top:0.15rem">USD × $1.400 blue hoy</div>
+        </div>
+      </div>
+      <div style="font-size:0.62rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.5rem">Historial de compras</div>
+      <div id="pcli-historial"></div>
+      <div style="display:flex;gap:0.5rem;margin-top:1.2rem">
+        <button class="btn btn-ghost btn-sm" id="pcli-btn-edit">Editar</button>
+        <button class="btn btn-ghost btn-sm" onclick="cerrarPanelCli()" style="margin-left:auto">Cerrar</button>
+      </div>
     </div>
   </div>
 </div>
@@ -409,12 +465,32 @@ tbody tr:last-child{border-bottom:none}
 <!-- ═══ HISTORIAL ═══ -->
 <div class="section" id="sec-historial">
   <div class="sec-hdr"><h2>Historial de ventas</h2><button class="btn btn-ghost" onclick="exportCSV()">↓ Exportar CSV</button></div>
-  <div class="search-row">
-    <input id="q-ven" type="text" placeholder="Buscar cliente o producto…" oninput="renderHist()">
-    <select id="f-pago" onchange="renderHist()">
+  <div class="search-row" style="flex-wrap:wrap;gap:0.4rem">
+    <input id="q-ven" type="text" placeholder="Buscar cliente…" oninput="renderHist()" style="min-width:130px">
+    <select id="f-pago" onchange="renderHist()" style="flex-shrink:0">
       <option value="">Todos los pagos</option>
       <option>Efectivo</option><option>Transferencia</option><option>Tarjeta</option><option>Mercado Pago</option>
     </select>
+    <div style="display:flex;align-items:center;gap:0.3rem;flex-shrink:0">
+      <input id="f-desde" type="text" placeholder="DD/MM/AAAA" maxlength="10"
+        oninput="autoSlash(this);renderHist()"
+        style="width:92px;font-size:0.76rem;padding:0.42rem 0.5rem;background:var(--card);
+               border:1px solid var(--line);border-radius:4px;color:var(--text);
+               font-family:var(--fm);outline:none;text-align:center"
+        onfocus="this.style.borderColor='var(--yellow)'" onblur="this.style.borderColor='var(--line)'">
+      <span style="font-size:0.65rem;color:var(--text3)">–</span>
+      <input id="f-hasta" type="text" placeholder="DD/MM/AAAA" maxlength="10"
+        oninput="autoSlash(this);renderHist()"
+        style="width:92px;font-size:0.76rem;padding:0.42rem 0.5rem;background:var(--card);
+               border:1px solid var(--line);border-radius:4px;color:var(--text);
+               font-family:var(--fm);outline:none;text-align:center"
+        onfocus="this.style.borderColor='var(--yellow)'" onblur="this.style.borderColor='var(--line)'">
+      <button onclick="limpiarFechas()" title="Limpiar rango"
+        style="background:none;border:none;color:var(--text3);cursor:pointer;
+               font-size:1rem;line-height:1;padding:0.1rem 0.3rem;
+               transition:color .15s"
+        onmouseenter="this.style.color='var(--text)'" onmouseleave="this.style.color='var(--text3)'">×</button>
+    </div>
   </div>
   <div class="card" style="padding:0;overflow:hidden">
     <div class="tbl-wrap">
@@ -507,18 +583,14 @@ tbody tr:last-child{border-bottom:none}
 
 <script>
 // ══ STATE ══
-let clientes = JSON.parse(localStorage.getItem('bb3_cli') || '[]');
-let productos = JSON.parse(localStorage.getItem('bb3_prod') || '[]');
-let ventas    = JSON.parse(localStorage.getItem('bb3_ven') || '[]');
+let clientes = [];
+let productos = [];
+let ventas    = [];
 let editCliId = null, editProdId = null;
 
-function save(){
-  localStorage.setItem('bb3_cli',  JSON.stringify(clientes));
-  localStorage.setItem('bb3_prod', JSON.stringify(productos));
-  localStorage.setItem('bb3_ven',  JSON.stringify(ventas));
-}
+function save(){ /* datos en memoria */ }
 
-if(!localStorage.getItem('bb3_prod_v2')){
+{
   productos=[
     // ── LÍNEA ADULTO ──
     {id:uid(),nombre:'Cepillo Arcoíris',desc:'Cerdas multicolor, mango bambú natural',precio:89,stock:80,cat:'Adulto',color:'Arcoíris',linea:'Adulto',sku:'AD-ARC'},
@@ -533,7 +605,6 @@ if(!localStorage.getItem('bb3_prod_v2')){
     {id:uid(),nombre:'Kids Violeta',desc:'Tamaño infantil, cerdas ultra suaves violetas',precio:75,stock:40,cat:'Kids',color:'Violeta',linea:'Kids',sku:'KD-VIO'},
     {id:uid(),nombre:'Kids Arcoíris',desc:'Tamaño infantil, cerdas multicolor',precio:75,stock:65,cat:'Kids',color:'Arcoíris',linea:'Kids',sku:'KD-ARC'},
   ];
-  localStorage.setItem('bb3_prod_v2','1');
   save();
 }
 
@@ -612,16 +683,75 @@ function detectarProvinciaCliente(v){
 
 function renderMapa(){ /* mapa eliminado */ }
 
-function renderDash(){
-  document.getElementById('kpi-v').textContent=ventas.length.toLocaleString('es-AR');
-  document.getElementById('kpi-c').textContent=clientes.length.toLocaleString('es-AR');
-  document.getElementById('kpi-u').textContent=ventas.reduce((s,v)=>s+v.items.reduce((a,i)=>a+i.qty,0),0).toLocaleString('es-AR');
-  const stockTotal = productos.reduce((s,p)=>s+p.stock,0);
-  document.getElementById('kpi-stock').textContent=stockTotal.toLocaleString('es-AR');
+const PROVINCIAS_ARG = [
+  'Buenos Aires','CABA','Córdoba','Santa Fe','Mendoza','Tucumán',
+  'Entre Ríos','Salta','Misiones','Chaco','Corrientes','Santiago del Estero',
+  'San Juan','Jujuy','Río Negro','Neuquén','Formosa','Chubut',
+  'San Luis','Catamarca','La Rioja','La Pampa','Santa Cruz','Tierra del Fuego'
+];
 
-  const rec=document.getElementById('dash-rec');
-  if(!ventas.length){ rec.innerHTML='<div class="empty">Sin ventas aún</div>'; }
-  else rec.innerHTML=[...ventas].reverse().slice(0,6).map(v=>{
+function renderProvincias(){
+  const el = document.getElementById('dash-provincias');
+  if(!el) return;
+
+  function normProv(p){
+    return (p||'').toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .replace('caba','buenos aires').replace('ciudad de buenos aires','buenos aires')
+      .replace('capital federal','buenos aires').trim();
+  }
+
+  const provClientes = new Set();
+  clientes.forEach(c=>{ const p=normProv(c.prov); if(p&&p!=='nulo') provClientes.add(p); });
+
+  const TOTAL = 24;
+  const PROVINCIAS_ARG = [
+    'Buenos Aires','CABA','Córdoba','Santa Fe','Mendoza','Tucumán',
+    'Entre Ríos','Salta','Misiones','Chaco','Corrientes','Santiago del Estero',
+    'San Juan','Jujuy','Río Negro','Neuquén','Formosa','Chubut',
+    'San Luis','Catamarca','La Rioja','La Pampa','Santa Cruz','Tierra del Fuego'
+  ];
+  const cubiertas = PROVINCIAS_ARG.filter(p=>provClientes.has(normProv(p)));
+  const cant = cubiertas.length;
+  const pct  = Math.round(cant/TOTAL*100);
+
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.9rem">
+      <div style="font-family:var(--fm);font-size:2.2rem;font-weight:700;color:var(--yellow);line-height:1">${cant}</div>
+      <div>
+        <div style="font-size:0.78rem;color:var(--text)">de 24 provincias</div>
+        <div style="font-size:0.68rem;color:var(--text3);margin-top:0.1rem">${pct}% del territorio nacional</div>
+      </div>
+      <div style="margin-left:auto;text-align:right">
+        <div style="font-size:0.65rem;color:var(--text3);margin-bottom:0.3rem">${cant}/${TOTAL}</div>
+        <div style="width:80px;height:4px;background:var(--line);border-radius:2px">
+          <div style="width:${pct}%;height:100%;background:var(--yellow);border-radius:2px"></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:0.3rem">
+      ${PROVINCIAS_ARG.map(p=>{
+        const activa = provClientes.has(normProv(p));
+        return `<span style="
+          font-size:0.62rem;padding:0.18rem 0.5rem;border-radius:3px;
+          font-weight:600;font-family:var(--fm);
+          background:${activa?'rgba(232,184,75,0.15)':'var(--surface)'};
+          color:${activa?'var(--yellow)':'var(--text3)'};
+          border:1px solid ${activa?'rgba(232,184,75,0.3)':'var(--line)'};
+        ">${p}</span>`;
+      }).join('')}
+    </div>
+  `;
+}
+
+
+let _recExpanded = false;
+function renderRec(){
+  const rec = document.getElementById('dash-rec');
+  if(!rec) return;
+  const lista = [...ventas].reverse().slice(0, _recExpanded ? 10 : 3);
+  const total = ventas.length;
+  rec.innerHTML = lista.map(v=>{
     const uds = v.items.reduce((s,i)=>s+i.qty,0);
     const usdR = totalUSD(v.total, v.fecha);
     return `<div class="mrow">
@@ -634,10 +764,30 @@ function renderDash(){
         ${usdR?`<div style="font-size:0.75rem;color:var(--green2);font-family:var(--fm)">${fmtUSD(usdR.usd)}</div>`:''}
       </div>
     </div>`;
-  }).join('');
+  }).join('')
+  + (total > 3 ? `<div style="text-align:center;padding:0.5rem 0 0.1rem">`
+    + `<button onclick="_recExpanded=!_recExpanded;renderRec()" style="`
+    + `background:none;border:none;cursor:pointer;`
+    + `font-size:0.65rem;color:var(--text3);letter-spacing:0.05em;`
+    + `font-family:var(--ff);padding:0.2rem 0.5rem;transition:color .15s"`
+    + ` onmouseenter="this.style.color='var(--text)'" onmouseleave="this.style.color='var(--text3)'">`
+    + (_recExpanded ? '· menos ·' : '· ver más ·')
+    + `</button></div>` : '');
+}
+
+function renderDash(){
+  document.getElementById('kpi-v').textContent=ventas.length.toLocaleString('es-AR');
+  document.getElementById('kpi-c').textContent=clientes.length.toLocaleString('es-AR');
+  document.getElementById('kpi-u').textContent=ventas.reduce((s,v)=>s+v.items.reduce((a,i)=>a+i.qty,0),0).toLocaleString('es-AR');
+  const stockTotal = productos.reduce((s,p)=>s+p.stock,0);
+  document.getElementById('kpi-stock').textContent=stockTotal.toLocaleString('es-AR');
+
+  const rec=document.getElementById('dash-rec');
+  renderRec();
 
   renderMapa();
   renderChartHist();
+  renderProvincias();
   updateHdr();
 }
 
@@ -733,6 +883,49 @@ function renderChartHist(){
     ctx.textAlign = 'center';
     ctx.fillText(p.a, p.x, H-6);
   });
+
+  // Mes pico — calcular por mes/año
+  const MESES_N = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  const porMes = {};
+  ventas.forEach(v=>{
+    const p=(v.fecha||"").split("/");
+    if(p.length<3) return;
+    const key = MESES_N[parseInt(p[1],10)-1]+" "+p[2];
+    const uds = v.items.reduce((s,i)=>s+i.qty,0);
+    porMes[key]=(porMes[key]||0)+uds;
+  });
+  const peakEntry = Object.entries(porMes).sort((a,b)=>b[1]-a[1])[0];
+
+  // Encontrar el año del mes pico para marcarlo en el gráfico
+  if(peakEntry){
+    const peakAño = peakEntry[0].split(" ")[1];
+    const peakPt = pts.find(p=>p.a===peakAño);
+    if(peakPt){
+      // Halo verde
+      ctx.beginPath();
+      ctx.arc(peakPt.x, peakPt.y, 7, 0, Math.PI*2);
+      ctx.fillStyle = "rgba(74,160,80,0.18)";
+      ctx.fill();
+      // Punto verde sólido
+      ctx.beginPath();
+      ctx.arc(peakPt.x, peakPt.y, 4, 0, Math.PI*2);
+      ctx.fillStyle = "#4aa050";
+      ctx.fill();
+    }
+  }
+
+  // Panel texto mes pico
+  const peakEl = document.getElementById("chart-peak");
+  if(peakEl && peakEntry){
+    peakEl.innerHTML = `
+      <div style="display:flex;align-items:center;gap:0.3rem;margin-bottom:0.2rem">
+        <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#4aa050;flex-shrink:0"></span>
+        <span style="font-size:0.58rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3)">Mes pico</span>
+      </div>
+      <div style="font-family:var(--fm);font-size:0.88rem;font-weight:700;color:var(--text);line-height:1">${peakEntry[0]}</div>
+      <div style="font-family:var(--fm);font-size:0.7rem;color:var(--text2);margin-top:0.15rem">${peakEntry[1].toLocaleString("es-AR")} uds.</div>
+    `;
+  }
 }
 
 // ══ NUEVA VENTA ══
@@ -909,45 +1102,80 @@ function limpiarVenta(){
 // ══ CLIENTES ══
 function renderCli(){
   const q=(document.getElementById('q-cli').value||'').toLowerCase();
-
   const lista = clientes
-    .filter(c=>[c.nombre,c.tel||'',c.email||''].some(x=>x.toLowerCase().includes(q)))
+    .filter(c=>[c.nombre,c.prov||''].some(x=>x.toLowerCase().includes(q)))
     .map(c=>{
       const comp = ventas.filter(v=>v.clienteId===c.id);
       const uds  = comp.reduce((s,v)=>s+v.items.reduce((a,i)=>a+i.qty,0),0);
-      const usdTotCli = comp.reduce((s,v)=>{ const r=totalUSD(v.total,v.fecha); return s+(r?r.usd:0); },0);
-      return { ...c, _comp:comp.length, _uds:uds, _usd:usdTotCli };
+      const usd  = comp.reduce((s,v)=>{ const r=totalUSD(v.total,v.fecha); return s+(r?r.usd:0); },0);
+      return { ...c, _comp:comp.length, _uds:uds, _usd:usd };
     })
     .sort((a,b)=>b._uds - a._uds);
 
   const tb=document.getElementById('t-cli');
-  if(!lista.length){ tb.innerHTML='<tr><td colspan="8" class="empty">Sin clientes registrados</td></tr>'; return; }
+  if(!lista.length){ tb.innerHTML='<tr><td colspan="6" class="empty">Sin clientes registrados</td></tr>'; return; }
 
   tb.innerHTML=lista.map((c,i)=>{
     const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
-    const usdTot=c._usd||0;
+    const rank  = medal || `<span style="font-family:var(--fm);font-size:0.72rem;color:var(--text3)">${i+1}</span>`;
+    const prov  = c.prov || '—';
     return `<tr>
-      <td style="font-family:var(--fm);font-size:0.72rem;color:var(--text3)">${medal||i+1}</td>
-      <td><strong>${c.nombre}</strong></td>
-      <td style="font-family:var(--fm);font-size:0.8rem;color:var(--text2)">${c.tel||'—'}</td>
-      <td style="font-size:0.8rem;color:var(--text2)">${c.email||'—'}</td>
-      <td><span class="badge bbl">${c._comp} pedidos</span></td>
-      <td>
-        <span style="font-family:var(--fm);font-size:0.92rem;color:var(--text);font-weight:600">${c._uds.toLocaleString('es-AR')}</span>
-        <span style="font-size:0.7rem;color:var(--text3)"> uds.</span>
+      <td style="text-align:center">${rank}</td>
+      <td><strong style="font-size:0.88rem">${c.nombre}</strong></td>
+      <td style="font-size:0.8rem;color:var(--text2)">${prov}</td>
+      <td style="text-align:center"><span class="badge bbl">${c._comp} pedido${c._comp!==1?'s':''}</span></td>
+      <td style="text-align:center;font-family:var(--fm);font-size:0.85rem;color:var(--text)">${c._uds.toLocaleString('es-AR')}</td>
+      <td style="text-align:right">
+        <button class="btn btn-sm btn-ghost" onclick="abrirPanelCli('${c.id}')" style="font-size:0.72rem;padding:0.28rem 0.65rem">Ver más ›</button>
       </td>
-      <td>
-        <span style="font-family:var(--fm);color:var(--green2);font-weight:600">${usdTot>0?fmtUSD(usdTot):'—'}</span>
-        <div style="font-size:0.67rem;color:var(--text3)">blue histórico</div>
-      </td>
-      <td><div style="display:flex;gap:0.35rem">
-        <button class="btn btn-sm btn-ghost" onclick="editCli('${c.id}')">Editar</button>
-        <button class="btn btn-sm btn-danger" onclick="delCli('${c.id}')">Eliminar</button>
-      </div></td>
     </tr>`;
   }).join('');
 }
 
+function abrirPanelCli(id){
+  const c = clientes.find(x=>x.id===id);
+  if(!c) return;
+  const comp   = ventas.filter(v=>v.clienteId===c.id);
+  const uds    = comp.reduce((s,v)=>s+v.items.reduce((a,i)=>a+i.qty,0),0);
+  const usdTot = comp.reduce((s,v)=>{ const r=totalUSD(v.total,v.fecha); return s+(r?r.usd:0); },0);
+  const arshoy = Math.round(usdTot * 1400);
+  const prov   = c.prov || '';
+  const ciudad = c.ciudad || '';
+  const loc    = ciudad && ciudad !== prov ? ciudad + ' · ' + prov : prov || '—';
+
+  document.getElementById('pcli-nombre').textContent  = c.nombre;
+  document.getElementById('pcli-loc').textContent     = loc;
+  document.getElementById('pcli-pedidos').textContent = comp.length.toLocaleString('es-AR');
+  document.getElementById('pcli-uds').textContent     = uds.toLocaleString('es-AR');
+  document.getElementById('pcli-usd').textContent     = usdTot>0 ? fmtUSD(usdTot) : '—';
+  document.getElementById('pcli-ars').textContent     = arshoy>0 ? fmt(arshoy)     : '—';
+
+  const hist = [...comp].sort((a,b)=>b._ts-a._ts);
+  document.getElementById('pcli-historial').innerHTML = hist.length
+    ? hist.map(v=>{
+        const udsV = v.items.reduce((s,i)=>s+i.qty,0);
+        const usdV = totalUSD(v.total, v.fecha);
+        const vend = (v.notas||'').replace('Vendedor: ','');
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:0.55rem 0;border-bottom:1px solid var(--line)">
+          <div>
+            <div style="font-size:0.82rem;font-weight:600;color:var(--text)">${v.fecha}</div>
+            <div style="font-size:0.68rem;color:var(--text3);margin-top:0.1rem">${udsV} unidades · ${vend}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;margin-left:0.8rem">
+            <div style="font-family:var(--fm);font-size:0.82rem;color:var(--yellow)">${v.total>0?fmt(Math.round(v.total)):'—'}</div>
+            ${usdV?`<div style="font-size:0.67rem;color:var(--green2);font-family:var(--fm)">${fmtUSD(usdV.usd)}</div>`:''}
+          </div>
+        </div>`;
+      }).join('')
+    : '<div style="color:var(--text3);font-size:0.82rem;padding:0.5rem 0">Sin compras registradas</div>';
+
+  document.getElementById('pcli-btn-edit').onclick = ()=>{ cerrarPanelCli(); setTimeout(()=>editCli(id),150); };
+  document.getElementById('panel-cli').style.display='flex';
+}
+
+function cerrarPanelCli(){
+  document.getElementById('panel-cli').style.display='none';
+}
 function abrirMCli(id){
   editCliId=id||null;
   document.getElementById('m-cli-tit').textContent=id?'Editar cliente':'Nuevo cliente';
@@ -1205,13 +1433,36 @@ function fmtFechaCorta(f){
   return meses[parseInt(p[1],10)-1]+' '+p[2].slice(-2);
 }
 
+function autoSlash(el){
+  let v=el.value.replace(/\D/g,'');
+  if(v.length>=5) v=v.slice(0,2)+'/'+v.slice(2,4)+'/'+v.slice(4,8);
+  else if(v.length>=3) v=v.slice(0,2)+'/'+v.slice(2);
+  el.value=v;
+}
+function parseFechaFiltro(s){
+  if(!s||s.length<10) return null;
+  const p=s.split('/');
+  if(p.length!==3||p[2].length!==4) return null;
+  const d=new Date(+p[2],+p[1]-1,+p[0]);
+  return isNaN(d)?null:d;
+}
+function limpiarFechas(){
+  document.getElementById('f-desde').value='';
+  document.getElementById('f-hasta').value='';
+  renderHist();
+}
 function renderHist(){
   const q=(document.getElementById('q-ven').value||'').toLowerCase();
   const fp=document.getElementById('f-pago').value;
+  const desde=parseFechaFiltro(document.getElementById('f-desde').value);
+  const hasta=parseFechaFiltro(document.getElementById('f-hasta').value);
   const list=[...ventas].reverse().filter(v=>{
     const mq=v.cliente.toLowerCase().includes(q)||v.items.some(i=>i.nombre.toLowerCase().includes(q));
     const mp=!fp||v.pago===fp;
-    return mq&&mp;
+    const vf=parseFechaFiltro(v.fecha);
+    const md=!desde||!vf||vf>=desde;
+    const mh=!hasta||!vf||vf<=hasta;
+    return mq&&mp&&md&&mh;
   });
   const tb=document.getElementById('t-hist');
   if(!list.length){ tb.innerHTML='<tr><td colspan="8" class="empty">Sin ventas registradas</td></tr>'; return; }
@@ -1224,7 +1475,7 @@ function renderHist(){
       <td style="font-size:0.82rem;color:var(--text2);white-space:nowrap">${fmtFechaCorta(v.fecha)}</td>
       <td style="font-size:0.82rem;color:var(--text);white-space:nowrap">${v.cliente}</td>
       <td style="font-size:0.82rem;color:var(--text);white-space:nowrap">${uds} ud${v.descuento>0?` <span style="font-size:0.7rem;color:var(--brown2)">-${v.descuento}%</span>`:''}</td>
-      <td style="font-size:0.82rem;color:var(--text);white-space:nowrap">${usdR?fmtUSD(usdR.usd):'—'}</td>
+      <td style="white-space:nowrap;font-family:var(--fm);font-size:0.82rem;color:var(--green2);font-weight:600">${usdR?fmtUSD(usdR.usd):'—'}</td>
       <td style="white-space:nowrap"><span class="badge bb" style="font-size:0.58rem">${v.pago}</span></td>
       <td style="white-space:nowrap"><button class="btn btn-sm btn-ghost" onclick="verDetalle('${v.id}')" style="padding:0.2rem 0.5rem;font-size:0.68rem">Ver</button></td>
     </tr>`;
@@ -1312,9 +1563,9 @@ const BLUE = {
   '2024-05':1255,'2024-06':1295,'2024-07':1395,'2024-08':1350,
   '2024-09':1230,'2024-10':1220,'2024-11':1155,'2024-12':1230,
   '2025-01':1280,'2025-02':1300,'2025-03':1310,'2025-04':1340,
-  '2025-05':1360,'2025-06':1380,'2026-01':1400,'2026-02':1410,'2026-03':1390,
+  '2025-05':1360,'2025-06':1380,'2026-01':1400,'2026-02':1410,'2026-03':1390,'2026-04':1380,
 };
-const BLUE_HOY = BLUE['2026-03'];
+const BLUE_HOY = BLUE['2026-04'];
 
 function blueKey(fechaStr){
   if(!fechaStr) return null;
@@ -1364,221 +1615,333 @@ document.querySelectorAll('.modal-ov').forEach(m=>m.addEventListener('click',e=>
 
 // ══ CARGA DE HISTÓRICO ══
 function cargarHistorico(){
-  if(localStorage.getItem('bb3_historico_cargado')) return;
 
   const PROD_ID = productos[0]?.id || 'hist';
 
-  function hv(cliente, vendedor, qty, precio, fecha, pago){
-    const ts = new Date(fecha.split('/').reverse().join('-')).getTime() || Date.now();
+  // hc = registrar cliente de la BD
+  function hc(id, nombre, ciudad, provincia){
+    const existing = clientes.find(x=>x.nombre.toLowerCase()===nombre.toLowerCase());
+    if(!existing){
+      clientes.push({id:'bd_'+id, bdId:id, nombre, tel:'', email:'', dir:'',
+        ciudad, prov:provincia, notas:'', _ts:id});
+    }
+  }
+
+  // hv = registrar venta
+  function hv(cliente, vendedor, qty, precio, fecha){
+    const ts = new Date(fecha.split('/').reverse().join('-')).getTime() || (Date.now() - Math.random()*1e10);
     const total = qty * precio;
-
-    // Asegurar cliente en lista
     let c = clientes.find(x=>x.nombre.toLowerCase()===cliente.toLowerCase());
-    if(!c){ c={id:uid(),nombre:cliente,tel:'',email:'',dir:'',notas:`Vendedor: ${vendedor}`,_ts:ts}; clientes.push(c); }
-
+    if(!c){
+      c={id:uid(),nombre:cliente,tel:'',email:'',dir:'',prov:'',ciudad:'',
+         notas:`Vendedor: ${vendedor}`,_ts:ts};
+      clientes.push(c);
+    }
     ventas.push({
       id:uid(), _ts:ts, fecha,
       clienteId:c.id, cliente, tel:'', email:'', dir:'',
+      prov:c.prov||'', ciudad:c.ciudad||'',
       items:[{prodId:PROD_ID,nombre:'Cepillo Bambú',precio,qty,subtotal:total}],
-      pago:pago||'Efectivo', descuento:0, total,
+      pago:'Efectivo', descuento:0, total,
       notas:`Vendedor: ${vendedor}`
     });
   }
 
-  // ── 2020 ──
-  hv('Venturini Camila','Tomy',50,91.4,'08/10/2020');
-  hv('Pozniak Adriana','Tomy',50,115.7,'15/10/2020');
-  hv('Rocio Julia','Tomy',50,115.5,'16/10/2020');
-  hv('Martina Valles','Tomy',60,91.4,'19/10/2020');
-  hv('Valeria Huenan','Tomy',50,115.5,'22/10/2020');
-  hv('Vanesa Silvana','Felix',50,120.9,'26/10/2020');
-  hv('Camila Grecco','Tomy',50,129.4,'09/12/2020');
-  hv('Capoeira','Felix',50,138,'09/12/2020');
+  // ── CLIENTES DE LA BASE DE DATOS ──
+  hc(0,'Ventas Unitarias','Buenos Aires','Buenos Aires');
+  hc(1,'Venturini Camila','Banfield','Buenos Aires');
+  hc(2,'Pozniak Adriana','Caba','Buenos Aires');
+  hc(3,'Rocio Julia','Banfield','Buenos Aires');
+  hc(4,'Martina Valles','Carlos Paz','Cordoba');
+  hc(5,'Valeria Huenan','Viedma','Rio Negro');
+  hc(6,'Vanesa Silvina','','Buenos Aires');
+  hc(7,'Camila Grecco','Banfield','Buenos Aires');
+  hc(8,'Capoeira','Buenos Aires','Buenos Aires');
+  hc(9,'Sandra Fraga','Buenos Aires','Buenos Aires');
+  hc(10,'Tamara Chilindron','La Plata','Buenos Aires');
+  hc(11,'Nadia Romanowicz','Zarate','Buenos Aires');
+  hc(12,'Martita Marino','Mar Del Plata','Buenos Aires');
+  hc(13,'Gabriela Shurman','Parana','Entre Rios');
+  hc(14,'Lola Fusco','Lujan','Buenos Aires');
+  hc(15,'Douglas Varguillas','San Pedro','Buenos Aires');
+  hc(16,'Juan Zureta','Jujuy','Jujuy');
+  hc(17,'Rocio Quiroga','San Rafael','Mendoza');
+  hc(18,'Marcela Viviana Peralta','Mar Del Plata','Buenos Aires');
+  hc(19,'Dara Elysium','Plaza Clucellas','Santa Fe');
+  hc(20,'Ariadna Camara','El Bolson','Rio Negro');
+  hc(21,'Veronica Vizzari','Lomas De Zamora','Buenos Aires');
+  hc(22,'Patricia Catalano','Buenos Aires','Buenos Aires');
+  hc(23,'Veronica Couto','Caba','Buenos Aires');
+  hc(24,'Gloria Kranevitter','Crespo','Entre Rios');
+  hc(25,'Natalia Parodi','Lomas De Zamora','Buenos Aires');
+  hc(26,'Pablo Ravinsara','Caba','Buenos Aires');
+  hc(27,'Roxana Rothe','Potrero Los Funes','San Luis');
+  hc(28,'Cliente Nany','Buenos Aires','Buenos Aires');
+  hc(29,'Cano Yolanda','Empedrado','Corrientes');
+  hc(30,'Melody Aguilar','Sarandi','Buenos Aires');
+  hc(31,'Norma Marfil','Perito Moreno','Santa Cruz');
+  hc(32,'Martina Polola','Pergamino','Buenos Aires');
+  hc(33,'Sofia Tinto','San Roque','San Juan');
+  hc(34,'Rosa Eliana','Cipolletti','Rio Negro');
+  hc(35,'Tatiana Turnes','Lanus','Buenos Aires');
+  hc(36,'Claudia Urquiza','San Martin','Buenos Aires');
+  hc(37,'Rocio Leal','Moreno','Buenos Aires');
+  hc(38,'Aurora Margarita Corral','Toay','La Pampa');
+  hc(39,'Pozzetti Maria Belen','Flores','Buenos Aires');
+  hc(40,'Ana Isabel Parodi','San Martin','Jujuy');
+  hc(41,'Nadia Giammaria','Caba','Buenos Aires');
+  hc(42,'Hilda Anca','Caba','Buenos Aires');
+  hc(43,'Adriana Oron','El Challao','Mendoza');
+  hc(44,'Camila Reales','Piedra Buena','Santa Cruz');
+  hc(45,'Giselle Ortiz','Mar Del Plata','Buenos Aires');
+  hc(46,'Florencia Preciado','Junin','Buenos Aires');
+  hc(47,'Elisa Evelin Ojeda','San Pedro','Misiones');
+  hc(48,'Soledad Ruiz','Mar Del Plata','Buenos Aires');
+  hc(49,'Andrea Paice','Mar De Ajo','Buenos Aires');
+  hc(50,'Veronica Bertone','Villa Maria','Buenos Aires');
+  hc(51,'Gisela Tarabini','Parana','Entre Rios');
+  hc(52,'Celeste Mangiardi','General Rodriguez','Buenos Aires');
+  hc(53,'Cristina Gutierrez','Monte Grande','Buenos Aires');
+  hc(54,'Alfredo Villareal','Moron','Buenos Aires');
+  hc(55,'Marina Coller','Las Grutas','Rio Negro');
+  hc(56,'Valeria Noemi Berrios','Bahia Blanca','Buenos Aires');
+  hc(57,'Angelica Gauna','San Fernando','Buenos Aires');
+  hc(58,'Adriana Krawitz','Haedo','Buenos Aires');
+  hc(59,'Andrea Gonzales','Rio Grande','Tierra Del Fuego');
+  hc(60,'Emiliana Guerra','Parana','Entre Rios');
+  hc(61,'Jorgelina Alvarez','Funes','Santa Fe');
+  hc(62,'Jorgelina Barrionuevo','Mar Del Plata','Buenos Aires');
+  hc(63,'Daira Bujan','Moreno','Buenos Aires');
+  hc(64,'Zulma Perez','General Ramirez','Entre Rios');
+  hc(65,'Julieta Perez','San Fernando','Buenos Aires');
+  hc(66,'Nair Ricci','Caba','Buenos Aires');
+  hc(67,'Gisela Vera','Rufino','Santa Fe');
+  hc(68,'Silvina Del Ministro','Viedma','Rio Negro');
+  hc(69,'Monica Aap','Cutral Co','Neuquen');
+  hc(70,'Hugo','Banfield','Buenos Aires');
+  hc(71,'Mercado Libre','Buenos Aires','Buenos Aires');
+  hc(72,'Barbara Noelia Petito','La Plata','Buenos Aires');
+  hc(73,'Jorge Rocha','Jujuy','Jujuy');
+  hc(74,'Carla Espinosa','Comodoro Rivadavia','Chubut');
+  hc(75,'Belen Savid','General Pico','La Pampa');
+  hc(76,'Priscila Julieta Garcia Morales','Las Heras','Mendoza');
+  hc(77,'Laura Aguzin','Castelar','Buenos Aires');
+  hc(78,'Ana Mosconi','Lincoln','Buenos Aires');
+  hc(79,'Patricia Scatolaro','Chajari','Entre Rios');
+  hc(80,'Sara Reynoso','Mendoza','Mendoza');
+  hc(81,'Romina Rigoni','Pablo Podesta','Buenos Aires');
+  hc(82,'Rocio Astoroga','Nueva Oron','Salta');
+  hc(83,'Martina Peralta','Embalse','Cordoba');
+  hc(84,'Mariana Corrales','Santos Lugares','Buenos Aires');
+  hc(85,'Gabriela Valls','Parque Patricios','Buenos Aires');
+  hc(86,'Maria Julia Vela','Gualeguaychu','Entre Rios');
+  hc(87,'Candela Etchetto','Caba','Buenos Aires');
+  hc(88,'Marlene Lopez','La Paz','Entre Rios');
+  hc(89,'Flavia Costa','Berazategui','Buenos Aires');
+  hc(90,'Yamila Valeria Mora','Cutral Co','Neuquen');
+  hc(91,'Soler Melina','Burzaco','Buenos Aires');
+  hc(92,'Sebastian Puente','Monserrat','Buenos Aires');
+  hc(93,'Fiorella Espru','San Justo','Santa Fe');
+  hc(94,'Veronica Barelli','Bahia Blanca','Buenos Aires');
+  hc(95,'Maria Sol Fernandez','Puerto Madryn','Chubut');
+  hc(96,'Gabriela Bustamante','Merlo','San Luis');
+  hc(97,'Fabiana Lanaro','Chajari','Entre Rios');
+  hc(98,'Sandra Pettina','Eugenio Bustos','Mendoza');
+  hc(99,'Paloma Gancedo','Mar Del Plata','Buenos Aires');
+  hc(100,'Agustina Canovas Rubio','Campana','Buenos Aires');
+  hc(101,'Julieta Santone','Buenos Aires','Buenos Aires');
+  hc(102,'Camila Ximena Vega','Buenos Aires','Buenos Aires');
+  hc(103,'Katerina Gruber','Buenos Aires','Buenos Aires');
+  hc(104,'Carolina Marchiso','Villa General Belgrano','Cordoba');
+  hc(105,'Priscila Y Diego','Buenos Aires','Buenos Aires');
+  hc(106,'Aros Libre','Buenos Aires','Buenos Aires');
 
-  // ── 2021 ──
-  hv('Fraga Sandra','Felix',50,103.6,'03/02/2021');
+
+  // ── 2020.0 ──
+  hv('Venturini Camila','Tomas Juarez',50,91.4,'08/10/2020');
+  hv('Pozniak Adriana','Tomas Juarez',50,115.7,'15/10/2020');
+  hv('Rocio Julia','Tomas Juarez',50,115.5,'16/10/2020');
+  hv('Martina Valles','Tomas Juarez',60,91.4,'19/10/2020');
+  hv('Valeria Huenan','Tomas Juarez',50,115.5,'22/10/2020');
+  hv('Vanesa Silvina','Felix Tesei',50,120.9,'26/10/2020');
+  hv('Camila Grecco','Tomas Juarez',50,129.4,'09/12/2020');
+  hv('Capoeira','Felix Tesei',50,138,'09/12/2020');
+
+  // ── 2021.0 ──
+  hv('Sandra Fraga','Felix Tesei',50,103.6,'03/02/2021');
   hv('Tamara Chilindron','Tomas Juarez',20,107.4,'14/02/2021');
-  hv('Romanowicz Ludmila','Felix',60,103.6,'16/02/2021');
-  hv('Martita Martino','Tomas Juarez',20,107.4,'18/02/2021');
-  hv('Romanowicz Ludmila','Felix',60,103.6,'22/02/2021');
+  hv('Nadia Romanowicz','Felix Tesei',60,103.6,'16/02/2021');
+  hv('Martita Marino','Tomas Juarez',20,107.4,'18/02/2021');
+  hv('Nadia Romanowicz','Felix Tesei',60,103.6,'22/02/2021');
   hv('Tamara Chilindron','Tomas Juarez',25,107.4,'23/02/2021');
   hv('Gabriela Shurman','Tomas Juarez',20,107.4,'28/02/2021');
   hv('Lola Fusco','Tomas Juarez',40,107.4,'01/03/2021');
-  hv('A Cherin','Tomas Juarez',2,250,'01/03/2021');
   hv('Douglas Varguillas','Tomas Juarez',126,97.6,'08/03/2021');
-  hv('Juan Zureta','Felix',50,103.6,'09/03/2021');
+  hv('Juan Zureta','Felix Tesei',50,103.6,'09/03/2021');
   hv('Venturini Camila','Tomas Juarez',40,107.4,'09/03/2021');
-  hv('Quiroga Rocio','Tomas Juarez',20,107.4,'10/03/2021');
-  hv('Peralta Marcela Viviana','Tomas Juarez',50,107.4,'10/03/2021');
-  hv('Juan Zureta','Felix',60,107.4,'11/03/2021');
+  hv('Rocio Quiroga','Tomas Juarez',20,107.4,'10/03/2021');
+  hv('Marcela Viviana Peralta','Tomas Juarez',50,107.4,'10/03/2021');
+  hv('Juan Zureta','Felix Tesei',60,107.4,'11/03/2021');
   hv('Dara Elysium','Tomas Juarez',20,107.4,'12/03/2021');
-  hv('Romanowicz Ludmila','Felix',60,103.6,'14/03/2021');
-  hv('Carina Manestar','Tomas Juarez',3,250,'17/03/2021');
-  hv('Gaby Carnevale','Tomas Juarez',5,250,'17/03/2021');
-  hv('Caro Casa 14','Tomas Juarez',6,250,'17/03/2021');
+  hv('Nadia Romanowicz','Felix Tesei',60,103.6,'14/03/2021');
   hv('Ariadna Camara','Tomas Juarez',60,107.4,'17/03/2021');
-  hv('Vanina Admin','Tomas Juarez',2,250,'25/03/2021');
-  hv('Vizzari Veronica Noemi','Tomas Juarez',50,118.5,'25/03/2021');
-  hv('Vane Casa 14','Tomas Juarez',3,250,'26/03/2021');
-  hv('Vane Zobkko','Tomas Juarez',2,250,'26/03/2021');
+  hv('Veronica Vizzari','Tomas Juarez',50,118.5,'25/03/2021');
   hv('Patricia Catalano','Tomas Juarez',25,128,'29/03/2021');
+  hv('Ventas Unitarias','Tomas Juarez',23,250,'26/03/2021');
   hv('Veronica Couto','Tomas Juarez',40,118.5,'05/04/2021');
-  hv('Consultorio Tete','Tomas Juarez',2,250,'06/04/2021');
-  hv('Juan Zureta','Felix',100,107.4,'09/04/2021');
+  hv('Juan Zureta','Felix Tesei',100,107.4,'09/04/2021');
   hv('Gloria Kranevitter','Tomas Juarez',60,118.5,'12/04/2021');
-  hv('Nati Parodi','Tomas Juarez',20,129.3,'13/04/2021');
+  hv('Natalia Parodi','Tomas Juarez',20,129.3,'13/04/2021');
   hv('Ariadna Camara','Tomas Juarez',200,100,'23/04/2021');
-  hv('Henry Gym Javo','Tomas Juarez',8,250,'24/04/2021');
+  hv('Ventas Unitarias','Tomas Juarez',10,250,'24/04/2021');
   hv('Pablo Ravinsara','Tomas Juarez',40,118.5,'03/06/2021');
   hv('Roxana Rothe','Tomas Juarez',40,118.5,'08/06/2021');
   hv('Venturini Camila','Tomas Juarez',50,118.5,'28/06/2021');
-  hv('Consultorio Tete','Tomas Juarez',2,250,'28/06/2021');
-  hv('Cliente Nany','Nadia Romanowics',45,91.3,'05/07/2021');
-  hv('Cliente Nany','Nadia Romanowics',20,91.3,'05/07/2021');
-  hv('Cliente Nany','Nadia Romanowics',30,91.3,'08/07/2021');
+  hv('Ventas Unitarias','Tomas Juarez',2,250,'28/06/2021');
+  hv('Norma Marfil','Nadia Romanowicz',45,91.3,'05/07/2021');
+  hv('Martina Polola','Nadia Romanowicz',20,91.3,'05/07/2021');
+  hv('Cliente Nany','Nadia Romanowicz',30,91.3,'08/07/2021');
   hv('Roxana Rothe','Tomas Juarez',40,118.5,'12/07/2021');
   hv('Pablo Ravinsara','Tomas Juarez',40,118.5,'12/07/2021');
-  hv('Cliente Nany','Nadia Romanowics',12,91.3,'15/07/2021');
-  hv('Cliente Nany','Nadia Romanowics',41,91.3,'15/07/2021');
-  hv('Cliente Nany','Nadia Romanowics',300,83.4,'21/07/2021');
-  hv('Nany Romanowicz','Tomas Juarez',20,91.3,'22/07/2021');
-  hv('Cliente Nany','Nadia Romanowics',60,91.3,'22/07/2021');
-  hv('Cliente Nany','Nadia Romanowics',25,91.3,'24/07/2021');
-  hv('Cliente Nany','Nadia Romanowics',45,91.3,'05/08/2021');
-  hv('Ale Woodniak','Tomas Juarez',6,250,'09/08/2021');
-  hv('Cliente Nany','Nadia Romanowics',20,91.3,'12/08/2021');
-  hv('Cliente Nany','Nadia Romanowics',60,91.3,'12/08/2021');
-  hv('Cliente Nany','Nadia Romanowics',60,91.3,'13/08/2021');
-  hv('Cliente Nany','Nadia Romanowics',30,91.3,'19/08/2021');
-  hv('Retira en Lomas','Nadia Romanowics',20,91.3,'19/08/2021');
-  hv('Martu','Nadia Romanowics',30,91.3,'20/08/2021');
-  hv('Ana','Nadia Romanowics',80,91.3,'20/08/2021');
-  hv('Nadia','Nadia Romanowics',40,91.3,'21/08/2021');
-  hv('Hilda','Nadia Romanowics',30,91.3,'22/08/2021');
-  hv('Soledad','Nadia Romanowics',40,91.3,'22/08/2021');
-  hv('Adriana','Nadia Romanowics',35,91.3,'22/08/2021');
-  hv('Ariadna Camara','Nadia Romanowics',60,120,'22/08/2021');
-  hv('Sofi','Nadia Romanowics',41,91.3,'22/08/2021');
-  hv('Cami Reales','Nadia Romanowics',30,91.3,'22/08/2021');
-  hv('Giselle','Nadia Romanowics',30,91.3,'23/08/2021');
-  hv('Florencia','Nadia Romanowics',30,91.3,'24/08/2021');
-  hv('Elisa Eva','Nadia Romanowics',30,91.3,'29/08/2021');
-  hv('Distribuidor Santa Fe','Nadia Romanowics',260,83.4,'08/09/2021');
-  hv('Andrea Paice','Nadia Romanowics',40,91.3,'08/09/2021');
-  hv('Veronica Bertone','Nadia Romanowics',20,91.3,'08/09/2021');
+  hv('Cliente Nany','Nadia Romanowicz',12,91.3,'15/07/2021');
+  hv('Cliente Nany','Nadia Romanowicz',41,91.3,'15/07/2021');
+  hv('Cliente Nany','Nadia Romanowicz',300,83.4,'21/07/2021');
+  hv('Nadia Romanowicz','Tomas Juarez',20,91.3,'22/07/2021');
+  hv('Rosa Eliana','Nadia Romanowicz',60,91.3,'22/07/2021');
+  hv('Sofia Tinto','Nadia Romanowicz',25,91.3,'24/07/2021');
+  hv('Tatiana Turnes','Nadia Romanowicz',45,91.3,'05/08/2021');
+  hv('Ventas Unitarias','Tomas Juarez',6,250,'09/08/2021');
+  hv('Claudia Urquiza','Nadia Romanowicz',20,91.3,'12/08/2021');
+  hv('Rocio Leal','Nadia Romanowicz',60,91.3,'12/08/2021');
+  hv('Aurora Margarita Corral','Nadia Romanowicz',60,91.3,'13/08/2021');
+  hv('Pozzetti Maria Belen','Nadia Romanowicz',30,91.3,'19/08/2021');
+  hv('Cliente Nany','Nadia Romanowicz',20,91.3,'19/08/2021');
+  hv('Cliente Nany','Nadia Romanowicz',30,91.3,'20/08/2021');
+  hv('Ana Isabel Parodi','Nadia Romanowicz',80,91.3,'20/08/2021');
+  hv('Nadia Giammaria','Nadia Romanowicz',40,91.3,'21/08/2021');
+  hv('Hilda Anca','Nadia Romanowicz',30,91.3,'22/08/2021');
+  hv('Soledad Ruiz','Nadia Romanowicz',40,91.3,'22/08/2021');
+  hv('Adriana Oron','Nadia Romanowicz',35,91.3,'22/08/2021');
+  hv('Ariadna Camara','Tomas Juarez',60,120,'22/08/2021');
+  hv('Sofia Tinto','Nadia Romanowicz',41,91.3,'22/08/2021');
+  hv('Camila Reales','Nadia Romanowicz',30,91.3,'22/08/2021');
+  hv('Giselle Ortiz','Nadia Romanowicz',30,91.3,'23/08/2021');
+  hv('Florencia Preciado','Nadia Romanowicz',30,91.3,'24/08/2021');
+  hv('Elisa Evelin Ojeda','Nadia Romanowicz',30,91.3,'29/08/2021');
+  hv('Cliente Nany','Nadia Romanowicz',260,83.4,'08/09/2021');
+  hv('Andrea Paice','Nadia Romanowicz',40,91.3,'08/09/2021');
+  hv('Veronica Bertone','Nadia Romanowicz',20,91.3,'08/09/2021');
   hv('Pablo Ravinsara','Tomas Juarez',35,140,'09/09/2021');
-  hv('Venta Nany','Nadia Romanowics',30,91.3,'09/09/2021');
-  hv('Gisela Tarabini','Nadia Romanowics',20,91.3,'14/09/2021');
-  hv('Venta Nany','Nadia Romanowics',30,91.3,'15/09/2021');
-  hv('Celeste','Nadia Romanowics',20,91.3,'22/09/2021');
-  hv('Cristina Nany','Nadia Romanowics',40,91.3,'27/09/2021');
-  hv('Alfredo','Nadia Romanowics',30,91.3,'27/09/2021');
-  hv('Gisela Tarabini','Nadia Romanowics',40,91.3,'27/09/2021');
-  hv('Nadia Romanowics','Tomas Juarez',30,91.3,'27/09/2021');
-  hv('Nadia Romanowics','Tomas Juarez',30,91.3,'29/09/2021');
-  hv('Venta Nany','Nadia Romanowics',60,91.3,'08/10/2021');
-  hv('Venta Nany','Nadia Romanowics',30,96.3,'16/10/2021');
+  hv('Cliente Nany','Nadia Romanowicz',30,91.3,'09/09/2021');
+  hv('Gisela Tarabini','Nadia Romanowicz',20,91.3,'14/09/2021');
+  hv('Cliente Nany','Nadia Romanowicz',30,91.3,'15/09/2021');
+  hv('Celeste Mangiardi','Nadia Romanowicz',20,91.3,'22/09/2021');
+  hv('Cristina Gutierrez','Nadia Romanowicz',40,91.3,'27/09/2021');
+  hv('Alfredo Villareal','Nadia Romanowicz',30,91.3,'27/09/2021');
+  hv('Gisela Tarabini','Nadia Romanowicz',40,91.3,'27/09/2021');
+  hv('Nadia Romanowicz','Tomas Juarez',60,91.3,'29/09/2021');
+  hv('Cliente Nany','Nadia Romanowicz',60,91.3,'08/10/2021');
+  hv('Cliente Nany','Nadia Romanowicz',30,96.3,'16/10/2021');
   hv('Cano Yolanda','Tomas Juarez',25,140,'18/10/2021');
-  hv('Marina Coller','Nadia Romanowics',40,91.3,'02/11/2021');
-  hv('Andrea Paice','Nadia Romanowics',30,91.3,'02/11/2021');
-  hv('Valeria Noemi Berrios','Nadia Romanowics',20,91.3,'02/11/2021');
-  hv('Angelica Gauna','Nadia Romanowics',35,91.3,'02/11/2021');
-  hv('Adriana Krawitz','Nadia Romanowics',30,91.3,'02/11/2021');
-  hv('Soledad Ruiz','Nadia Romanowics',40,91.3,'02/11/2021');
-  hv('Andrea Gonzalez','Nadia Romanowics',31,91.3,'02/11/2021');
+  hv('Marina Coller','Nadia Romanowicz',40,91.3,'02/11/2021');
+  hv('Andrea Paice','Nadia Romanowicz',30,91.3,'02/11/2021');
+  hv('Valeria Noemi Berrios','Nadia Romanowicz',20,91.3,'02/11/2021');
+  hv('Angelica Gauna','Nadia Romanowicz',35,91.3,'02/11/2021');
+  hv('Adriana Krawitz','Nadia Romanowicz',30,91.3,'02/11/2021');
+  hv('Soledad Ruiz','Nadia Romanowicz',40,91.3,'02/11/2021');
+  hv('Andrea Gonzales','Nadia Romanowicz',31,91.3,'02/11/2021');
   hv('Nadia Romanowicz','Tomas Juarez',40,91.3,'03/11/2021');
-  hv('Emiliana Guerra','Nadia Romanowics',40,91.3,'03/11/2021');
-  hv('Jorgelina Alvarez','Nadia Romanowics',30,91.3,'03/11/2021');
-  hv('Jorgelina Barrionuevo','Nadia Romanowics',60,91.3,'03/11/2021');
-  hv('Daira Bujan','Nadia Romanowics',30,91.3,'04/11/2021');
-  hv('Zulma Perez','Nadia Romanowics',30,91.3,'05/11/2021');
-  hv('Julieta Perez','Nadia Romanowics',60,91.3,'10/11/2021');
+  hv('Emiliana Guerra','Nadia Romanowicz',40,91.3,'03/11/2021');
+  hv('Jorgelina Alvarez','Nadia Romanowicz',30,91.3,'03/11/2021');
+  hv('Jorgelina Barrionuevo','Nadia Romanowicz',60,91.3,'03/11/2021');
+  hv('Daira Bujan','Nadia Romanowicz',30,91.3,'04/11/2021');
+  hv('Zulma Perez','Nadia Romanowicz',30,91.3,'05/11/2021');
+  hv('Julieta Perez','Nadia Romanowicz',60,91.3,'10/11/2021');
   hv('Valeria Huenan','Tomas Juarez',50,72,'11/11/2021');
-  hv('Nair Ricci','Nadia Romanowics',30,91.3,'12/11/2021');
-  hv('Gisela Vera','Nadia Romanowics',60,91.3,'19/11/2021');
-  hv('Silvina Del Ministro','Nadia Romanowics',20,91.3,'23/11/2021');
-  hv('Monica UP','Nadia Romanowics',30,91.3,'26/11/2021');
-  hv('Hugo Banfield','Nadia Romanowics',20,91.3,'26/11/2021');
-  hv('Julieta Santone','Nadia Romanowics',20,91.3,'04/12/2021');
+  hv('Nair Ricci','Nadia Romanowicz',30,91.3,'12/11/2021');
+  hv('Gisela Vera','Nadia Romanowicz',60,91.3,'19/11/2021');
+  hv('Silvina Del Ministro','Nadia Romanowicz',20,91.3,'23/11/2021');
+  hv('Monica Aap','Nadia Romanowicz',30,91.3,'26/11/2021');
+  hv('Hugo','Nadia Romanowicz',20,91.3,'26/11/2021');
+  hv('Julieta Santone','Nadia Romanowicz',20,91.3,'04/12/2021');
 
-  // ── 2022 ──
-  hv('Rio Negro (Nany)','Nadia Romanowics',80,91.3,'03/02/2022');
-  hv('Las Flores (Nany)','Nadia Romanowics',40,91.3,'14/02/2022');
+  // ── 2022.0 ──
+  hv('Cliente Nany','Nadia Romanowicz',80,91.3,'03/02/2022');
+  hv('Cliente Nany','Nadia Romanowicz',40,91.3,'14/02/2022');
   hv('Melody Aguilar','Tomas Juarez',20,140,'05/03/2022');
-  hv('Romanowicz Ludmila','Tomas Juarez',30,91.3,'22/03/2022');
-  hv('Mercado Libre (Nany)','Nadia Romanowics',30,91.3,'25/03/2022');
-  hv('Barbara Noelia','Tomas Juarez',30,133,'30/03/2022');
-  hv('Soledad Ruiz','Nadia Romanowics',20,91.3,'31/03/2022');
-  hv('Jorge Rocha','Tomas Juarez',250,112.14,'02/04/2022');
-  hv('Carla Espinosa','Tomas Juarez',30,133,'04/04/2022');
+  hv('Nadia Romanowicz','Tomas Juarez',30,91.3,'22/03/2022');
+  hv('Mercado Libre','Nadia Romanowicz',30,91.3,'25/03/2022');
+  hv('Barbara Noelia Petito','Tomas Juarez',30,133,'30/03/2022');
+  hv('Soledad Ruiz','Nadia Romanowicz',20,91.3,'31/03/2022');
+  hv('Jorge Rocha','Tomas Juarez',250,108.6,'02/04/2022');
+  hv('Carla Espinosa','Tomas Juarez',30,131.8,'04/04/2022');
   hv('Gisela Tarabini','Tomas Juarez',40,116.9,'15/04/2022');
-  hv('Giselle Ortiz','Tomas Juarez',22,115,'18/04/2022');
+  hv('Giselle Ortiz','Tomas Juarez',22,126.42,'18/04/2022');
   hv('Belen Savid','Tomas Juarez',20,155.05,'22/04/2022');
   hv('Mercado Libre','Tomas Juarez',20,156,'25/04/2022');
+  hv('Priscila Julieta Garcia Morales','Tomas Juarez',20,152.5,'26/04/2022');
   hv('Laura Aguzin','Tomas Juarez',20,148.4,'26/04/2022');
-  hv('Priscila Julieta Perez','Tomas Juarez',20,152.5,'26/04/2022');
   hv('Ana Mosconi','Tomas Juarez',30,145.9,'26/04/2022');
-  hv('Patricia Scatalaro','Tomas Juarez',20,155.05,'27/04/2022');
+  hv('Patricia Scatolaro','Tomas Juarez',20,155.05,'27/04/2022');
   hv('Sara Reynoso','Tomas Juarez',60,128.4,'27/04/2022');
   hv('Mercado Libre','Tomas Juarez',50,134.8,'27/04/2022');
-  hv('Romina Rigoni','Tomas Juarez',20,158.5,'06/05/2022');
-  hv('Rocio Astoroga','Tomas Juarez',60,104.3,'10/05/2022');
-  hv('Martina Peralta','Tomas Juarez',20,155.05,'14/05/2022');
-  hv('Mercado Libre','Tomas Juarez',20,159.95,'15/05/2022');
+  hv('Romina Rigoni','Tomas Juarez',20,154,'06/05/2022');
+  hv('Rocio Astoroga','Tomas Juarez',60,102.3,'10/05/2022');
+  hv('Martina Peralta','Tomas Juarez',20,155,'14/05/2022');
+  hv('Mercado Libre','Tomas Juarez',20,160,'15/05/2022');
   hv('Mariana Corrales','Tomas Juarez',20,157.75,'19/05/2022');
-  hv('Gabriela Valls','Tomas Juarez',30,148.8,'23/05/2022');
-  hv('Maria Julia Vela','Tomas Juarez',60,133.12,'25/05/2022');
-  hv('Nadia Giammaria','Nadia Romanowics',60,98.43,'31/05/2022');
-  hv('Candela Etchetto','Tomas Juarez',20,157.6,'31/05/2022');
-  hv('Marlene Lopez','Tomas Juarez',20,137.55,'31/05/2022');
-  hv('Laura Aguzin','Tomas Juarez',20,140.25,'31/05/2022');
-  hv('Flavia Costa','Tomas Juarez',20,156.05,'01/06/2022');
-  hv('Daira Lorena Bijan','Nadia Romanowics',30,99.7,'02/06/2022');
-  hv('Martina Peralta','Tomas Juarez',20,152.05,'12/06/2022');
-  hv('Rocio Astoroga','Tomas Juarez',40,151.55,'22/06/2022');
-  hv('Yamila Valeria Mora','Tomas Juarez',60,131.47,'22/06/2022');
-  hv('Maria Julia Vela','Tomas Juarez',60,131.47,'22/06/2022');
-  hv('Pablo Ravinsara','Tomas Juarez',40,148.18,'28/06/2022');
-  hv('Soler Melina','Tomas Juarez',30,149.63,'11/07/2022');
-  hv('Sebastian Puente','Tomas Juarez',100,127.35,'13/07/2022');
-  hv('Belen Savid','Tomas Juarez',30,159.27,'18/07/2022');
-  hv('Candela Etchetto','Tomas Juarez',40,163.2,'29/07/2022');
-  hv('Sara Reynoso','Tomas Juarez',100,140.29,'02/08/2022');
-  hv('Fiorela Espru','Tomas Juarez',20,167.15,'06/08/2022');
-  hv('Maria Ver Barelli','Tomas Juarez',20,167.7,'08/08/2022');
-  hv('Martina Peralta','Tomas Juarez',30,146.6,'11/08/2022');
-  hv('Rocio Astoroga','Tomas Juarez',40,159.18,'11/08/2022');
-  hv('Maria Sol Fernandez','Tomas Juarez',20,165.5,'11/08/2022');
-  hv('Gabriela Bustamante','Tomas Juarez',20,158.3,'13/08/2022');
-  hv('Fabiana Lanaro','Tomas Juarez',20,168.65,'13/08/2022');
-  hv('Sandra Pettina','Tomas Juarez',20,143.95,'22/08/2022');
-  hv('Sebastian Puente','Tomas Juarez',100,143.9,'23/08/2022');
-  hv('Paloma Gancedo','Tomas Juarez',100,133.69,'24/08/2022');
-  hv('Mercado Libre','Tomas Juarez',20,155.9,'24/08/2022');
-  hv('Agustina Canovas Rubio','Tomas Juarez',30,150.33,'27/08/2022');
+  hv('Gabriela Valls','Tomas Juarez',30,148,'23/05/2022');
+  hv('Maria Julia Vela','Tomas Juarez',60,133,'25/05/2022');
+  hv('Nadia Giammaria','Nadia Romanowicz',60,99,'31/05/2022');
+  hv('Candela Etchetto','Tomas Juarez',20,157,'31/05/2022');
+  hv('Laura Aguzin','Tomas Juarez',20,140,'31/05/2022');
+  hv('Marlene Lopez','Tomas Juarez',20,137,'31/05/2022');
+  hv('Flavia Costa','Tomas Juarez',20,156,'02/06/2022');
+  hv('Daira Bujan','Nadia Romanowicz',30,99,'02/06/2022');
+  hv('Martina Peralta','Tomas Juarez',20,152,'12/06/2022');
+  hv('Rocio Astoroga','Tomas Juarez',40,151,'22/06/2022');
+  hv('Yamila Valeria Mora','Tomas Juarez',60,132,'22/06/2022');
+  hv('Maria Julia Vela','Tomas Juarez',60,131,'22/06/2022');
+  hv('Pablo Ravinsara','Tomas Juarez',40,148,'28/06/2022');
+  hv('Soler Melina','Tomas Juarez',30,150,'11/07/2022');
+  hv('Sebastian Puente','Tomas Juarez',100,127,'13/07/2022');
+  hv('Belen Savid','Tomas Juarez',30,159,'19/07/2022');
+  hv('Candela Etchetto','Tomas Juarez',40,163,'29/07/2022');
+  hv('Sara Reynoso','Tomas Juarez',100,140,'02/08/2022');
+  hv('Fiorella Espru','Tomas Juarez',20,167,'06/08/2022');
+  hv('Veronica Barelli','Tomas Juarez',20,168,'08/08/2022');
+  hv('Rocio Astoroga','Tomas Juarez',40,159,'11/08/2022');
+  hv('Martina Peralta','Tomas Juarez',30,147,'11/08/2022');
+  hv('Maria Sol Fernandez','Tomas Juarez',20,165,'11/08/2022');
+  hv('Gabriela Bustamante','Tomas Juarez',20,158,'13/08/2022');
+  hv('Fabiana Lanaro','Tomas Juarez',20,169,'13/08/2022');
+  hv('Sandra Pettina','Tomas Juarez',20,144,'22/08/2022');
+  hv('Sebastian Puente','Tomas Juarez',100,144,'23/08/2022');
+  hv('Paloma Gancedo','Tomas Juarez',100,133,'24/08/2022');
+  hv('Mercado Libre','Tomas Juarez',20,156,'24/08/2022');
+  hv('Agustina Canovas Rubio','Tomas Juarez',30,150,'27/08/2022');
+  hv('Tatiana Turnes','Tomas Juarez',40,113.25,'13/08/2022');
+  hv('Laura Aguzin','Tomas Juarez',30,158.5,'13/08/2022');
+  hv('Mercado Libre','Tomas Juarez',30,135.8,'13/08/2022');
   hv('Camila Ximena Vega','Tomas Juarez',20,154,'30/08/2022');
   hv('Sandra Pettina','Tomas Juarez',20,171.5,'31/08/2022');
-  hv('Mercado Libre','Tomas Juarez',30,135.8,'13/09/2022');
-  hv('Tatiana Turnes','Nadia Romanowics',40,113.25,'13/09/2022');
-  hv('Laura Aguzin','Tomas Juarez',30,158.5,'13/09/2022');
 
-  // ── 2023 ──
-  hv('Sebastian Puente','Vendedor',500,125,'08/03/2023');
-  hv('Katerina Gruber','Vendedor',100,138,'08/03/2023');
-  hv('Belen Savid','Vendedor',100,125,'12/03/2023');
-  hv('Carolina Marchiso','Vendedor',100,124.4,'12/03/2023');
-  hv('Gabriella Valls','Vendedor',100,126,'19/03/2023');
-  hv('Ana Mosconi','Vendedor',100,126,'19/03/2023');
-  hv('Nadia Romanowicz','Vendedor',100,133.2,'28/03/2023');
-  hv('Soledad Ruiz','Vendedor',100,126,'09/04/2023');
-  hv('Gabriella Valls','Vendedor',100,126,'12/04/2023');
-  hv('Priscila y Diego','Vendedor',100,126.9,'14/04/2023');
-  hv('Nadia Romanowics','Vendedor',100,129.6,'20/04/2023');
-  hv('Julieta Perez','Vendedor',200,126.3,'25/04/2023');
-  hv('Aros Libre','Vendedor',100,129.6,'28/04/2023');
+  // ── 2023.0 ──
+  hv('Sebastian Puente','Tomas Juarez',500,125,'08/03/2023');
+  hv('Katerina Gruber','Tomas Juarez',100,138,'08/03/2023');
+  hv('Belen Savid','Tomas Juarez',100,125,'12/03/2023');
+  hv('Carolina Marchiso','Tomas Juarez',100,124.4,'12/03/2023');
+  hv('Gabriela Valls','Tomas Juarez',100,126,'19/03/2023');
+  hv('Ana Mosconi','Tomas Juarez',100,126,'19/03/2023');
+  hv('Nadia Romanowicz','Tomas Juarez',100,133.2,'28/03/2023');
+  hv('Soledad Ruiz','Tomas Juarez',100,126,'09/04/2023');
+  hv('Gabriela Valls','Tomas Juarez',100,126,'12/04/2023');
+  hv('Priscila Y Diego','Tomas Juarez',100,126.9,'14/04/2023');
+  hv('Nadia Romanowicz','Tomas Juarez',100,129.6,'20/04/2023');
+  hv('Julieta Perez','Tomas Juarez',200,126.3,'25/04/2023');
+  hv('Aros Libre','Tomas Juarez',100,129.6,'28/04/2023');
 
   save();
-  localStorage.setItem('bb3_historico_cargado','1');
   console.log('Histórico cargado:', ventas.length, 'ventas,', clientes.length, 'clientes');
 }
 
