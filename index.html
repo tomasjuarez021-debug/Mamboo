@@ -272,7 +272,7 @@ tbody tr:last-child{border-bottom:none}
   </div>
 
   <div style="margin-bottom:0.9rem">
-    <div class="card"><div class="card-title">Últimas ventas</div><div id="dash-rec"><div class="empty">Sin ventas aún</div></div></div>
+    <div class="card"><div class="card-title">Ultimas ventas</div><div id="dash-rec"><div class="empty">Sin ventas aun</div></div></div>
   </div>
 
   <div class="card" id="card-provincias" style="margin-bottom:0.8rem">
@@ -280,110 +280,89 @@ tbody tr:last-child{border-bottom:none}
     <div id="dash-provincias"></div>
   </div>
 
+  <div style="display:flex;align-items:center;justify-content:flex-end;gap:0.5rem;padding:0.3rem 0.2rem 0.8rem;opacity:0.7">
+    <span style="font-size:0.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em">USD blue</span>
+    <span style="font-size:0.6rem;color:var(--text3)">$</span>
+    <input id="blue-input" type="number" min="1" step="1" oninput="actualizarBlue(this.value)"
+      style="width:64px;font-size:0.75rem;font-family:var(--fm);font-weight:600;padding:0.25rem 0.4rem;background:transparent;border:none;border-bottom:1px solid var(--line);color:var(--yellow);outline:none;text-align:right">
+    <span style="font-size:0.6rem;color:var(--text3)">hoy</span>
+  </div>
+
 </div>
 
 <!-- ═══ NUEVA VENTA ═══ -->
 <div class="section" id="sec-venta">
-  <div class="sec-hdr"><h2>Nueva Venta</h2></div>
-
-  <div class="card" style="max-width:720px;margin:0 auto">
-
-    <!-- BLOQUE CLIENTE -->
-    <div class="card-title">Cliente</div>
-
-    <!-- Selector modo -->
-    <div style="display:flex;gap:0;margin-bottom:1rem;border:1px solid var(--line);border-radius:5px;overflow:hidden">
-      <button id="btn-cli-exist" onclick="setModoCliente('exist')"
-        style="flex:1;padding:0.55rem;font-family:var(--ff);font-size:0.8rem;font-weight:600;border:none;cursor:pointer;background:var(--yellow);color:var(--black);transition:all .15s">
-        Cliente existente
-      </button>
-      <button id="btn-cli-nuevo" onclick="setModoCliente('nuevo')"
-        style="flex:1;padding:0.55rem;font-family:var(--ff);font-size:0.8rem;font-weight:600;border:none;cursor:pointer;background:var(--line);color:var(--text2);transition:all .15s">
-        Cliente nuevo
-      </button>
+  <div style="max-width:520px;margin:0 auto;padding-top:0.4rem">
+    <div style="position:relative;margin-bottom:1rem">
+      <input id="v-search" type="text" placeholder="Buscar cliente..."
+        autocomplete="off" oninput="filtrarClientes()" onfocus="filtrarClientes()"
+        style="width:100%;background:var(--card);border:1px solid var(--line);border-radius:6px;color:var(--text);font-family:var(--ff);font-size:0.95rem;padding:0.75rem 1rem;outline:none;box-sizing:border-box">
+      <div id="v-dropdown" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:300;background:var(--card);border:1px solid var(--line);border-radius:6px;max-height:240px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.4)"></div>
     </div>
-
-    <!-- Modo existente: buscador con autocomplete -->
-    <div id="bloque-exist">
-      <div class="fg" style="position:relative">
-        <label>Buscar cliente</label>
-        <input id="v-search" type="text" placeholder="Escribí nombre, teléfono o email…"
-          autocomplete="off" oninput="filtrarClientes()" onfocus="filtrarClientes()">
-        <div id="v-dropdown" style="
-          display:none;position:absolute;top:100%;left:0;right:0;z-index:300;
-          background:var(--card);border:1px solid var(--yellow);border-top:none;border-radius:0 0 5px 5px;
-          max-height:220px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.35)
-        "></div>
-      </div>
-      <!-- Info del cliente seleccionado -->
-      <div id="v-cli-info" style="display:none;margin-top:0.7rem;background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:0.8rem 1rem">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start">
-          <div>
-            <div id="vci-nom" style="font-weight:600;font-size:0.92rem"></div>
-            <div id="vci-det" style="font-size:0.75rem;color:var(--text2);margin-top:2px"></div>
-          </div>
-          <button onclick="limpiarCliente()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:1rem;padding:0">×</button>
+    <div id="v-cli-info" style="display:none;margin-bottom:1rem;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:0.75rem 1rem">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div id="vci-nom" style="font-weight:700;font-size:0.92rem;color:var(--text)"></div>
+          <div id="vci-stats" style="font-size:0.68rem;color:var(--text3);margin-top:0.2rem"></div>
         </div>
-        <div id="vci-stats" style="font-size:0.7rem;color:var(--text3);margin-top:0.4rem"></div>
+        <button onclick="limpiarCliente()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:1.1rem;padding:0.2rem 0.4rem;line-height:1">x</button>
       </div>
     </div>
-
-    <!-- Modo nuevo: formulario desplegable -->
-    <div id="bloque-nuevo" style="display:none">
-      <div class="fstack">
-        <div class="fg"><label>Nombre *</label><input id="v-nom" type="text" placeholder="Nombre completo"></div>
-        <div class="form-cols">
-          <div class="fg"><label>Teléfono</label><input id="v-tel" type="tel" placeholder="+54 11 0000 0000"></div>
-          <div class="fg"><label>Email</label><input id="v-email" type="email" placeholder="correo@ejemplo.com"></div>
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:6px;padding:0.9rem 1rem;margin-bottom:1rem">
+      <div style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-bottom:0.7rem">Productos</div>
+      <div id="vitems"></div>
+      <button onclick="addItem()" style="margin-top:0.5rem;background:none;border:none;cursor:pointer;font-size:0.75rem;color:var(--text3);font-family:var(--ff);padding:0.3rem 0">+ agregar producto</button>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:6px;padding:0.9rem 1rem;margin-bottom:1rem">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;margin-bottom:0.8rem">
+        <div class="fg">
+          <label style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3)">Metodo de pago</label>
+          <select id="v-pago" style="margin-top:0.3rem"><option>Efectivo</option><option>Billetera Virtual</option><option>Transferencia</option><option>Tarjeta</option><option>Mercado Pago</option></select>
         </div>
-        <div class="fg"><label>Dirección</label><input id="v-dir" type="text" placeholder="Calle, ciudad, provincia"></div>
+        <div class="fg">
+          <label style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3)">Fecha de venta</label>
+          <input id="v-fecha" type="date" style="margin-top:0.3rem;background:var(--surface);border:1px solid var(--line);border-radius:4px;color:var(--text);font-family:var(--fm);font-size:0.85rem;padding:0.5rem;width:100%;outline:none">
+        </div>
+        <div class="fg">
+          <label style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3)">Total recibido ($)</label>
+          <input id="v-ingresado" type="number" min="0" step="1" placeholder="0" oninput="calcDescuento()" style="margin-top:0.3rem">
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0.8rem;background:var(--surface);border-radius:5px;border:1px solid var(--line)">
+        <span style="font-size:0.72rem;color:var(--text3)">Descuento aplicado</span>
+        <span id="v-desc-display" style="font-family:var(--fm);font-size:0.9rem;font-weight:700;color:var(--text3)">0%</span>
+      </div>
+      <input id="v-desc" type="hidden" value="0">
+    </div>
+    <div class="fg" style="margin-bottom:1rem">
+      <textarea id="v-notas" placeholder="Notas opcionales..." style="min-height:50px;font-size:0.88rem"></textarea>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:6px;padding:0.9rem 1rem;margin-bottom:1rem">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3)">Total a cobrar</div>
+          <div id="v-total" style="font-family:var(--fm);font-size:1.6rem;font-weight:700;color:var(--yellow);line-height:1.1;margin-top:0.2rem">$0.00</div>
+        </div>
+        <button class="btn btn-y" onclick="registrarVenta()" style="font-size:0.9rem;padding:0.7rem 1.4rem">Registrar</button>
       </div>
     </div>
-
-    <div class="div"></div>
-
-    <!-- BLOQUE PRODUCTOS -->
-    <div class="card-title">Productos</div>
-    <div id="vitems"></div>
-    <button class="btn btn-ghost" style="margin-top:0.5rem;font-size:0.75rem" onclick="addItem()">+ Agregar producto</button>
-
-    <div class="div"></div>
-
-    <!-- PAGO + DESCUENTO -->
-    <div class="form-cols">
-      <div class="fg"><label>Método de pago</label>
-        <select id="v-pago"><option>Efectivo</option><option>Transferencia</option><option>Tarjeta</option><option>Mercado Pago</option></select>
-      </div>
-      <div class="fg"><label>Descuento (%)</label>
-        <input id="v-desc" type="number" value="0" min="0" max="100" onchange="calcTotal()">
-      </div>
-    </div>
-    <div class="fg" style="margin-top:0.65rem"><label>Notas</label>
-      <textarea id="v-notas" placeholder="Instrucciones especiales…"></textarea>
-    </div>
-
-    <div class="div"></div>
-    <div class="total-bar"><span class="lbl">Total a cobrar</span><span class="total-val" id="v-total">$0.00</span></div>
-    <div class="btn-row">
-      <button class="btn btn-y" onclick="registrarVenta()">Registrar venta</button>
-      <button class="btn btn-ghost" onclick="limpiarVenta()">Limpiar</button>
+    <div style="text-align:center;padding:0.3rem">
+      <button onclick="limpiarVenta()" style="background:none;border:none;cursor:pointer;font-size:0.68rem;color:var(--text3);font-family:var(--ff);padding:0.3rem">limpiar formulario</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ CLIENTES ═══ -->
 <div class="section" id="sec-clientes">
   <div class="sec-hdr"><h2>Clientes</h2><button class="btn btn-y btn-sm" onclick="abrirMCli()">+ Nuevo</button></div>
   <div class="search-row" style="margin-bottom:0.8rem">
-    <input id="q-cli" type="text" placeholder="Buscar nombre o provincia…" oninput="renderCli()" style="max-width:340px">
+    <input id="q-cli" type="text" placeholder="Buscar nombre o provincia..." oninput="renderCli()" style="max-width:340px">
   </div>
   <div class="card" style="padding:0;overflow:hidden">
     <div class="tbl-wrap">
       <table>
         <thead><tr>
           <th style="width:36px;text-align:center">#</th>
-          <th>Nombre</th>
-          <th>Provincia</th>
+          <th>Nombre</th><th>Provincia</th>
           <th style="text-align:center">Pedidos</th>
           <th style="text-align:center">Unidades</th>
           <th style="width:90px"></th>
@@ -392,37 +371,21 @@ tbody tr:last-child{border-bottom:none}
       </table>
     </div>
   </div>
-
-  <!-- PANEL DETALLE CLIENTE -->
   <div id="panel-cli" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:900;justify-content:center;align-items:flex-end" onclick="if(event.target===this)cerrarPanelCli()">
     <div style="background:var(--card);border:1px solid var(--line);border-radius:14px 14px 0 0;padding:1.4rem 1.2rem 2.8rem;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;animation:slideUp .25s ease" onclick="event.stopPropagation()">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.3rem">
-        <div id="pcli-nombre" style="font-size:1.05rem;font-weight:700;color:var(--text);line-height:1.2"></div>
-        <button onclick="cerrarPanelCli()" style="background:var(--line);border:none;border-radius:50%;width:28px;height:28px;color:var(--text2);cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:1rem">×</button>
+        <div id="pcli-nombre" style="font-size:1.05rem;font-weight:700;color:var(--text)"></div>
+        <button onclick="cerrarPanelCli()" style="background:var(--line);border:none;border-radius:50%;width:28px;height:28px;color:var(--text2);cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:1rem">x</button>
       </div>
       <div id="pcli-loc" style="font-size:0.7rem;color:var(--text3);margin-bottom:1.1rem;text-transform:uppercase;letter-spacing:0.08em"></div>
       <div style="height:1px;background:var(--line);margin-bottom:1.1rem"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.65rem;margin-bottom:1.1rem">
-        <div style="background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:0.8rem 0.9rem">
-          <div style="font-size:0.58rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.25rem">Pedidos</div>
-          <div id="pcli-pedidos" style="font-family:var(--fm);font-size:1.4rem;font-weight:700;color:var(--text)"></div>
-        </div>
-        <div style="background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:0.8rem 0.9rem">
-          <div style="font-size:0.58rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.25rem">Unidades compradas</div>
-          <div id="pcli-uds" style="font-family:var(--fm);font-size:1.4rem;font-weight:700;color:var(--text)"></div>
-        </div>
-        <div style="background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:0.8rem 0.9rem">
-          <div style="font-size:0.58rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.25rem">Total USD blue</div>
-          <div id="pcli-usd" style="font-family:var(--fm);font-size:1.15rem;font-weight:700;color:var(--green2)"></div>
-          <div style="font-size:0.6rem;color:var(--text3);margin-top:0.15rem">cotización histórica</div>
-        </div>
-        <div style="background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:0.8rem 0.9rem">
-          <div style="font-size:0.58rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.25rem">Pesos hoy</div>
-          <div id="pcli-ars" style="font-family:var(--fm);font-size:1.15rem;font-weight:700;color:var(--yellow)"></div>
-          <div style="font-size:0.6rem;color:var(--text3);margin-top:0.15rem">USD × $1.400 blue hoy</div>
-        </div>
+        <div style="background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:0.8rem 0.9rem"><div style="font-size:0.58rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.25rem">Pedidos</div><div id="pcli-pedidos" style="font-family:var(--fm);font-size:1.4rem;font-weight:700;color:var(--text)"></div></div>
+        <div style="background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:0.8rem 0.9rem"><div style="font-size:0.58rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.25rem">Unidades</div><div id="pcli-uds" style="font-family:var(--fm);font-size:1.4rem;font-weight:700;color:var(--text)"></div></div>
+        <div style="background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:0.8rem 0.9rem"><div style="font-size:0.58rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.25rem">Total USD blue</div><div id="pcli-usd" style="font-family:var(--fm);font-size:1.15rem;font-weight:700;color:var(--green2)"></div><div style="font-size:0.6rem;color:var(--text3);margin-top:0.15rem">cotizacion historica</div></div>
+        <div style="background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:0.8rem 0.9rem"><div style="font-size:0.58rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.25rem">Pesos hoy</div><div id="pcli-ars" style="font-family:var(--fm);font-size:1.15rem;font-weight:700;color:var(--yellow)"></div><div style="font-size:0.6rem;color:var(--text3);margin-top:0.15rem">USD x blue hoy</div></div>
       </div>
-      <div style="font-size:0.62rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.5rem">Historial de compras</div>
+      <div style="font-size:0.62rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.5rem">Historial</div>
       <div id="pcli-historial"></div>
       <div style="display:flex;gap:0.5rem;margin-top:1.2rem">
         <button class="btn btn-ghost btn-sm" id="pcli-btn-edit">Editar</button>
@@ -466,36 +429,24 @@ tbody tr:last-child{border-bottom:none}
 <div class="section" id="sec-historial">
   <div class="sec-hdr"><h2>Historial de ventas</h2><button class="btn btn-ghost" onclick="exportCSV()">↓ Exportar CSV</button></div>
   <div class="search-row" style="flex-wrap:wrap;gap:0.4rem">
-    <input id="q-ven" type="text" placeholder="Buscar cliente…" oninput="renderHist()" style="min-width:130px">
+    <input id="q-ven" type="text" placeholder="Buscar cliente..." oninput="renderHist()" style="min-width:130px">
     <select id="f-pago" onchange="renderHist()" style="flex-shrink:0">
       <option value="">Todos los pagos</option>
       <option>Efectivo</option><option>Transferencia</option><option>Tarjeta</option><option>Mercado Pago</option>
     </select>
     <div style="display:flex;align-items:center;gap:0.3rem;flex-shrink:0">
-      <input id="f-desde" type="text" placeholder="DD/MM/AAAA" maxlength="10"
-        oninput="autoSlash(this);renderHist()"
-        style="width:92px;font-size:0.76rem;padding:0.42rem 0.5rem;background:var(--card);
-               border:1px solid var(--line);border-radius:4px;color:var(--text);
-               font-family:var(--fm);outline:none;text-align:center"
-        onfocus="this.style.borderColor='var(--yellow)'" onblur="this.style.borderColor='var(--line)'">
-      <span style="font-size:0.65rem;color:var(--text3)">–</span>
-      <input id="f-hasta" type="text" placeholder="DD/MM/AAAA" maxlength="10"
-        oninput="autoSlash(this);renderHist()"
-        style="width:92px;font-size:0.76rem;padding:0.42rem 0.5rem;background:var(--card);
-               border:1px solid var(--line);border-radius:4px;color:var(--text);
-               font-family:var(--fm);outline:none;text-align:center"
-        onfocus="this.style.borderColor='var(--yellow)'" onblur="this.style.borderColor='var(--line)'">
-      <button onclick="limpiarFechas()" title="Limpiar rango"
-        style="background:none;border:none;color:var(--text3);cursor:pointer;
-               font-size:1rem;line-height:1;padding:0.1rem 0.3rem;
-               transition:color .15s"
-        onmouseenter="this.style.color='var(--text)'" onmouseleave="this.style.color='var(--text3)'">×</button>
+      <input id="f-desde" type="text" placeholder="DD/MM/AAAA" maxlength="10" oninput="autoSlash(this);renderHist()"
+        style="width:92px;font-size:0.76rem;padding:0.42rem 0.5rem;background:var(--card);border:1px solid var(--line);border-radius:4px;color:var(--text);font-family:var(--fm);outline:none;text-align:center">
+      <span style="font-size:0.65rem;color:var(--text3)">-</span>
+      <input id="f-hasta" type="text" placeholder="DD/MM/AAAA" maxlength="10" oninput="autoSlash(this);renderHist()"
+        style="width:92px;font-size:0.76rem;padding:0.42rem 0.5rem;background:var(--card);border:1px solid var(--line);border-radius:4px;color:var(--text);font-family:var(--fm);outline:none;text-align:center">
+      <button onclick="limpiarFechas()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:1rem;line-height:1;padding:0.1rem 0.3rem">x</button>
     </div>
   </div>
   <div class="card" style="padding:0;overflow:hidden">
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>#</th><th>Fecha</th><th>Cliente</th><th>Uds.</th><th>Total USD</th><th>Pago</th><th></th></tr></thead>
+        <thead><tr><th>#</th><th>Fecha</th><th>Cliente</th><th>Uds.</th><th>Total USD</th><th>Pago</th><th></th><th></th></tr></thead>
         <tbody id="t-hist"></tbody>
       </table>
     </div>
@@ -566,6 +517,32 @@ tbody tr:last-child{border-bottom:none}
   </div>
 </div>
 
+<!-- ═══ MODAL EDITAR VENTA ═══ -->
+<div class="modal-ov" id="m-edit-venta">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-title">Editar venta</div>
+    <div class="fstack">
+      <div class="fg"><label>Cliente</label><input id="me-cliente" type="text"></div>
+      <div class="form-cols">
+        <div class="fg"><label>Fecha (DD/MM/AAAA)</label><input id="me-fecha" type="text" maxlength="10" oninput="autoSlash(this)"></div>
+        <div class="fg"><label>Método de pago</label>
+          <select id="me-pago"><option>Efectivo</option><option>Billetera Virtual</option><option>Transferencia</option><option>Tarjeta</option><option>Mercado Pago</option></select>
+        </div>
+      </div>
+      <div class="form-cols">
+        <div class="fg"><label>Cantidad</label><input id="me-qty" type="number" min="1"></div>
+        <div class="fg"><label>Precio unitario ($)</label><input id="me-precio" type="number" min="0" step="0.01"></div>
+      </div>
+      <div class="fg"><label>Notas</label><textarea id="me-notas"></textarea></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-y" onclick="guardarEdicionVenta()">Guardar</button>
+      <button class="btn btn-ghost" onclick="cerrar('m-edit-venta')">Cancelar</button>
+      <button class="btn btn-danger" onclick="eliminarVenta()">Eliminar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ MODAL DETALLE ═══ -->
 <div class="modal-ov" id="m-det">
   <div class="modal" style="max-width:540px">
@@ -583,32 +560,37 @@ tbody tr:last-child{border-bottom:none}
 
 <script>
 // ══ STATE ══
-let clientes = [];
-let productos = [];
-let ventas    = [];
+let clientes = JSON.parse(localStorage.getItem('mb_cli')||'[]');
+let productos = JSON.parse(localStorage.getItem('mb_prod')||'[]');
+let ventas    = JSON.parse(localStorage.getItem('mb_ven')||'[]');
 let editCliId = null, editProdId = null;
 
-function save(){ /* datos en memoria */ }
+function save(){
+  localStorage.setItem('mb_cli',JSON.stringify(clientes));
+  localStorage.setItem('mb_prod',JSON.stringify(productos));
+  localStorage.setItem('mb_ven',JSON.stringify(ventas));
+}
+
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6) }
 
 {
   productos=[
     // ── LÍNEA ADULTO ──
-    {id:uid(),nombre:'Cepillo Arcoíris',desc:'Cerdas multicolor, mango bambú natural',precio:89,stock:80,cat:'Adulto',color:'Arcoíris',linea:'Adulto',sku:'AD-ARC'},
-    {id:uid(),nombre:'Cepillo Negro',desc:'Cerdas negras carbón, mango bambú',precio:89,stock:60,cat:'Adulto',color:'Negro',linea:'Adulto',sku:'AD-NEG'},
-    {id:uid(),nombre:'Cepillo Blanco',desc:'Cerdas blancas clásicas, mango bambú',precio:89,stock:90,cat:'Adulto',color:'Blanco',linea:'Adulto',sku:'AD-BLA'},
-    {id:uid(),nombre:'Cepillo Beige',desc:'Cerdas beige naturales, mango bambú',precio:89,stock:70,cat:'Adulto',color:'Beige',linea:'Adulto',sku:'AD-BEI'},
-    {id:uid(),nombre:'Cepillo Marrón',desc:'Cerdas marrón tierra, mango bambú',precio:89,stock:50,cat:'Adulto',color:'Marrón',linea:'Adulto',sku:'AD-MAR'},
+    {id:uid(),nombre:'Cepillo Arcoíris',desc:'Cerdas multicolor, mango bambú natural',precio:1400,stock:0,cat:'Adulto',color:'Arcoíris',linea:'Adulto',sku:'AD-ARC'},
+    {id:uid(),nombre:'Cepillo Negro',desc:'Cerdas negras carbón, mango bambú',precio:1400,stock:130,cat:'Adulto',color:'Negro',linea:'Adulto',sku:'AD-NEG'},
+    {id:uid(),nombre:'Cepillo Blanco',desc:'Cerdas blancas clásicas, mango bambú',precio:1400,stock:1220,cat:'Adulto',color:'Blanco',linea:'Adulto',sku:'AD-BLA'},
+    {id:uid(),nombre:'Cepillo Beige',desc:'Cerdas beige naturales, mango bambú',precio:1400,stock:1220,cat:'Adulto',color:'Beige',linea:'Adulto',sku:'AD-BEI'},
+    {id:uid(),nombre:'Cepillo Marrón',desc:'Cerdas marrón tierra, mango bambú',precio:1400,stock:40,cat:'Adulto',color:'Marrón',linea:'Adulto',sku:'AD-MAR'},
     // ── LÍNEA KIDS ──
-    {id:uid(),nombre:'Kids Rojo',desc:'Tamaño infantil, cerdas ultra suaves rojas',precio:75,stock:60,cat:'Kids',color:'Rojo',linea:'Kids',sku:'KD-ROJ'},
-    {id:uid(),nombre:'Kids Azul',desc:'Tamaño infantil, cerdas ultra suaves azules',precio:75,stock:55,cat:'Kids',color:'Azul',linea:'Kids',sku:'KD-AZU'},
-    {id:uid(),nombre:'Kids Verde',desc:'Tamaño infantil, cerdas ultra suaves verdes',precio:75,stock:45,cat:'Kids',color:'Verde',linea:'Kids',sku:'KD-VER'},
-    {id:uid(),nombre:'Kids Violeta',desc:'Tamaño infantil, cerdas ultra suaves violetas',precio:75,stock:40,cat:'Kids',color:'Violeta',linea:'Kids',sku:'KD-VIO'},
-    {id:uid(),nombre:'Kids Arcoíris',desc:'Tamaño infantil, cerdas multicolor',precio:75,stock:65,cat:'Kids',color:'Arcoíris',linea:'Kids',sku:'KD-ARC'},
+    {id:uid(),nombre:'Kids Rojo',desc:'Tamaño infantil, cerdas ultra suaves rojas',precio:1400,stock:0,cat:'Kids',color:'Rojo',linea:'Kids',sku:'KD-ROJ'},
+    {id:uid(),nombre:'Kids Azul',desc:'Tamaño infantil, cerdas ultra suaves azules',precio:1400,stock:0,cat:'Kids',color:'Azul',linea:'Kids',sku:'KD-AZU'},
+    {id:uid(),nombre:'Kids Verde',desc:'Tamaño infantil, cerdas ultra suaves verdes',precio:1400,stock:0,cat:'Kids',color:'Verde',linea:'Kids',sku:'KD-VER'},
+    {id:uid(),nombre:'Kids Violeta',desc:'Tamaño infantil, cerdas ultra suaves violetas',precio:1400,stock:0,cat:'Kids',color:'Violeta',linea:'Kids',sku:'KD-VIO'},
+    {id:uid(),nombre:'Kids Arcoíris',desc:'Tamaño infantil, cerdas multicolor',precio:1400,stock:0,cat:'Kids',color:'Arcoíris',linea:'Kids',sku:'KD-ARC'},
   ];
   save();
 }
 
-function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6) }
 function fmt(n){ return '$'+Number(n).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2}) }
 function now(){ return new Date().toLocaleString('es-MX',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) }
 
@@ -623,6 +605,7 @@ function toast(msg,type='ok'){
 // ══ TABS ══
 const TABS=['dashboard','clientes','inventario','historial'];
 function showTab(id){
+  try{
   document.querySelectorAll('.tab').forEach(t=>{
     const tabId=t.getAttribute('onclick').match(/'(\w+)'/)[1];
     t.classList.toggle('active', tabId===id);
@@ -632,6 +615,7 @@ function showTab(id){
   const map={dashboard:renderDash,venta:()=>{fillSelCli();renderItems();},clientes:renderCli,inventario:renderInv,historial:renderHist};
   if(map[id]) map[id]();
   updateHdr();
+  }catch(e){console.error('ERROR showTab('+id+'):',e.message,e.stack);}
 }
 
 // ══ HEADER ══
@@ -683,96 +667,71 @@ function detectarProvinciaCliente(v){
 
 function renderMapa(){ /* mapa eliminado */ }
 
-const PROVINCIAS_ARG = [
-  'Buenos Aires','CABA','Córdoba','Santa Fe','Mendoza','Tucumán',
-  'Entre Ríos','Salta','Misiones','Chaco','Corrientes','Santiago del Estero',
-  'San Juan','Jujuy','Río Negro','Neuquén','Formosa','Chubut',
-  'San Luis','Catamarca','La Rioja','La Pampa','Santa Cruz','Tierra del Fuego'
-];
-
-function renderProvincias(){
-  const el = document.getElementById('dash-provincias');
-  if(!el) return;
-
-  function normProv(p){
-    return (p||'').toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-      .replace('caba','buenos aires').replace('ciudad de buenos aires','buenos aires')
-      .replace('capital federal','buenos aires').trim();
-  }
-
-  const provClientes = new Set();
-  clientes.forEach(c=>{ const p=normProv(c.prov); if(p&&p!=='nulo') provClientes.add(p); });
-
-  const TOTAL = 24;
-  const PROVINCIAS_ARG = [
-    'Buenos Aires','CABA','Córdoba','Santa Fe','Mendoza','Tucumán',
-    'Entre Ríos','Salta','Misiones','Chaco','Corrientes','Santiago del Estero',
-    'San Juan','Jujuy','Río Negro','Neuquén','Formosa','Chubut',
-    'San Luis','Catamarca','La Rioja','La Pampa','Santa Cruz','Tierra del Fuego'
-  ];
-  const cubiertas = PROVINCIAS_ARG.filter(p=>provClientes.has(normProv(p)));
-  const cant = cubiertas.length;
-  const pct  = Math.round(cant/TOTAL*100);
-
-  el.innerHTML = `
-    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.9rem">
-      <div style="font-family:var(--fm);font-size:2.2rem;font-weight:700;color:var(--yellow);line-height:1">${cant}</div>
-      <div>
-        <div style="font-size:0.78rem;color:var(--text)">de 24 provincias</div>
-        <div style="font-size:0.68rem;color:var(--text3);margin-top:0.1rem">${pct}% del territorio nacional</div>
-      </div>
-      <div style="margin-left:auto;text-align:right">
-        <div style="font-size:0.65rem;color:var(--text3);margin-bottom:0.3rem">${cant}/${TOTAL}</div>
-        <div style="width:80px;height:4px;background:var(--line);border-radius:2px">
-          <div style="width:${pct}%;height:100%;background:var(--yellow);border-radius:2px"></div>
-        </div>
-      </div>
-    </div>
-    <div style="display:flex;flex-wrap:wrap;gap:0.3rem">
-      ${PROVINCIAS_ARG.map(p=>{
-        const activa = provClientes.has(normProv(p));
-        return `<span style="
-          font-size:0.62rem;padding:0.18rem 0.5rem;border-radius:3px;
-          font-weight:600;font-family:var(--fm);
-          background:${activa?'rgba(232,184,75,0.15)':'var(--surface)'};
-          color:${activa?'var(--yellow)':'var(--text3)'};
-          border:1px solid ${activa?'rgba(232,184,75,0.3)':'var(--line)'};
-        ">${p}</span>`;
-      }).join('')}
-    </div>
-  `;
+let _recExpanded=false;
+function renderRec(){
+  const rec=document.getElementById('dash-rec');
+  if(!rec) return;
+  const lista=[...ventas].reverse().slice(0,_recExpanded?10:3);
+  const total=ventas.length;
+  rec.innerHTML=lista.map(v=>{
+    const uds=v.items.reduce((s,i)=>s+i.qty,0);
+    const usdR=totalUSD(v.total,v.fecha);
+    return '<div class="mrow">'
+      +'<div><div class="name">'+v.cliente+'</div>'
+      +'<div class="sub">'+v.fecha+' <span style="color:var(--text2)">'+v.pago+'</span></div></div>'
+      +'<div style="text-align:right">'
+      +'<div class="val">'+uds+' uds.</div>'
+      +(usdR?'<div style="font-size:0.75rem;color:var(--green2);font-family:var(--fm)">'+fmtUSD(usdR.usd)+'</div>':'')
+      +'</div></div>';
+  }).join('')
+  +(total>3?'<div style="text-align:center;padding:0.5rem 0 0.1rem">'
+    +'<button onclick="_recExpanded=!_recExpanded;renderRec()" style="background:none;border:none;cursor:pointer;font-size:0.65rem;color:var(--text3);letter-spacing:0.05em;font-family:var(--ff);padding:0.2rem 0.5rem">'
+    +(_recExpanded?'menos':'ver mas')
+    +'</button></div>':'');
 }
 
+const PROVINCIAS_ARG=['Buenos Aires','CABA','Cordoba','Santa Fe','Mendoza','Tucuman','Entre Rios','Salta','Misiones','Chaco','Corrientes','Santiago del Estero','San Juan','Jujuy','Rio Negro','Neuquen','Formosa','Chubut','San Luis','Catamarca','La Rioja','La Pampa','Santa Cruz','Tierra del Fuego'];
+function renderProvincias(){
+  const el=document.getElementById('dash-provincias');
+  if(!el) return;
+  function normP(p){return(p||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace('caba','buenos aires').trim();}
+  const provCli=new Set();
+  clientes.forEach(c=>{const p=normP(c.prov);if(p&&p!=='nulo')provCli.add(p);});
+  const cant=PROVINCIAS_ARG.filter(p=>provCli.has(normP(p))).length;
+  const pct=Math.round(cant/24*100);
+  el.innerHTML='<div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.9rem">'
+    +'<div style="font-family:var(--fm);font-size:2.2rem;font-weight:700;color:var(--yellow);line-height:1">'+cant+'</div>'
+    +'<div><div style="font-size:0.78rem;color:var(--text)">de 24 provincias</div>'
+    +'<div style="font-size:0.68rem;color:var(--text3);margin-top:0.1rem">'+pct+'% del territorio nacional</div></div>'
+    +'<div style="margin-left:auto;text-align:right">'
+    +'<div style="font-size:0.65rem;color:var(--text3);margin-bottom:0.3rem">'+cant+'/24</div>'
+    +'<div style="width:80px;height:4px;background:var(--line);border-radius:2px">'
+    +'<div style="width:'+pct+'%;height:100%;background:var(--yellow);border-radius:2px"></div>'
+    +'</div></div></div>'
+    +'<div style="display:flex;flex-wrap:wrap;gap:0.3rem">'
+    +PROVINCIAS_ARG.map(p=>{
+      const a=provCli.has(normP(p));
+      return '<span style="font-size:0.62rem;padding:0.18rem 0.5rem;border-radius:3px;font-weight:600;font-family:var(--fm);background:'+(a?'rgba(232,184,75,0.15)':'var(--surface)')+';color:'+(a?'var(--yellow)':'var(--text3)')+';border:1px solid '+(a?'rgba(232,184,75,0.3)':'var(--line)')+'">'+p+'</span>';
+    }).join('')+'</div>';
+}
 
-let _recExpanded = false;
-function renderRec(){
-  const rec = document.getElementById('dash-rec');
-  if(!rec) return;
-  const lista = [...ventas].reverse().slice(0, _recExpanded ? 10 : 3);
-  const total = ventas.length;
-  rec.innerHTML = lista.map(v=>{
-    const uds = v.items.reduce((s,i)=>s+i.qty,0);
-    const usdR = totalUSD(v.total, v.fecha);
-    return `<div class="mrow">
-      <div>
-        <div class="name">${v.cliente}</div>
-        <div class="sub">${v.fecha} · <span style="color:var(--text2)">${v.pago}</span></div>
-      </div>
-      <div style="text-align:right">
-        <div class="val">${uds} uds.</div>
-        ${usdR?`<div style="font-size:0.75rem;color:var(--green2);font-family:var(--fm)">${fmtUSD(usdR.usd)}</div>`:''}
-      </div>
-    </div>`;
-  }).join('')
-  + (total > 3 ? `<div style="text-align:center;padding:0.5rem 0 0.1rem">`
-    + `<button onclick="_recExpanded=!_recExpanded;renderRec()" style="`
-    + `background:none;border:none;cursor:pointer;`
-    + `font-size:0.65rem;color:var(--text3);letter-spacing:0.05em;`
-    + `font-family:var(--ff);padding:0.2rem 0.5rem;transition:color .15s"`
-    + ` onmouseenter="this.style.color='var(--text)'" onmouseleave="this.style.color='var(--text3)'">`
-    + (_recExpanded ? '· menos ·' : '· ver más ·')
-    + `</button></div>` : '');
+function autoSlash(el){
+  let v=el.value.replace(/\D/g,'');
+  if(v.length>=5)v=v.slice(0,2)+'/'+v.slice(2,4)+'/'+v.slice(4,8);
+  else if(v.length>=3)v=v.slice(0,2)+'/'+v.slice(2);
+  el.value=v;
+}
+function parseFechaFiltro(s){
+  if(!s||s.length<10)return null;
+  const p=s.split('/');
+  if(p.length!==3||p[2].length!==4)return null;
+  const d=new Date(+p[2],+p[1]-1,+p[0]);
+  return isNaN(d)?null:d;
+}
+function limpiarFechas(){
+  document.getElementById('f-desde').value='';
+  document.getElementById('f-hasta').value='';
+  renderHist();
 }
 
 function renderDash(){
@@ -789,6 +748,7 @@ function renderDash(){
   renderChartHist();
   renderProvincias();
   updateHdr();
+  const bi=document.getElementById('blue-input');if(bi)bi.value=blueHoy;
 }
 
 function renderChartHist(){
@@ -884,47 +844,32 @@ function renderChartHist(){
     ctx.fillText(p.a, p.x, H-6);
   });
 
-  // Mes pico — calcular por mes/año
-  const MESES_N = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-  const porMes = {};
+  // Mes pico
+  const MESES_N=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  const porMes={};
   ventas.forEach(v=>{
-    const p=(v.fecha||"").split("/");
-    if(p.length<3) return;
-    const key = MESES_N[parseInt(p[1],10)-1]+" "+p[2];
-    const uds = v.items.reduce((s,i)=>s+i.qty,0);
+    const pp=(v.fecha||'').split('/');
+    if(pp.length<3)return;
+    const key=MESES_N[parseInt(pp[1],10)-1]+' '+pp[2];
+    const uds=v.items.reduce((s,i)=>s+i.qty,0);
     porMes[key]=(porMes[key]||0)+uds;
   });
-  const peakEntry = Object.entries(porMes).sort((a,b)=>b[1]-a[1])[0];
-
-  // Encontrar el año del mes pico para marcarlo en el gráfico
+  const peakEntry=Object.entries(porMes).sort((a,b)=>b[1]-a[1])[0];
   if(peakEntry){
-    const peakAño = peakEntry[0].split(" ")[1];
-    const peakPt = pts.find(p=>p.a===peakAño);
+    const peakAno=peakEntry[0].split(' ')[1];
+    const peakPt=pts.find(p=>p.a===peakAno);
     if(peakPt){
-      // Halo verde
-      ctx.beginPath();
-      ctx.arc(peakPt.x, peakPt.y, 7, 0, Math.PI*2);
-      ctx.fillStyle = "rgba(74,160,80,0.18)";
-      ctx.fill();
-      // Punto verde sólido
-      ctx.beginPath();
-      ctx.arc(peakPt.x, peakPt.y, 4, 0, Math.PI*2);
-      ctx.fillStyle = "#4aa050";
-      ctx.fill();
+      ctx.beginPath();ctx.arc(peakPt.x,peakPt.y,7,0,Math.PI*2);ctx.fillStyle='rgba(74,160,80,0.18)';ctx.fill();
+      ctx.beginPath();ctx.arc(peakPt.x,peakPt.y,4,0,Math.PI*2);ctx.fillStyle='#4aa050';ctx.fill();
     }
   }
-
-  // Panel texto mes pico
-  const peakEl = document.getElementById("chart-peak");
-  if(peakEl && peakEntry){
-    peakEl.innerHTML = `
-      <div style="display:flex;align-items:center;gap:0.3rem;margin-bottom:0.2rem">
-        <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#4aa050;flex-shrink:0"></span>
-        <span style="font-size:0.58rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3)">Mes pico</span>
-      </div>
-      <div style="font-family:var(--fm);font-size:0.88rem;font-weight:700;color:var(--text);line-height:1">${peakEntry[0]}</div>
-      <div style="font-family:var(--fm);font-size:0.7rem;color:var(--text2);margin-top:0.15rem">${peakEntry[1].toLocaleString("es-AR")} uds.</div>
-    `;
+  const peakEl=document.getElementById('chart-peak');
+  if(peakEl&&peakEntry){
+    peakEl.innerHTML='<div style="display:flex;align-items:center;gap:0.3rem;margin-bottom:0.2rem">'
+      +'<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#4aa050;flex-shrink:0"></span>'
+      +'<span style="font-size:0.58rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3)">Mes pico</span></div>'
+      +'<div style="font-family:var(--fm);font-size:0.88rem;font-weight:700;color:var(--text);line-height:1">'+peakEntry[0]+'</div>'
+      +'<div style="font-family:var(--fm);font-size:0.7rem;color:var(--text2);margin-top:0.15rem">'+peakEntry[1].toLocaleString('es-AR')+' uds.</div>';
   }
 }
 
@@ -934,53 +879,34 @@ let modoCliente='exist'; // 'exist' | 'nuevo'
 let clienteSelId=null;
 
 function setModoCliente(modo){
-  modoCliente=modo;
   clienteSelId=null;
-  document.getElementById('bloque-exist').style.display = modo==='exist'?'block':'none';
-  document.getElementById('bloque-nuevo').style.display = modo==='nuevo'?'block':'none';
-  document.getElementById('btn-cli-exist').style.background = modo==='exist'?'var(--yellow)':'var(--line)';
-  document.getElementById('btn-cli-exist').style.color      = modo==='exist'?'var(--black)':'var(--text2)';
-  document.getElementById('btn-cli-nuevo').style.background = modo==='nuevo'?'var(--yellow)':'var(--line)';
-  document.getElementById('btn-cli-nuevo').style.color      = modo==='nuevo'?'var(--black)':'var(--text2)';
-  if(modo==='exist'){
-    document.getElementById('v-search').value='';
-    document.getElementById('v-cli-info').style.display='none';
-    document.getElementById('v-dropdown').style.display='none';
-  }
+  document.getElementById('v-search').value='';
+  const ci=document.getElementById('v-cli-info');if(ci)ci.style.display='none';
+  const dd=document.getElementById('v-dropdown');if(dd)dd.style.display='none';
 }
-
 function filtrarClientes(){
   const q=(document.getElementById('v-search').value||'').toLowerCase().trim();
   const dd=document.getElementById('v-dropdown');
-  if(!q){ dd.style.display='none'; return; }
-
-  const matches=clientes.filter(c=>
-    [c.nombre,c.tel||'',c.email||'',c.dir||''].some(x=>x.toLowerCase().includes(q))
-  ).slice(0,8);
-
+  if(!q){dd.style.display='none';return;}
+  const matches=clientes.filter(c=>c.nombre.toLowerCase().includes(q)).slice(0,8);
   if(!matches.length){
-    dd.innerHTML=`<div style="padding:0.7rem 1rem;font-size:0.82rem;color:var(--text3)">Sin resultados</div>`;
-    dd.style.display='block'; return;
+    dd.innerHTML='<div style="padding:0.7rem 1rem;font-size:0.82rem;color:var(--text3)">Sin resultados</div>';
+    dd.style.display='block';return;
   }
-
   dd.innerHTML=matches.map(c=>{
-    const compras=ventas.filter(v=>v.clienteId===c.id);
-    const uds=compras.reduce((s,v)=>s+v.items.reduce((a,i)=>a+i.qty,0),0);
-    return `<div onclick="seleccionarCliente('${c.id}')" style="
-      padding:0.7rem 1rem;cursor:pointer;border-bottom:1px solid var(--line);
-      transition:background .12s;display:flex;justify-content:space-between;align-items:center
-    " onmouseenter="this.style.background='var(--surface)'" onmouseleave="this.style.background='transparent'">
-      <div>
-        <div style="font-size:0.88rem;font-weight:600;color:var(--text)">${c.nombre}</div>
-        <div style="font-size:0.72rem;color:var(--text2)">${[c.tel,c.email].filter(Boolean).join(' · ')}</div>
-      </div>
-      <div style="text-align:right;flex-shrink:0;margin-left:1rem">
-        <span style="font-family:var(--fm);font-size:0.75rem;color:var(--text3)">${uds} uds.</span>
-        <div style="font-size:0.67rem;color:var(--text3)">${compras.length} pedidos</div>
-      </div>
-    </div>`;
+    const comp=ventas.filter(v=>v.clienteId===c.id);
+    const uds=comp.reduce((s,v)=>s+v.items.reduce((a,i)=>a+i.qty,0),0);
+    return '<div data-cid="'+c.id+'" style="padding:0.65rem 1rem;cursor:pointer;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">'
+      +'<div style="font-size:0.88rem;font-weight:600;color:var(--text)">'+c.nombre+'</div>'
+      +'<div style="font-size:0.72rem;color:var(--text3);font-family:var(--fm)">'+uds+' uds. - '+comp.length+' ped.</div>'
+      +'</div>';
   }).join('');
   dd.style.display='block';
+  // Delegación de eventos para los items del dropdown
+  dd.onclick=function(e){
+    const el=e.target.closest('[data-cid]');
+    if(el) seleccionarCliente(el.getAttribute('data-cid'));
+  };
 }
 
 function seleccionarCliente(id){
@@ -988,17 +914,12 @@ function seleccionarCliente(id){
   const c=clientes.find(x=>x.id===id);
   document.getElementById('v-search').value=c.nombre;
   document.getElementById('v-dropdown').style.display='none';
-
-  const compras=ventas.filter(v=>v.clienteId===c.id);
-  const uds=compras.reduce((s,v)=>s+v.items.reduce((a,i)=>a+i.qty,0),0);
-  const usdGast=compras.reduce((s,v)=>{ const r=totalUSD(v.total,v.fecha); return s+(r?r.usd:0); },0);
-
+  const comp=ventas.filter(v=>v.clienteId===c.id);
+  const uds=comp.reduce((s,v)=>s+v.items.reduce((a,i)=>a+i.qty,0),0);
   document.getElementById('vci-nom').textContent=c.nombre;
-  document.getElementById('vci-det').textContent=[c.tel,c.email,c.dir].filter(Boolean).join(' · ')||'Sin datos de contacto';
-  document.getElementById('vci-stats').textContent=`${compras.length} pedidos · ${uds} uds. compradas · ${fmtUSD(usdGast)} USD blue histórico`;
+  document.getElementById('vci-stats').textContent=(c.prov&&c.prov!=='nulo'?c.prov+' - ':'')+comp.length+' pedidos - '+uds+' uds.';
   document.getElementById('v-cli-info').style.display='block';
 }
-
 function limpiarCliente(){
   clienteSelId=null;
   document.getElementById('v-search').value='';
@@ -1020,7 +941,7 @@ function renderItems(){
     <div class="vitem">
       <select onchange="items[${i}].pid=this.value;calcTotal()">
         <option value="">— Producto —</option>
-        ${productos.map(p=>`<option value="${p.id}"${it.pid===p.id?' selected':''}>${p.nombre} · ${fmt(p.precio)}</option>`).join('')}
+        ${productos.filter(p=>p.stock>0).map(p=>`<option value="${p.id}"${it.pid===p.id?' selected':''}>${p.nombre} - ${fmt(p.precio)}</option>`).join('')}
       </select>
       <input type="number" min="1" value="${it.qty}" onchange="items[${i}].qty=Math.max(1,+this.value);calcTotal()">
       <button class="vdel" onclick="removeItem(${i})">×</button>
@@ -1030,6 +951,18 @@ function renderItems(){
 
 function addItem(){ items.push({pid:'',qty:1}); renderItems(); }
 function removeItem(i){ if(items.length===1){ items=[{pid:'',qty:1}]; } else { items.splice(i,1); } renderItems(); }
+
+function calcDescuento(){
+  const ingresado=parseFloat(document.getElementById('v-ingresado').value)||0;
+  let sub=0;
+  items.forEach(it=>{const p=productos.find(x=>x.id===it.pid);if(p)sub+=p.precio*it.qty;});
+  let desc=0;
+  if(sub>0&&ingresado>0&&ingresado<sub){desc=Math.round((1-ingresado/sub)*100);}
+  document.getElementById('v-desc').value=desc;
+  const dd=document.getElementById('v-desc-display');
+  if(dd){dd.textContent=desc>0?desc+'%':'0%';dd.style.color=desc>0?'var(--brown2)':'var(--text3)';}
+  calcTotal();
+}
 
 function calcTotal(){
   let sub=0;
@@ -1075,12 +1008,15 @@ function registrarVenta(){
   itemsData.forEach(it=>{ const p=productos.find(x=>x.id===it.prodId); if(p) p.stock=Math.max(0,p.stock-it.qty); });
 
   const d=parseFloat(document.getElementById('v-desc').value)||0;
+  const totalFinal=calcTotal();
+  const usdMomento=blueHoy>0?Math.round(totalFinal/blueHoy*100)/100:null;
   ventas.push({
-    id:uid(),_ts:Date.now(),fecha:now(),
+    id:uid(),_ts:Date.now(),fecha:(()=>{const fd=document.getElementById('v-fecha').value;if(fd){const p=fd.split('-');return p[2]+'/'+p[1]+'/'+p[0];}return now();})(),
     clienteId:cliId,cliente:nom,tel,email,dir,
     items:itemsData,
     pago:document.getElementById('v-pago').value,
-    descuento:d,total:calcTotal(),
+    descuento:d,total:totalFinal,
+    usdRegistrado:usdMomento,blueAlMomento:blueHoy,
     notas:document.getElementById('v-notas').value.trim()
   });
 
@@ -1099,77 +1035,72 @@ function limpiarVenta(){
   renderItems();
 }
 
-// ══ CLIENTES ══
+// == CLIENTES ==
 function renderCli(){
   const q=(document.getElementById('q-cli').value||'').toLowerCase();
-  const lista = clientes
+  const lista=clientes
     .filter(c=>[c.nombre,c.prov||''].some(x=>x.toLowerCase().includes(q)))
     .map(c=>{
-      const comp = ventas.filter(v=>v.clienteId===c.id);
-      const uds  = comp.reduce((s,v)=>s+v.items.reduce((a,i)=>a+i.qty,0),0);
-      const usd  = comp.reduce((s,v)=>{ const r=totalUSD(v.total,v.fecha); return s+(r?r.usd:0); },0);
-      return { ...c, _comp:comp.length, _uds:uds, _usd:usd };
+      const comp=ventas.filter(v=>v.clienteId===c.id);
+      const uds=comp.reduce((s,v)=>s+v.items.reduce((a,i)=>a+i.qty,0),0);
+      const usd=comp.reduce((s,v)=>{const r=totalUSD(v.total,v.fecha);return s+(r?r.usd:0);},0);
+      return{...c,_comp:comp.length,_uds:uds,_usd:usd};
     })
-    .sort((a,b)=>b._uds - a._uds);
-
+    .sort((a,b)=>b._uds-a._uds);
   const tb=document.getElementById('t-cli');
-  if(!lista.length){ tb.innerHTML='<tr><td colspan="6" class="empty">Sin clientes registrados</td></tr>'; return; }
-
+  if(!lista.length){tb.innerHTML='<tr><td colspan="6" class="empty">Sin clientes</td></tr>';return;}
   tb.innerHTML=lista.map((c,i)=>{
-    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
-    const rank  = medal || `<span style="font-family:var(--fm);font-size:0.72rem;color:var(--text3)">${i+1}</span>`;
-    const prov  = c.prov || '—';
-    return `<tr>
-      <td style="text-align:center">${rank}</td>
-      <td><strong style="font-size:0.88rem">${c.nombre}</strong></td>
-      <td style="font-size:0.8rem;color:var(--text2)">${prov}</td>
-      <td style="text-align:center"><span class="badge bbl">${c._comp} pedido${c._comp!==1?'s':''}</span></td>
-      <td style="text-align:center;font-family:var(--fm);font-size:0.85rem;color:var(--text)">${c._uds.toLocaleString('es-AR')}</td>
-      <td style="text-align:right">
-        <button class="btn btn-sm btn-ghost" onclick="abrirPanelCli('${c.id}')" style="font-size:0.72rem;padding:0.28rem 0.65rem">Ver más ›</button>
-      </td>
-    </tr>`;
+    const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+    const rank=medal||('<span style="font-family:var(--fm);font-size:0.72rem;color:var(--text3)">'+( i+1)+'</span>');
+    const prov=c.prov||'—';
+    return '<tr>'
+      +'<td style="text-align:center">'+rank+'</td>'
+      +'<td><strong style="font-size:0.88rem">'+c.nombre+'</strong></td>'
+      +'<td style="font-size:0.8rem;color:var(--text2)">'+prov+'</td>'
+      +'<td style="text-align:center"><span class="badge bbl">'+c._comp+' pedido'+(c._comp!==1?'s':'')+'</span></td>'
+      +'<td style="text-align:center;font-family:var(--fm);font-size:0.85rem;color:var(--text)">'+c._uds.toLocaleString('es-AR')+'</td>'
+      +'<td style="text-align:right"><button class="btn btn-sm btn-ghost" data-pid="'+c.id+'" style="font-size:0.72rem;padding:0.28rem 0.65rem">Ver mas</button></td>'
+      +'</tr>';
   }).join('');
+  // Delegación clicks
+  tb.onclick=function(e){
+    const btn=e.target.closest('[data-pid]');
+    if(btn) abrirPanelCli(btn.getAttribute('data-pid'));
+  };
 }
 
 function abrirPanelCli(id){
-  const c = clientes.find(x=>x.id===id);
+  const c=clientes.find(x=>x.id===id);
   if(!c) return;
-  const comp   = ventas.filter(v=>v.clienteId===c.id);
-  const uds    = comp.reduce((s,v)=>s+v.items.reduce((a,i)=>a+i.qty,0),0);
-  const usdTot = comp.reduce((s,v)=>{ const r=totalUSD(v.total,v.fecha); return s+(r?r.usd:0); },0);
-  const arshoy = Math.round(usdTot * 1400);
-  const prov   = c.prov || '';
-  const ciudad = c.ciudad || '';
-  const loc    = ciudad && ciudad !== prov ? ciudad + ' · ' + prov : prov || '—';
-
-  document.getElementById('pcli-nombre').textContent  = c.nombre;
-  document.getElementById('pcli-loc').textContent     = loc;
-  document.getElementById('pcli-pedidos').textContent = comp.length.toLocaleString('es-AR');
-  document.getElementById('pcli-uds').textContent     = uds.toLocaleString('es-AR');
-  document.getElementById('pcli-usd').textContent     = usdTot>0 ? fmtUSD(usdTot) : '—';
-  document.getElementById('pcli-ars').textContent     = arshoy>0 ? fmt(arshoy)     : '—';
-
-  const hist = [...comp].sort((a,b)=>b._ts-a._ts);
-  document.getElementById('pcli-historial').innerHTML = hist.length
-    ? hist.map(v=>{
-        const udsV = v.items.reduce((s,i)=>s+i.qty,0);
-        const usdV = totalUSD(v.total, v.fecha);
-        const vend = (v.notas||'').replace('Vendedor: ','');
-        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:0.55rem 0;border-bottom:1px solid var(--line)">
-          <div>
-            <div style="font-size:0.82rem;font-weight:600;color:var(--text)">${v.fecha}</div>
-            <div style="font-size:0.68rem;color:var(--text3);margin-top:0.1rem">${udsV} unidades · ${vend}</div>
-          </div>
-          <div style="text-align:right;flex-shrink:0;margin-left:0.8rem">
-            <div style="font-family:var(--fm);font-size:0.82rem;color:var(--yellow)">${v.total>0?fmt(Math.round(v.total)):'—'}</div>
-            ${usdV?`<div style="font-size:0.67rem;color:var(--green2);font-family:var(--fm)">${fmtUSD(usdV.usd)}</div>`:''}
-          </div>
-        </div>`;
+  const comp=ventas.filter(v=>v.clienteId===c.id);
+  const uds=comp.reduce((s,v)=>s+v.items.reduce((a,i)=>a+i.qty,0),0);
+  const usdTot=comp.reduce((s,v)=>{const r=totalUSD(v.total,v.fecha);return s+(r?r.usd:0);},0);
+  const arshoy=Math.round(usdTot*blueHoy);
+  const prov=c.prov||'';
+  const ciudad=c.ciudad||'';
+  const loc=ciudad&&ciudad!==prov?ciudad+' - '+prov:prov||'—';
+  document.getElementById('pcli-nombre').textContent=c.nombre;
+  document.getElementById('pcli-loc').textContent=loc;
+  document.getElementById('pcli-pedidos').textContent=comp.length.toLocaleString('es-AR');
+  document.getElementById('pcli-uds').textContent=uds.toLocaleString('es-AR');
+  document.getElementById('pcli-usd').textContent=usdTot>0?fmtUSD(usdTot):'—';
+  document.getElementById('pcli-ars').textContent=arshoy>0?fmt(arshoy):'—';
+  const hist=[...comp].sort((a,b)=>b._ts-a._ts);
+  document.getElementById('pcli-historial').innerHTML=hist.length
+    ?hist.map(v=>{
+        const udsV=v.items.reduce((s,i)=>s+i.qty,0);
+        const usdV=totalUSD(v.total,v.fecha);
+        const vend=(v.notas||'').replace('Vendedor: ','');
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:0.55rem 0;border-bottom:1px solid var(--line)">'
+          +'<div><div style="font-size:0.82rem;font-weight:600;color:var(--text)">'+v.fecha+'</div>'
+          +'<div style="font-size:0.68rem;color:var(--text3);margin-top:0.1rem">'+udsV+' unidades - '+vend+'</div></div>'
+          +'<div style="text-align:right;flex-shrink:0;margin-left:0.8rem">'
+          +'<div style="font-family:var(--fm);font-size:0.82rem;color:var(--yellow)">'+(v.total>0?fmt(Math.round(v.total)):'—')+'</div>'
+          +(usdV?'<div style="font-size:0.67rem;color:var(--green2);font-family:var(--fm)">'+fmtUSD(usdV.usd)+'</div>':'')
+          +'</div></div>';
       }).join('')
-    : '<div style="color:var(--text3);font-size:0.82rem;padding:0.5rem 0">Sin compras registradas</div>';
-
-  document.getElementById('pcli-btn-edit').onclick = ()=>{ cerrarPanelCli(); setTimeout(()=>editCli(id),150); };
+    :'<div style="color:var(--text3);font-size:0.82rem;padding:0.5rem 0">Sin compras registradas</div>';
+  document.getElementById('pcli-btn-edit').onclick=function(){cerrarPanelCli();setTimeout(function(){editCli(id);},150);};
   document.getElementById('panel-cli').style.display='flex';
 }
 
@@ -1275,7 +1206,7 @@ function renderInv(){
 
 // PROYECCIONES ────────────────────────────────────────────
 function renderProyecciones(){
-  const BLUE = 1400;
+  const BLUE = blueHoy;
   const stockTotal = productos.reduce((s,p)=>s+p.stock, 0);
   const grid = document.getElementById('proj-grid');
   if(!grid) return;
@@ -1433,29 +1364,12 @@ function fmtFechaCorta(f){
   return meses[parseInt(p[1],10)-1]+' '+p[2].slice(-2);
 }
 
-function autoSlash(el){
-  let v=el.value.replace(/\D/g,'');
-  if(v.length>=5) v=v.slice(0,2)+'/'+v.slice(2,4)+'/'+v.slice(4,8);
-  else if(v.length>=3) v=v.slice(0,2)+'/'+v.slice(2);
-  el.value=v;
-}
-function parseFechaFiltro(s){
-  if(!s||s.length<10) return null;
-  const p=s.split('/');
-  if(p.length!==3||p[2].length!==4) return null;
-  const d=new Date(+p[2],+p[1]-1,+p[0]);
-  return isNaN(d)?null:d;
-}
-function limpiarFechas(){
-  document.getElementById('f-desde').value='';
-  document.getElementById('f-hasta').value='';
-  renderHist();
-}
 function renderHist(){
   const q=(document.getElementById('q-ven').value||'').toLowerCase();
   const fp=document.getElementById('f-pago').value;
-  const desde=parseFechaFiltro(document.getElementById('f-desde').value);
-  const hasta=parseFechaFiltro(document.getElementById('f-hasta').value);
+  const fdEl=document.getElementById('f-desde');const fhEl=document.getElementById('f-hasta');
+  const desde=fdEl?parseFechaFiltro(fdEl.value):null;
+  const hasta=fhEl?parseFechaFiltro(fhEl.value):null;
   const list=[...ventas].reverse().filter(v=>{
     const mq=v.cliente.toLowerCase().includes(q)||v.items.some(i=>i.nombre.toLowerCase().includes(q));
     const mp=!fp||v.pago===fp;
@@ -1475,9 +1389,10 @@ function renderHist(){
       <td style="font-size:0.82rem;color:var(--text2);white-space:nowrap">${fmtFechaCorta(v.fecha)}</td>
       <td style="font-size:0.82rem;color:var(--text);white-space:nowrap">${v.cliente}</td>
       <td style="font-size:0.82rem;color:var(--text);white-space:nowrap">${uds} ud${v.descuento>0?` <span style="font-size:0.7rem;color:var(--brown2)">-${v.descuento}%</span>`:''}</td>
-      <td style="white-space:nowrap;font-family:var(--fm);font-size:0.82rem;color:var(--green2);font-weight:600">${usdR?fmtUSD(usdR.usd):'—'}</td>
+      <td style="font-size:0.82rem;font-family:var(--fm);color:var(--green2);font-weight:600;white-space:nowrap">${usdR?fmtUSD(usdR.usd):'—'}</td>
       <td style="white-space:nowrap"><span class="badge bb" style="font-size:0.58rem">${v.pago}</span></td>
       <td style="white-space:nowrap"><button class="btn btn-sm btn-ghost" onclick="verDetalle('${v.id}')" style="padding:0.2rem 0.5rem;font-size:0.68rem">Ver</button></td>
+      <td style="white-space:nowrap"><button onclick="editarVenta('${v.id}')" style="background:none;border:none;cursor:pointer;font-size:0.75rem;color:var(--text3);padding:0.2rem 0.4rem" title="Editar">✏</button></td>
     </tr>`;
   }).join('');
 }
@@ -1566,6 +1481,8 @@ const BLUE = {
   '2025-05':1360,'2025-06':1380,'2026-01':1400,'2026-02':1410,'2026-03':1390,'2026-04':1380,
 };
 const BLUE_HOY = BLUE['2026-04'];
+let blueHoy = BLUE_HOY;
+function actualizarBlue(v){const n=parseInt(v);if(n>0)blueHoy=n;}
 
 function blueKey(fechaStr){
   if(!fechaStr) return null;
@@ -1597,6 +1514,48 @@ function usdSpan(pesos, fechaStr){
 
 
 
+// ══ EDITAR VENTA ══
+let _editVentaId = null;
+function editarVenta(id){
+  const v = ventas.find(x=>x.id===id);
+  if(!v) return;
+  _editVentaId = id;
+  document.getElementById('me-cliente').value = v.cliente;
+  document.getElementById('me-fecha').value = v.fecha;
+  document.getElementById('me-pago').value = v.pago;
+  document.getElementById('me-qty').value = v.items[0]?.qty||0;
+  document.getElementById('me-precio').value = v.items[0]?.precio||0;
+  document.getElementById('me-notas').value = v.notas||'';
+  document.getElementById('m-edit-venta').classList.add('open');
+}
+function guardarEdicionVenta(){
+  const v = ventas.find(x=>x.id===_editVentaId);
+  if(!v) return;
+  const qty = parseInt(document.getElementById('me-qty').value)||1;
+  const precio = parseFloat(document.getElementById('me-precio').value)||0;
+  v.cliente = document.getElementById('me-cliente').value.trim();
+  v.fecha   = document.getElementById('me-fecha').value.trim();
+  v.pago    = document.getElementById('me-pago').value;
+  v.notas   = document.getElementById('me-notas').value.trim();
+  v.items[0].qty      = qty;
+  v.items[0].precio   = precio;
+  v.items[0].subtotal = qty * precio;
+  v.total = qty * precio * (1 - (v.descuento||0)/100);
+  save();
+  cerrar('m-edit-venta');
+  renderHist();
+  toast('Venta actualizada','ok');
+}
+function eliminarVenta(){
+  if(!confirm('Eliminar esta venta?')) return;
+  ventas = ventas.filter(x=>x.id!==_editVentaId);
+  save();
+  cerrar('m-edit-venta');
+  renderHist();
+  renderDash();
+  toast('Venta eliminada','err');
+}
+
 // ══ CSV ══
 function exportCSV(){
   if(!ventas.length){ toast('No hay ventas para exportar','err'); return; }
@@ -1615,40 +1574,27 @@ document.querySelectorAll('.modal-ov').forEach(m=>m.addEventListener('click',e=>
 
 // ══ CARGA DE HISTÓRICO ══
 function cargarHistorico(){
+  if(localStorage.getItem('mb_cargado')&&ventas.length>0) return;
 
   const PROD_ID = productos[0]?.id || 'hist';
 
-  // hc = registrar cliente de la BD
-  function hc(id, nombre, ciudad, provincia){
-    const existing = clientes.find(x=>x.nombre.toLowerCase()===nombre.toLowerCase());
-    if(!existing){
-      clientes.push({id:'bd_'+id, bdId:id, nombre, tel:'', email:'', dir:'',
-        ciudad, prov:provincia, notas:'', _ts:id});
-    }
+  function hc(id,nombre,ciudad,provincia){
+    if(!clientes.find(x=>x.nombre.toLowerCase()===nombre.toLowerCase()))
+      clientes.push({id:'bd_'+id,bdId:id,nombre,tel:'',email:'',dir:'',ciudad,prov:provincia,notas:'',_ts:id});
+  }
+  function hv(cliente,vendedor,qty,precio,fecha,provincia,ciudad){
+    const ts=new Date(fecha.split('/').reverse().join('-')).getTime()||Date.now();
+    const total=qty*precio;
+    let c=clientes.find(x=>x.nombre.toLowerCase()===cliente.toLowerCase());
+    if(!c){c={id:uid(),nombre:cliente,tel:'',email:'',dir:'',ciudad:ciudad||'',prov:provincia||'',notas:'Vendedor: '+vendedor,_ts:ts};clientes.push(c);}
+    else{if(!c.prov&&provincia)c.prov=provincia;if(!c.ciudad&&ciudad)c.ciudad=ciudad;}
+    ventas.push({id:uid(),_ts:ts,fecha,clienteId:c.id,cliente,tel:'',email:'',dir:'',prov:provincia||'',ciudad:ciudad||'',
+      items:[{prodId:PROD_ID,nombre:'Cepillo Bambu',precio,qty,subtotal:total}],
+      pago:'Billetera Virtual',descuento:0,total,notas:'Vendedor: '+vendedor});
   }
 
-  // hv = registrar venta
-  function hv(cliente, vendedor, qty, precio, fecha){
-    const ts = new Date(fecha.split('/').reverse().join('-')).getTime() || (Date.now() - Math.random()*1e10);
-    const total = qty * precio;
-    let c = clientes.find(x=>x.nombre.toLowerCase()===cliente.toLowerCase());
-    if(!c){
-      c={id:uid(),nombre:cliente,tel:'',email:'',dir:'',prov:'',ciudad:'',
-         notas:`Vendedor: ${vendedor}`,_ts:ts};
-      clientes.push(c);
-    }
-    ventas.push({
-      id:uid(), _ts:ts, fecha,
-      clienteId:c.id, cliente, tel:'', email:'', dir:'',
-      prov:c.prov||'', ciudad:c.ciudad||'',
-      items:[{prodId:PROD_ID,nombre:'Cepillo Bambú',precio,qty,subtotal:total}],
-      pago:'Efectivo', descuento:0, total,
-      notas:`Vendedor: ${vendedor}`
-    });
-  }
-
-  // ── CLIENTES DE LA BASE DE DATOS ──
-  hc(0,'Ventas Unitarias','Buenos Aires','Buenos Aires');
+  // -- CLIENTES --
+  hc(0,'Ventas Unitarias','','');
   hc(1,'Venturini Camila','Banfield','Buenos Aires');
   hc(2,'Pozniak Adriana','Caba','Buenos Aires');
   hc(3,'Rocio Julia','Banfield','Buenos Aires');
@@ -1656,8 +1602,8 @@ function cargarHistorico(){
   hc(5,'Valeria Huenan','Viedma','Rio Negro');
   hc(6,'Vanesa Silvina','','Buenos Aires');
   hc(7,'Camila Grecco','Banfield','Buenos Aires');
-  hc(8,'Capoeira','Buenos Aires','Buenos Aires');
-  hc(9,'Sandra Fraga','Buenos Aires','Buenos Aires');
+  hc(8,'Capoeira','','');
+  hc(9,'Sandra Fraga','','');
   hc(10,'Tamara Chilindron','La Plata','Buenos Aires');
   hc(11,'Nadia Romanowicz','Zarate','Buenos Aires');
   hc(12,'Martita Marino','Mar Del Plata','Buenos Aires');
@@ -1670,13 +1616,13 @@ function cargarHistorico(){
   hc(19,'Dara Elysium','Plaza Clucellas','Santa Fe');
   hc(20,'Ariadna Camara','El Bolson','Rio Negro');
   hc(21,'Veronica Vizzari','Lomas De Zamora','Buenos Aires');
-  hc(22,'Patricia Catalano','Buenos Aires','Buenos Aires');
+  hc(22,'Patricia Catalano','','');
   hc(23,'Veronica Couto','Caba','Buenos Aires');
   hc(24,'Gloria Kranevitter','Crespo','Entre Rios');
   hc(25,'Natalia Parodi','Lomas De Zamora','Buenos Aires');
   hc(26,'Pablo Ravinsara','Caba','Buenos Aires');
   hc(27,'Roxana Rothe','Potrero Los Funes','San Luis');
-  hc(28,'Cliente Nany','Buenos Aires','Buenos Aires');
+  hc(28,'Cliente Nany','','');
   hc(29,'Cano Yolanda','Empedrado','Corrientes');
   hc(30,'Melody Aguilar','Sarandi','Buenos Aires');
   hc(31,'Norma Marfil','Perito Moreno','Santa Cruz');
@@ -1719,7 +1665,7 @@ function cargarHistorico(){
   hc(68,'Silvina Del Ministro','Viedma','Rio Negro');
   hc(69,'Monica Aap','Cutral Co','Neuquen');
   hc(70,'Hugo','Banfield','Buenos Aires');
-  hc(71,'Mercado Libre','Buenos Aires','Buenos Aires');
+  hc(71,'Mercado Libre','','');
   hc(72,'Barbara Noelia Petito','La Plata','Buenos Aires');
   hc(73,'Jorge Rocha','Jujuy','Jujuy');
   hc(74,'Carla Espinosa','Comodoro Rivadavia','Chubut');
@@ -1752,204 +1698,204 @@ function cargarHistorico(){
   hc(101,'Julieta Santone','Buenos Aires','Buenos Aires');
   hc(102,'Camila Ximena Vega','Buenos Aires','Buenos Aires');
   hc(103,'Katerina Gruber','Buenos Aires','Buenos Aires');
-  hc(104,'Carolina Marchiso','Villa General Belgrano','Cordoba');
+  hc(104,'Carolina Marchisio','Villa General Belgrano','Cordoba');
   hc(105,'Priscila Y Diego','Buenos Aires','Buenos Aires');
   hc(106,'Aros Libre','Buenos Aires','Buenos Aires');
 
 
-  // ── 2020.0 ──
-  hv('Venturini Camila','Tomas Juarez',50,91.4,'08/10/2020');
-  hv('Pozniak Adriana','Tomas Juarez',50,115.7,'15/10/2020');
-  hv('Rocio Julia','Tomas Juarez',50,115.5,'16/10/2020');
-  hv('Martina Valles','Tomas Juarez',60,91.4,'19/10/2020');
-  hv('Valeria Huenan','Tomas Juarez',50,115.5,'22/10/2020');
-  hv('Vanesa Silvina','Felix Tesei',50,120.9,'26/10/2020');
-  hv('Camila Grecco','Tomas Juarez',50,129.4,'09/12/2020');
-  hv('Capoeira','Felix Tesei',50,138,'09/12/2020');
+  // -- 2020 --
+  hv('Venturini Camila','Tomas Juarez',50,91.4,'08/10/2020','Buenos Aires','Banfield');
+  hv('Pozniak Adriana','Tomas Juarez',50,115.7,'15/10/2020','Buenos Aires','Caba');
+  hv('Rocio Julia','Tomas Juarez',50,115.5,'16/10/2020','Buenos Aires','Banfield');
+  hv('Martina Valles','Tomas Juarez',60,91.4,'19/10/2020','Cordoba','Carlos Paz');
+  hv('Valeria Huenan','Tomas Juarez',50,115.5,'22/10/2020','Rio Negro','Viedma');
+  hv('Vanesa Silvina','Felix Tesei',50,120.9,'26/10/2020','Buenos Aires','');
+  hv('Camila Grecco','Tomas Juarez',50,129.4,'09/12/2020','Buenos Aires','Banfield');
+  hv('Capoeira','Felix Tesei',50,138,'09/12/2020','Buenos Aires','');
 
-  // ── 2021.0 ──
-  hv('Sandra Fraga','Felix Tesei',50,103.6,'03/02/2021');
-  hv('Tamara Chilindron','Tomas Juarez',20,107.4,'14/02/2021');
-  hv('Nadia Romanowicz','Felix Tesei',60,103.6,'16/02/2021');
-  hv('Martita Marino','Tomas Juarez',20,107.4,'18/02/2021');
-  hv('Nadia Romanowicz','Felix Tesei',60,103.6,'22/02/2021');
-  hv('Tamara Chilindron','Tomas Juarez',25,107.4,'23/02/2021');
-  hv('Gabriela Shurman','Tomas Juarez',20,107.4,'28/02/2021');
-  hv('Lola Fusco','Tomas Juarez',40,107.4,'01/03/2021');
-  hv('Douglas Varguillas','Tomas Juarez',126,97.6,'08/03/2021');
-  hv('Juan Zureta','Felix Tesei',50,103.6,'09/03/2021');
-  hv('Venturini Camila','Tomas Juarez',40,107.4,'09/03/2021');
-  hv('Rocio Quiroga','Tomas Juarez',20,107.4,'10/03/2021');
-  hv('Marcela Viviana Peralta','Tomas Juarez',50,107.4,'10/03/2021');
-  hv('Juan Zureta','Felix Tesei',60,107.4,'11/03/2021');
-  hv('Dara Elysium','Tomas Juarez',20,107.4,'12/03/2021');
-  hv('Nadia Romanowicz','Felix Tesei',60,103.6,'14/03/2021');
-  hv('Ariadna Camara','Tomas Juarez',60,107.4,'17/03/2021');
-  hv('Veronica Vizzari','Tomas Juarez',50,118.5,'25/03/2021');
-  hv('Patricia Catalano','Tomas Juarez',25,128,'29/03/2021');
-  hv('Ventas Unitarias','Tomas Juarez',23,250,'26/03/2021');
-  hv('Veronica Couto','Tomas Juarez',40,118.5,'05/04/2021');
-  hv('Juan Zureta','Felix Tesei',100,107.4,'09/04/2021');
-  hv('Gloria Kranevitter','Tomas Juarez',60,118.5,'12/04/2021');
-  hv('Natalia Parodi','Tomas Juarez',20,129.3,'13/04/2021');
-  hv('Ariadna Camara','Tomas Juarez',200,100,'23/04/2021');
-  hv('Ventas Unitarias','Tomas Juarez',10,250,'24/04/2021');
-  hv('Pablo Ravinsara','Tomas Juarez',40,118.5,'03/06/2021');
-  hv('Roxana Rothe','Tomas Juarez',40,118.5,'08/06/2021');
-  hv('Venturini Camila','Tomas Juarez',50,118.5,'28/06/2021');
-  hv('Ventas Unitarias','Tomas Juarez',2,250,'28/06/2021');
-  hv('Norma Marfil','Nadia Romanowicz',45,91.3,'05/07/2021');
-  hv('Martina Polola','Nadia Romanowicz',20,91.3,'05/07/2021');
-  hv('Cliente Nany','Nadia Romanowicz',30,91.3,'08/07/2021');
-  hv('Roxana Rothe','Tomas Juarez',40,118.5,'12/07/2021');
-  hv('Pablo Ravinsara','Tomas Juarez',40,118.5,'12/07/2021');
-  hv('Cliente Nany','Nadia Romanowicz',12,91.3,'15/07/2021');
-  hv('Cliente Nany','Nadia Romanowicz',41,91.3,'15/07/2021');
-  hv('Cliente Nany','Nadia Romanowicz',300,83.4,'21/07/2021');
-  hv('Nadia Romanowicz','Tomas Juarez',20,91.3,'22/07/2021');
-  hv('Rosa Eliana','Nadia Romanowicz',60,91.3,'22/07/2021');
-  hv('Sofia Tinto','Nadia Romanowicz',25,91.3,'24/07/2021');
-  hv('Tatiana Turnes','Nadia Romanowicz',45,91.3,'05/08/2021');
-  hv('Ventas Unitarias','Tomas Juarez',6,250,'09/08/2021');
-  hv('Claudia Urquiza','Nadia Romanowicz',20,91.3,'12/08/2021');
-  hv('Rocio Leal','Nadia Romanowicz',60,91.3,'12/08/2021');
-  hv('Aurora Margarita Corral','Nadia Romanowicz',60,91.3,'13/08/2021');
-  hv('Pozzetti Maria Belen','Nadia Romanowicz',30,91.3,'19/08/2021');
-  hv('Cliente Nany','Nadia Romanowicz',20,91.3,'19/08/2021');
-  hv('Cliente Nany','Nadia Romanowicz',30,91.3,'20/08/2021');
-  hv('Ana Isabel Parodi','Nadia Romanowicz',80,91.3,'20/08/2021');
-  hv('Nadia Giammaria','Nadia Romanowicz',40,91.3,'21/08/2021');
-  hv('Hilda Anca','Nadia Romanowicz',30,91.3,'22/08/2021');
-  hv('Soledad Ruiz','Nadia Romanowicz',40,91.3,'22/08/2021');
-  hv('Adriana Oron','Nadia Romanowicz',35,91.3,'22/08/2021');
-  hv('Ariadna Camara','Tomas Juarez',60,120,'22/08/2021');
-  hv('Sofia Tinto','Nadia Romanowicz',41,91.3,'22/08/2021');
-  hv('Camila Reales','Nadia Romanowicz',30,91.3,'22/08/2021');
-  hv('Giselle Ortiz','Nadia Romanowicz',30,91.3,'23/08/2021');
-  hv('Florencia Preciado','Nadia Romanowicz',30,91.3,'24/08/2021');
-  hv('Elisa Evelin Ojeda','Nadia Romanowicz',30,91.3,'29/08/2021');
-  hv('Cliente Nany','Nadia Romanowicz',260,83.4,'08/09/2021');
-  hv('Andrea Paice','Nadia Romanowicz',40,91.3,'08/09/2021');
-  hv('Veronica Bertone','Nadia Romanowicz',20,91.3,'08/09/2021');
-  hv('Pablo Ravinsara','Tomas Juarez',35,140,'09/09/2021');
-  hv('Cliente Nany','Nadia Romanowicz',30,91.3,'09/09/2021');
-  hv('Gisela Tarabini','Nadia Romanowicz',20,91.3,'14/09/2021');
-  hv('Cliente Nany','Nadia Romanowicz',30,91.3,'15/09/2021');
-  hv('Celeste Mangiardi','Nadia Romanowicz',20,91.3,'22/09/2021');
-  hv('Cristina Gutierrez','Nadia Romanowicz',40,91.3,'27/09/2021');
-  hv('Alfredo Villareal','Nadia Romanowicz',30,91.3,'27/09/2021');
-  hv('Gisela Tarabini','Nadia Romanowicz',40,91.3,'27/09/2021');
-  hv('Nadia Romanowicz','Tomas Juarez',60,91.3,'29/09/2021');
-  hv('Cliente Nany','Nadia Romanowicz',60,91.3,'08/10/2021');
-  hv('Cliente Nany','Nadia Romanowicz',30,96.3,'16/10/2021');
-  hv('Cano Yolanda','Tomas Juarez',25,140,'18/10/2021');
-  hv('Marina Coller','Nadia Romanowicz',40,91.3,'02/11/2021');
-  hv('Andrea Paice','Nadia Romanowicz',30,91.3,'02/11/2021');
-  hv('Valeria Noemi Berrios','Nadia Romanowicz',20,91.3,'02/11/2021');
-  hv('Angelica Gauna','Nadia Romanowicz',35,91.3,'02/11/2021');
-  hv('Adriana Krawitz','Nadia Romanowicz',30,91.3,'02/11/2021');
-  hv('Soledad Ruiz','Nadia Romanowicz',40,91.3,'02/11/2021');
-  hv('Andrea Gonzales','Nadia Romanowicz',31,91.3,'02/11/2021');
-  hv('Nadia Romanowicz','Tomas Juarez',40,91.3,'03/11/2021');
-  hv('Emiliana Guerra','Nadia Romanowicz',40,91.3,'03/11/2021');
-  hv('Jorgelina Alvarez','Nadia Romanowicz',30,91.3,'03/11/2021');
-  hv('Jorgelina Barrionuevo','Nadia Romanowicz',60,91.3,'03/11/2021');
-  hv('Daira Bujan','Nadia Romanowicz',30,91.3,'04/11/2021');
-  hv('Zulma Perez','Nadia Romanowicz',30,91.3,'05/11/2021');
-  hv('Julieta Perez','Nadia Romanowicz',60,91.3,'10/11/2021');
-  hv('Valeria Huenan','Tomas Juarez',50,72,'11/11/2021');
-  hv('Nair Ricci','Nadia Romanowicz',30,91.3,'12/11/2021');
-  hv('Gisela Vera','Nadia Romanowicz',60,91.3,'19/11/2021');
-  hv('Silvina Del Ministro','Nadia Romanowicz',20,91.3,'23/11/2021');
-  hv('Monica Aap','Nadia Romanowicz',30,91.3,'26/11/2021');
-  hv('Hugo','Nadia Romanowicz',20,91.3,'26/11/2021');
-  hv('Julieta Santone','Nadia Romanowicz',20,91.3,'04/12/2021');
+  // -- 2021 --
+  hv('Sandra Fraga','Felix Tesei',50,103.6,'03/02/2021','Buenos Aires','');
+  hv('Tamara Chilindron','Tomas Juarez',20,107.4,'14/02/2021','Buenos Aires','La Plata');
+  hv('Nadia Romanowicz','Felix Tesei',60,103.6,'16/02/2021','Buenos Aires','Zarate');
+  hv('Martita Marino','Tomas Juarez',20,107.4,'18/02/2021','Buenos Aires','Mar Del Plata');
+  hv('Nadia Romanowicz','Felix Tesei',60,103.6,'22/02/2021','Buenos Aires','Zarate');
+  hv('Tamara Chilindron','Tomas Juarez',25,107.4,'23/02/2021','Buenos Aires','La Plata');
+  hv('Gabriela Shurman','Tomas Juarez',20,107.4,'28/02/2021','Entre Rios','Parana');
+  hv('Lola Fusco','Tomas Juarez',40,107.4,'01/03/2021','Buenos Aires','Lujan');
+  hv('Douglas Varguillas','Tomas Juarez',126,97.6,'08/03/2021','Buenos Aires','San Pedro');
+  hv('Juan Zureta','Felix Tesei',50,103.6,'09/03/2021','Jujuy','Jujuy');
+  hv('Venturini Camila','Tomas Juarez',40,107.4,'09/03/2021','Buenos Aires','Banfield');
+  hv('Rocio Quiroga','Tomas Juarez',20,107.4,'10/03/2021','Mendoza','San Rafael');
+  hv('Marcela Viviana Peralta','Tomas Juarez',50,107.4,'10/03/2021','Buenos Aires','Mar Del Plata');
+  hv('Juan Zureta','Felix Tesei',60,107.4,'11/03/2021','Jujuy','Jujuy');
+  hv('Dara Elysium','Tomas Juarez',20,107.4,'12/03/2021','Santa Fe','Plaza Clucellas');
+  hv('Nadia Romanowicz','Felix Tesei',60,103.6,'14/03/2021','Buenos Aires','Zarate');
+  hv('Ariadna Camara','Tomas Juarez',60,107.4,'17/03/2021','Rio Negro','El Bolson');
+  hv('Veronica Vizzari','Tomas Juarez',50,118.5,'25/03/2021','Buenos Aires','Lomas De Zamora');
+  hv('Patricia Catalano','Tomas Juarez',25,128,'29/03/2021','Buenos Aires','');
+  hv('Ventas Unitarias','Tomas Juarez',23,250,'26/03/2021','Buenos Aires','');
+  hv('Veronica Couto','Tomas Juarez',40,118.5,'05/04/2021','Buenos Aires','Caba');
+  hv('Juan Zureta','Felix Tesei',100,107.4,'09/04/2021','Jujuy','Jujuy');
+  hv('Gloria Kranevitter','Tomas Juarez',60,118.5,'12/04/2021','Entre Rios','Crespo');
+  hv('Natalia Parodi','Tomas Juarez',20,129.3,'13/04/2021','Buenos Aires','Lomas De Zamora');
+  hv('Ariadna Camara','Tomas Juarez',200,100,'23/04/2021','Rio Negro','El Bolson');
+  hv('Ventas Unitarias','Tomas Juarez',10,250,'24/04/2021','Buenos Aires','');
+  hv('Pablo Ravinsara','Tomas Juarez',40,118.5,'03/06/2021','Buenos Aires','Caba');
+  hv('Roxana Rothe','Tomas Juarez',40,118.5,'08/06/2021','San Luis','Potrero Los Funes');
+  hv('Venturini Camila','Tomas Juarez',50,118.5,'28/06/2021','Buenos Aires','Banfield');
+  hv('Ventas Unitarias','Tomas Juarez',2,250,'28/06/2021','Buenos Aires','');
+  hv('Norma Marfil','Nadia Romanowics',45,91.3,'05/07/2021','Santa Cruz','Perito Moreno');
+  hv('Martina Polola','Nadia Romanowics',20,91.3,'05/07/2021','Buenos Aires','Pergamino');
+  hv('Cliente Nany','Nadia Romanowics',30,91.3,'08/07/2021','Buenos Aires','');
+  hv('Roxana Rothe','Tomas Juarez',40,118.5,'12/07/2021','San Luis','Potrero Los Funes');
+  hv('Pablo Ravinsara','Tomas Juarez',40,118.5,'12/07/2021','Buenos Aires','Caba');
+  hv('Cliente Nany','Nadia Romanowics',12,91.3,'15/07/2021','Buenos Aires','');
+  hv('Cliente Nany','Nadia Romanowics',41,91.3,'15/07/2021','Buenos Aires','');
+  hv('Cliente Nany','Nadia Romanowics',300,83.4,'21/07/2021','Buenos Aires','');
+  hv('Nadia Romanowicz','Tomas Juarez',20,91.3,'22/07/2021','Buenos Aires','Zarate');
+  hv('Rosa Eliana','Nadia Romanowics',60,91.3,'22/07/2021','Rio Negro','Cipolletti');
+  hv('Sofia Tinto','Nadia Romanowics',25,91.3,'24/07/2021','San Juan','San Roque');
+  hv('Tatiana Turnes','Nadia Romanowics',45,91.3,'05/08/2021','Buenos Aires','Lanus');
+  hv('Ventas Unitarias','Tomas Juarez',6,250,'09/08/2021','Buenos Aires','');
+  hv('Claudia Urquiza','Nadia Romanowics',20,91.3,'12/08/2021','Buenos Aires','San Martin');
+  hv('Rocio Leal','Nadia Romanowics',60,91.3,'12/08/2021','Buenos Aires','Moreno');
+  hv('Aurora Margarita Corral','Nadia Romanowics',60,91.3,'13/08/2021','La Pampa','Toay');
+  hv('Pozzetti Maria Belen','Nadia Romanowics',30,91.3,'19/08/2021','Buenos Aires','Flores');
+  hv('Cliente Nany','Nadia Romanowics',20,91.3,'19/08/2021','Buenos Aires','');
+  hv('Cliente Nany','Nadia Romanowics',30,91.3,'20/08/2021','Buenos Aires','');
+  hv('Ana Isabel Parodi','Nadia Romanowics',80,91.3,'20/08/2021','Jujuy','San Martin');
+  hv('Nadia Giammaria','Nadia Romanowics',40,91.3,'21/08/2021','Buenos Aires','Caba');
+  hv('Hilda Anca','Nadia Romanowics',30,91.3,'22/08/2021','Buenos Aires','Caba');
+  hv('Soledad Ruiz','Nadia Romanowics',40,91.3,'22/08/2021','Buenos Aires','Mar Del Plata');
+  hv('Adriana Oron','Nadia Romanowics',35,91.3,'22/08/2021','Mendoza','El Challao');
+  hv('Ariadna Camara','Tomas Juarez',60,120,'22/08/2021','Rio Negro','El Bolson');
+  hv('Sofia Tinto','Nadia Romanowics',41,91.3,'22/08/2021','San Juan','San Roque');
+  hv('Camila Reales','Nadia Romanowics',30,91.3,'22/08/2021','Santa Cruz','Piedra Buena');
+  hv('Giselle Ortiz','Nadia Romanowics',30,91.3,'23/08/2021','Buenos Aires','Mar Del Plata');
+  hv('Florencia Preciado','Nadia Romanowics',30,91.3,'24/08/2021','Buenos Aires','Junin');
+  hv('Elisa Evelin Ojeda','Nadia Romanowics',30,91.3,'29/08/2021','Misiones','San Pedro');
+  hv('Cliente Nany','Nadia Romanowics',260,83.4,'08/09/2021','Buenos Aires','');
+  hv('Andrea Paice','Nadia Romanowics',40,91.3,'08/09/2021','Buenos Aires','Mar De Ajo');
+  hv('Veronica Bertone','Nadia Romanowics',20,91.3,'08/09/2021','Buenos Aires','Villa Maria');
+  hv('Pablo Ravinsara','Tomas Juarez',35,140,'09/09/2021','Buenos Aires','Caba');
+  hv('Cliente Nany','Nadia Romanowics',30,91.3,'09/09/2021','Buenos Aires','');
+  hv('Gisela Tarabini','Nadia Romanowics',20,91.3,'14/09/2021','Entre Rios','Parana');
+  hv('Cliente Nany','Nadia Romanowics',30,91.3,'15/09/2021','Buenos Aires','');
+  hv('Celeste Mangiardi','Nadia Romanowics',20,91.3,'22/09/2021','Buenos Aires','General Rodriguez');
+  hv('Cristina Gutierrez','Nadia Romanowics',40,91.3,'27/09/2021','Buenos Aires','Monte Grande');
+  hv('Alfredo Villareal','Nadia Romanowics',30,91.3,'27/09/2021','Buenos Aires','Moron');
+  hv('Gisela Tarabini','Nadia Romanowics',40,91.3,'27/09/2021','Entre Rios','Parana');
+  hv('Nadia Romanowicz','Tomas Juarez',60,91.3,'29/09/2021','Buenos Aires','Zarate');
+  hv('Cliente Nany','Nadia Romanowics',60,91.3,'08/10/2021','Buenos Aires','');
+  hv('Cliente Nany','Nadia Romanowics',30,96.3,'16/10/2021','Buenos Aires','');
+  hv('Cano Yolanda','Tomas Juarez',25,140,'18/10/2021','Corrientes','Empedrado');
+  hv('Marina Coller','Nadia Romanowics',40,91.3,'02/11/2021','Rio Negro','Las Grutas');
+  hv('Andrea Paice','Nadia Romanowics',30,91.3,'02/11/2021','Buenos Aires','Mar De Ajo');
+  hv('Valeria Noemi Berrios','Nadia Romanowics',20,91.3,'02/11/2021','Buenos Aires','Bahia Blanca');
+  hv('Angelica Gauna','Nadia Romanowics',35,91.3,'02/11/2021','Buenos Aires','San Fernando');
+  hv('Adriana Krawitz','Nadia Romanowics',30,91.3,'02/11/2021','Buenos Aires','Haedo');
+  hv('Soledad Ruiz','Nadia Romanowics',40,91.3,'02/11/2021','Buenos Aires','Mar Del Plata');
+  hv('Andrea Gonzales','Nadia Romanowics',31,91.3,'02/11/2021','Tierra Del Fuego','Rio Grande');
+  hv('Nadia Romanowicz','Tomas Juarez',40,91.3,'03/11/2021','Buenos Aires','Zarate');
+  hv('Emiliana Guerra','Nadia Romanowics',40,91.3,'03/11/2021','Entre Rios','Parana');
+  hv('Jorgelina Alvarez','Nadia Romanowics',30,91.3,'03/11/2021','Santa Fe','Funes');
+  hv('Jorgelina Barrionuevo','Nadia Romanowics',60,91.3,'03/11/2021','Buenos Aires','Mar Del Plata');
+  hv('Daira Bujan','Nadia Romanowics',30,91.3,'04/11/2021','Buenos Aires','Moreno');
+  hv('Zulma Perez','Nadia Romanowics',30,91.3,'05/11/2021','Entre Rios','General Ramirez');
+  hv('Julieta Perez','Nadia Romanowics',60,91.3,'10/11/2021','Buenos Aires','San Fernando');
+  hv('Valeria Huenan','Tomas Juarez',50,72,'11/11/2021','Rio Negro','Viedma');
+  hv('Nair Ricci','Nadia Romanowics',30,91.3,'12/11/2021','Buenos Aires','Caba');
+  hv('Gisela Vera','Nadia Romanowics',60,91.3,'19/11/2021','Santa Fe','Rufino');
+  hv('Silvina Del Ministro','Nadia Romanowics',20,91.3,'23/11/2021','Rio Negro','Viedma');
+  hv('Monica Aap','Nadia Romanowics',30,91.3,'26/11/2021','Neuquen','Cutral Co');
+  hv('Hugo','Nadia Romanowics',20,91.3,'26/11/2021','Buenos Aires','Banfield');
+  hv('Julieta Santone','Nadia Romanowics',20,91.3,'04/12/2021','Buenos Aires','Buenos Aires');
 
-  // ── 2022.0 ──
-  hv('Cliente Nany','Nadia Romanowicz',80,91.3,'03/02/2022');
-  hv('Cliente Nany','Nadia Romanowicz',40,91.3,'14/02/2022');
-  hv('Melody Aguilar','Tomas Juarez',20,140,'05/03/2022');
-  hv('Nadia Romanowicz','Tomas Juarez',30,91.3,'22/03/2022');
-  hv('Mercado Libre','Nadia Romanowicz',30,91.3,'25/03/2022');
-  hv('Barbara Noelia Petito','Tomas Juarez',30,133,'30/03/2022');
-  hv('Soledad Ruiz','Nadia Romanowicz',20,91.3,'31/03/2022');
-  hv('Jorge Rocha','Tomas Juarez',250,108.6,'02/04/2022');
-  hv('Carla Espinosa','Tomas Juarez',30,131.8,'04/04/2022');
-  hv('Gisela Tarabini','Tomas Juarez',40,116.9,'15/04/2022');
-  hv('Giselle Ortiz','Tomas Juarez',22,126.42,'18/04/2022');
-  hv('Belen Savid','Tomas Juarez',20,155.05,'22/04/2022');
-  hv('Mercado Libre','Tomas Juarez',20,156,'25/04/2022');
-  hv('Priscila Julieta Garcia Morales','Tomas Juarez',20,152.5,'26/04/2022');
-  hv('Laura Aguzin','Tomas Juarez',20,148.4,'26/04/2022');
-  hv('Ana Mosconi','Tomas Juarez',30,145.9,'26/04/2022');
-  hv('Patricia Scatolaro','Tomas Juarez',20,155.05,'27/04/2022');
-  hv('Sara Reynoso','Tomas Juarez',60,128.4,'27/04/2022');
-  hv('Mercado Libre','Tomas Juarez',50,134.8,'27/04/2022');
-  hv('Romina Rigoni','Tomas Juarez',20,154,'06/05/2022');
-  hv('Rocio Astoroga','Tomas Juarez',60,102.3,'10/05/2022');
-  hv('Martina Peralta','Tomas Juarez',20,155,'14/05/2022');
-  hv('Mercado Libre','Tomas Juarez',20,160,'15/05/2022');
-  hv('Mariana Corrales','Tomas Juarez',20,157.75,'19/05/2022');
-  hv('Gabriela Valls','Tomas Juarez',30,148,'23/05/2022');
-  hv('Maria Julia Vela','Tomas Juarez',60,133,'25/05/2022');
-  hv('Nadia Giammaria','Nadia Romanowicz',60,99,'31/05/2022');
-  hv('Candela Etchetto','Tomas Juarez',20,157,'31/05/2022');
-  hv('Laura Aguzin','Tomas Juarez',20,140,'31/05/2022');
-  hv('Marlene Lopez','Tomas Juarez',20,137,'31/05/2022');
-  hv('Flavia Costa','Tomas Juarez',20,156,'02/06/2022');
-  hv('Daira Bujan','Nadia Romanowicz',30,99,'02/06/2022');
-  hv('Martina Peralta','Tomas Juarez',20,152,'12/06/2022');
-  hv('Rocio Astoroga','Tomas Juarez',40,151,'22/06/2022');
-  hv('Yamila Valeria Mora','Tomas Juarez',60,132,'22/06/2022');
-  hv('Maria Julia Vela','Tomas Juarez',60,131,'22/06/2022');
-  hv('Pablo Ravinsara','Tomas Juarez',40,148,'28/06/2022');
-  hv('Soler Melina','Tomas Juarez',30,150,'11/07/2022');
-  hv('Sebastian Puente','Tomas Juarez',100,127,'13/07/2022');
-  hv('Belen Savid','Tomas Juarez',30,159,'19/07/2022');
-  hv('Candela Etchetto','Tomas Juarez',40,163,'29/07/2022');
-  hv('Sara Reynoso','Tomas Juarez',100,140,'02/08/2022');
-  hv('Fiorella Espru','Tomas Juarez',20,167,'06/08/2022');
-  hv('Veronica Barelli','Tomas Juarez',20,168,'08/08/2022');
-  hv('Rocio Astoroga','Tomas Juarez',40,159,'11/08/2022');
-  hv('Martina Peralta','Tomas Juarez',30,147,'11/08/2022');
-  hv('Maria Sol Fernandez','Tomas Juarez',20,165,'11/08/2022');
-  hv('Gabriela Bustamante','Tomas Juarez',20,158,'13/08/2022');
-  hv('Fabiana Lanaro','Tomas Juarez',20,169,'13/08/2022');
-  hv('Sandra Pettina','Tomas Juarez',20,144,'22/08/2022');
-  hv('Sebastian Puente','Tomas Juarez',100,144,'23/08/2022');
-  hv('Paloma Gancedo','Tomas Juarez',100,133,'24/08/2022');
-  hv('Mercado Libre','Tomas Juarez',20,156,'24/08/2022');
-  hv('Agustina Canovas Rubio','Tomas Juarez',30,150,'27/08/2022');
-  hv('Tatiana Turnes','Tomas Juarez',40,113.25,'13/08/2022');
-  hv('Laura Aguzin','Tomas Juarez',30,158.5,'13/08/2022');
-  hv('Mercado Libre','Tomas Juarez',30,135.8,'13/08/2022');
-  hv('Camila Ximena Vega','Tomas Juarez',20,154,'30/08/2022');
-  hv('Sandra Pettina','Tomas Juarez',20,171.5,'31/08/2022');
+  // -- 2022 --
+  hv('Cliente Nany','Nadia Romanowics',80,91.3,'03/02/2022','Buenos Aires','');
+  hv('Cliente Nany','Nadia Romanowics',40,91.3,'14/02/2022','Buenos Aires','');
+  hv('Melody Aguilar','Tomas Juarez',20,140,'05/03/2022','Buenos Aires','Sarandi');
+  hv('Nadia Romanowicz','Tomas Juarez',30,91.3,'22/03/2022','Buenos Aires','Zarate');
+  hv('Mercado Libre','Nadia Romanowics',30,91.3,'25/03/2022','Buenos Aires','');
+  hv('Barbara Noelia Petito','Tomas Juarez',30,133,'30/03/2022','Buenos Aires','La Plata');
+  hv('Soledad Ruiz','Nadia Romanowics',20,91.3,'31/03/2022','Buenos Aires','Mar Del Plata');
+  hv('Jorge Rocha','Tomas Juarez',250,108.6,'02/04/2022','Jujuy','Jujuy');
+  hv('Carla Espinosa','Tomas Juarez',30,131.8,'04/04/2022','Chubut','Comodoro Rivadavia');
+  hv('Gisela Tarabini','Tomas Juarez',40,116.9,'15/04/2022','Entre Rios','Parana');
+  hv('Giselle Ortiz','Tomas Juarez',22,126.42,'18/04/2022','Buenos Aires','Mar Del Plata');
+  hv('Belen Savid','Tomas Juarez',20,155.05,'22/04/2022','La Pampa','General Pico');
+  hv('Mercado Libre','Tomas Juarez',20,156,'25/04/2022','Buenos Aires','');
+  hv('Priscila Julieta Garcia Morales','Tomas Juarez',20,152.5,'26/04/2022','Mendoza','Las Heras');
+  hv('Laura Aguzin','Tomas Juarez',20,148.4,'26/04/2022','Buenos Aires','Castelar');
+  hv('Ana Mosconi','Tomas Juarez',30,145.9,'26/04/2022','Buenos Aires','Lincoln');
+  hv('Patricia Scatolaro','Tomas Juarez',20,155.05,'27/04/2022','Entre Rios','Chajari');
+  hv('Sara Reynoso','Tomas Juarez',60,128.4,'27/04/2022','Mendoza','Mendoza');
+  hv('Mercado Libre','Tomas Juarez',50,134.8,'27/04/2022','Buenos Aires','');
+  hv('Romina Rigoni','Tomas Juarez',20,154,'06/05/2022','Buenos Aires','Pablo Podesta');
+  hv('Rocio Astoroga','Tomas Juarez',60,102.3,'10/05/2022','Salta','Nueva Oron');
+  hv('Martina Peralta','Tomas Juarez',20,155,'14/05/2022','Cordoba','Embalse');
+  hv('Mercado Libre','Tomas Juarez',20,160,'15/05/2022','Buenos Aires','');
+  hv('Mariana Corrales','Tomas Juarez',20,157.75,'19/05/2022','Buenos Aires','Santos Lugares');
+  hv('Gabriela Valls','Tomas Juarez',30,148,'23/05/2022','Buenos Aires','Parque Patricios');
+  hv('Maria Julia Vela','Tomas Juarez',60,133,'25/05/2022','Entre Rios','Gualeguaychu');
+  hv('Nadia Giammaria','Nadia Romanowics',60,99,'31/05/2022','Buenos Aires','Caba');
+  hv('Candela Etchetto','Tomas Juarez',20,157,'31/05/2022','Buenos Aires','Caba');
+  hv('Laura Aguzin','Tomas Juarez',20,140,'31/05/2022','Buenos Aires','Castelar');
+  hv('Marlene Lopez','Tomas Juarez',20,137,'31/05/2022','Entre Rios','La Paz');
+  hv('Flavia Costa','Tomas Juarez',20,156,'02/06/2022','Buenos Aires','Berazategui');
+  hv('Daira Bujan','Nadia Romanowics',30,99,'02/06/2022','Buenos Aires','Moreno');
+  hv('Martina Peralta','Tomas Juarez',20,152,'12/06/2022','Cordoba','Embalse');
+  hv('Rocio Astoroga','Tomas Juarez',40,151,'22/06/2022','Salta','Nueva Oron');
+  hv('Yamila Valeria Mora','Tomas Juarez',60,132,'22/06/2022','Neuquen','Cutral Co');
+  hv('Maria Julia Vela','Tomas Juarez',60,131,'22/06/2022','Entre Rios','Gualeguaychu');
+  hv('Pablo Ravinsara','Tomas Juarez',40,148,'28/06/2022','Buenos Aires','Caba');
+  hv('Soler Melina','Tomas Juarez',30,150,'11/07/2022','Buenos Aires','Burzaco');
+  hv('Sebastian Puente','Tomas Juarez',100,127,'13/07/2022','Buenos Aires','Monserrat');
+  hv('Belen Savid','Tomas Juarez',30,159,'19/07/2022','La Pampa','General Pico');
+  hv('Candela Etchetto','Tomas Juarez',40,163,'29/07/2022','Buenos Aires','Caba');
+  hv('Sara Reynoso','Tomas Juarez',100,140,'02/08/2022','Mendoza','Mendoza');
+  hv('Fiorella Espru','Tomas Juarez',20,167,'06/08/2022','Santa Fe','San Justo');
+  hv('Veronica Barelli','Tomas Juarez',20,168,'08/08/2022','Buenos Aires','Bahia Blanca');
+  hv('Rocio Astoroga','Tomas Juarez',40,159,'11/08/2022','Salta','Nueva Oron');
+  hv('Martina Peralta','Tomas Juarez',30,147,'11/08/2022','Cordoba','Embalse');
+  hv('Maria Sol Fernandez','Tomas Juarez',20,165,'11/08/2022','Chubut','Puerto Madryn');
+  hv('Gabriela Bustamante','Tomas Juarez',20,158,'13/08/2022','San Luis','Merlo');
+  hv('Fabiana Lanaro','Tomas Juarez',20,169,'13/08/2022','Entre Rios','Chajari');
+  hv('Sandra Pettina','Tomas Juarez',20,144,'22/08/2022','Mendoza','Eugenio Bustos');
+  hv('Sebastian Puente','Tomas Juarez',100,144,'23/08/2022','Buenos Aires','Monserrat');
+  hv('Paloma Gancedo','Tomas Juarez',100,133,'24/08/2022','Buenos Aires','Mar Del Plata');
+  hv('Mercado Libre','Tomas Juarez',20,156,'24/08/2022','Buenos Aires','');
+  hv('Agustina Canovas Rubio','Tomas Juarez',30,150,'27/08/2022','Buenos Aires','Campana');
+  hv('Tatiana Turnes','Tomas Juarez',40,113.25,'13/08/2022','Buenos Aires','Lanus');
+  hv('Laura Aguzin','Tomas Juarez',30,158.5,'13/08/2022','Buenos Aires','Castelar');
+  hv('Mercado Libre','Tomas Juarez',30,135.8,'13/08/2022','Buenos Aires','');
+  hv('Camila Ximena Vega','Tomas Juarez',20,154,'30/08/2022','Buenos Aires','Buenos Aires');
+  hv('Sandra Pettina','Tomas Juarez',20,171.5,'31/08/2022','Mendoza','Eugenio Bustos');
 
-  // ── 2023.0 ──
-  hv('Sebastian Puente','Tomas Juarez',500,125,'08/03/2023');
-  hv('Katerina Gruber','Tomas Juarez',100,138,'08/03/2023');
-  hv('Belen Savid','Tomas Juarez',100,125,'12/03/2023');
-  hv('Carolina Marchiso','Tomas Juarez',100,124.4,'12/03/2023');
-  hv('Gabriela Valls','Tomas Juarez',100,126,'19/03/2023');
-  hv('Ana Mosconi','Tomas Juarez',100,126,'19/03/2023');
-  hv('Nadia Romanowicz','Tomas Juarez',100,133.2,'28/03/2023');
-  hv('Soledad Ruiz','Tomas Juarez',100,126,'09/04/2023');
-  hv('Gabriela Valls','Tomas Juarez',100,126,'12/04/2023');
-  hv('Priscila Y Diego','Tomas Juarez',100,126.9,'14/04/2023');
-  hv('Nadia Romanowicz','Tomas Juarez',100,129.6,'20/04/2023');
-  hv('Julieta Perez','Tomas Juarez',200,126.3,'25/04/2023');
-  hv('Aros Libre','Tomas Juarez',100,129.6,'28/04/2023');
+  // -- 2023 --
+  hv('Sebastian Puente','Tomas Juarez',500,125,'08/03/2023','Buenos Aires','Monserrat');
+  hv('Katerina Gruber','Tomas Juarez',100,138,'08/03/2023','Buenos Aires','Buenos Aires');
+  hv('Belen Savid','Tomas Juarez',100,125,'12/03/2023','La Pampa','General Pico');
+  hv('Carolina Marchisio','Tomas Juarez',100,124.4,'12/03/2023','Cordoba','Villa General Belgrano');
+  hv('Gabriela Valls','Tomas Juarez',100,126,'19/03/2023','Buenos Aires','Parque Patricios');
+  hv('Ana Mosconi','Tomas Juarez',100,126,'19/03/2023','Buenos Aires','Lincoln');
+  hv('Nadia Romanowicz','Tomas Juarez',100,133.2,'28/03/2023','Buenos Aires','Zarate');
+  hv('Soledad Ruiz','Tomas Juarez',100,126,'09/04/2023','Buenos Aires','Mar Del Plata');
+  hv('Gabriela Valls','Tomas Juarez',100,126,'12/04/2023','Buenos Aires','Parque Patricios');
+  hv('Priscila Y Diego','Tomas Juarez',100,126.9,'14/04/2023','Buenos Aires','Buenos Aires');
+  hv('Nadia Romanowicz','Tomas Juarez',100,129.6,'20/04/2023','Buenos Aires','Zarate');
+  hv('Julieta Perez','Tomas Juarez',200,126.3,'25/04/2023','Buenos Aires','San Fernando');
+  hv('Aros Libre','Tomas Juarez',100,129.6,'28/04/2023','Buenos Aires','Buenos Aires');
 
   save();
   console.log('Histórico cargado:', ventas.length, 'ventas,', clientes.length, 'clientes');
 }
 
-cargarHistorico();
+try{ cargarHistorico(); localStorage.setItem('mb_cargado','1'); }catch(e){ console.error('ERROR cargarHistorico:',e.message,e.stack); }
 
 // ══ INIT ══
-renderDash();
-updateHdr();
+try{ renderDash(); }catch(e){ console.error('ERROR renderDash:',e.message); }
+try{ updateHdr(); }catch(e){ console.error('ERROR updateHdr:',e.message); }
 </script>
 </body>
 </html>
